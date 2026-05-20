@@ -42,6 +42,8 @@ V10: ∀ user input (form field) → `:user-invalid` styling + HTML5 validation 
 V11: form fetch failure → human fallback msg w/ `mailto:contact@infixr.com`
 V12: ⊥ hardcoded px breakpoint when `clamp()` or container query works
 V13: GH Pages root → `index.html` served; `.nojekyll` ! present
+V14: ∀ hero-class viewport unit → `svh` not `dvh`/`vh` (avoid mobile URL-bar resize jank)
+V15: ∀ raster image ≥ 100 KB → `<picture>` w/ webp `<source>` first, original as fallback `<img>`
 
 ## §T TASKS
 id|status|task|cites
@@ -59,10 +61,11 @@ T11|x|about.html|I.page
 T12|x|blog.html|I.page
 T13|x|Open Graph + favicons|V8
 T14|x|GH Pages deploy|V13
-T15|.|fix mobile jumpiness near hero+carousel|B1,V6,V7
+T15|x|fix mobile jumpiness near hero+carousel|B1,V6,V7
 T16|.|wire real form endpoint (placeholder now)|I.script
 T17|.|custom domain config|-
 
 ## §B BUGS
 id|date|cause|fix
-B1|2026-05-20|mobile jank near hero + carousel reported by Ari on real device. likely CLS from hero img + carousel animation jitter. ? root cause pending devtools trace|V6,V7
+B1|2026-05-20|mobile jank @ hero+carousel. causes: hero `<img>` missing w/h (CLS), `92dvh` resized on URL-bar toggle, `backdrop-filter` on sticky header GPU-thrashed during carousel anim|V6,V7,V14
+B2|2026-05-20|hero png 1.2 MB → slow LCP on mobile. webp 121 KB / 48 KB now via `<picture>` srcset|V15
