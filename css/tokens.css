@@ -1,0 +1,60 @@
+@layer tokens {
+  :root {
+    color-scheme: dark;
+
+    --bg: #1c1c1c;
+    --bg-elev: #232323;
+    --bg-card: #2a2a2a;
+    --bg-card-hover: #303030;
+    --border: color-mix(in oklab, #ffffff 8%, transparent);
+    --border-strong: color-mix(in oklab, #ffffff 14%, transparent);
+
+    --fg: #f4f4f5;
+    --fg-muted: #b8b8b8;
+    --fg-dim: #8a8a8a;
+
+    --accent: #1fd1a1;
+    --accent-glow: color-mix(in oklab, var(--accent) 35%, transparent);
+
+    --radius-sm: 8px;
+    --radius: 14px;
+    --radius-lg: 22px;
+    --radius-pill: 999px;
+
+    --space-1: .25rem;
+    --space-2: .5rem;
+    --space-3: .75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4rem;
+    --space-9: 6rem;
+
+    --container: min(1280px, 100% - 2rem);
+
+    --font-sans: 'Inter var', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-feat: 'cv02', 'cv03', 'cv04', 'cv11';
+
+    --step--1: clamp(.875rem, .82rem + .25cqi, 1rem);
+    --step-0: clamp(1rem, .94rem + .3cqi, 1.125rem);
+    --step-1: clamp(1.125rem, 1rem + .5cqi, 1.375rem);
+    --step-2: clamp(1.375rem, 1.2rem + .8cqi, 1.75rem);
+    --step-3: clamp(1.75rem, 1.4rem + 1.5cqi, 2.5rem);
+    --step-4: clamp(2.25rem, 1.6rem + 3cqi, 3.75rem);
+    --step-5: clamp(2.75rem, 1.8rem + 5cqi, 5.5rem);
+
+    --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
+    --shadow: 0 10px 30px -8px rgba(0,0,0,.6);
+    --shadow-glow: 0 0 60px -10px var(--accent-glow);
+  }
+
+  html { background: var(--bg); }
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-sans);
+    font-feature-settings: var(--font-feat);
+    font-size: var(--step-0);
+  }
+}

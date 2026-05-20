@@ -1,0 +1,14 @@
+{
+  "name": "InfiXR — Industrial VR Solutions",
+  "short_name": "InfiXR",
+  "description": "End-to-end VR training solutions for safer & faster learning.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#1c1c1c",
+  "theme_color": "#232323",
+  "icons": [
+    { "src": "assets/favicon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "any" },
+    { "src": "assets/favicon.svg", "type": "image/svg+xml", "sizes": "any", "purpose": "maskable" }
+  ]
+}
