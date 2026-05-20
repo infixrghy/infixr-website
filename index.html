@@ -68,7 +68,11 @@
   <!-- HERO -->
   <section class="hero" aria-labelledby="hero-title">
     <div class="hero__media" aria-hidden="true">
-      <img src="assets/hero2.png" alt="" loading="eager" fetchpriority="high">
+      <picture>
+        <source media="(max-width: 700px)" type="image/webp" srcset="assets/hero2-900.webp">
+        <source type="image/webp" srcset="assets/hero2-1600.webp">
+        <img src="assets/hero2-1600.png" alt="" width="1600" height="1067" loading="eager" fetchpriority="high" decoding="async">
+      </picture>
       <div class="hero__veil"></div>
     </div>
     <div class="hero__content">
@@ -107,7 +111,10 @@
       <ol class="carousel__track">
         <li class="card" id="who-1">
           <figure>
-            <img src="assets/who-1.jpg" alt="Team using VR headsets in collaborative session" loading="lazy" width="640" height="360">
+            <picture>
+              <source type="image/webp" srcset="assets/who-1.webp">
+              <img src="assets/who-1.jpg" alt="Team using VR headsets in collaborative session" loading="lazy" width="800" height="450" decoding="async">
+            </picture>
           </figure>
           <div class="card__body">
             <h3>We Create VR Apps For Real-World Challenges</h3>
@@ -116,7 +123,10 @@
         </li>
         <li class="card" id="who-2">
           <figure>
-            <img src="assets/who-2.jpg" alt="Engineer designing solar panel assembly lines in VR" loading="lazy" width="640" height="427">
+            <picture>
+              <source type="image/webp" srcset="assets/who-2.webp">
+              <img src="assets/who-2.jpg" alt="Engineer designing solar panel assembly lines in VR" loading="lazy" width="800" height="534" decoding="async">
+            </picture>
           </figure>
           <div class="card__body">
             <h3>Scalable &amp; Accessible</h3>
@@ -125,7 +135,10 @@
         </li>
         <li class="card" id="who-3">
           <figure>
-            <img src="assets/who-3.jpg" alt="Scientist using VR in a medical innovation lab" loading="lazy" width="640" height="360">
+            <picture>
+              <source type="image/webp" srcset="assets/who-3.webp">
+              <img src="assets/who-3.jpg" alt="Scientist using VR in a medical innovation lab" loading="lazy" width="800" height="450" decoding="async">
+            </picture>
           </figure>
           <div class="card__body">
             <h3>Practical, Not Experimental</h3>
@@ -150,7 +163,12 @@
     </header>
     <ul class="solutions__grid">
       <li class="solution">
-        <figure><img src="assets/sol-corporate.png" alt="Corporate VR training environment" loading="lazy" width="640" height="360"></figure>
+        <figure>
+          <picture>
+            <source type="image/webp" srcset="assets/sol-corporate.webp">
+            <img src="assets/sol-corporate.png" alt="Corporate VR training environment" loading="lazy" width="800" height="450" decoding="async">
+          </picture>
+        </figure>
         <div class="solution__body">
           <h3>Corporate &amp; Workforce Training</h3>
           <p>We create immersive VR training that helps teams improve communication, decision-making, and performance through realistic, scenario-based learning.</p>
@@ -158,7 +176,12 @@
         </div>
       </li>
       <li class="solution">
-        <figure><img src="assets/sol-industrial.png" alt="Industrial warehouse and safety scenarios" loading="lazy" width="640" height="288"></figure>
+        <figure>
+          <picture>
+            <source type="image/webp" srcset="assets/sol-industrial.webp">
+            <img src="assets/sol-industrial.png" alt="Industrial warehouse and safety scenarios" loading="lazy" width="800" height="360" decoding="async">
+          </picture>
+        </figure>
         <div class="solution__body">
           <h3>Industrial &amp; Safety Training</h3>
           <p>Train for high-risk environments without real-world consequences. From equipment handling to emergency response, we make learning safe and scalable.</p>
@@ -166,7 +189,12 @@
         </div>
       </li>
       <li class="solution">
-        <figure><img src="assets/sol-realestate.png" alt="Interior walkthrough renders" loading="lazy" width="640" height="346"></figure>
+        <figure>
+          <picture>
+            <source type="image/webp" srcset="assets/sol-realestate.webp">
+            <img src="assets/sol-realestate.png" alt="Interior walkthrough renders" loading="lazy" width="800" height="432" decoding="async">
+          </picture>
+        </figure>
         <div class="solution__body">
           <h3>Real Estate &amp; Visualization</h3>
           <p>Experience spaces before they're built. We design immersive walkthroughs for real estate, tourism, and customer engagement with global reach.</p>

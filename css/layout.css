@@ -10,10 +10,16 @@
     justify-content: space-between;
     gap: var(--space-5);
     padding: var(--space-4) var(--space-5);
-    background: color-mix(in oklab, var(--bg) 70%, transparent);
-    backdrop-filter: blur(12px) saturate(140%);
-    -webkit-backdrop-filter: blur(12px) saturate(140%);
+    background: color-mix(in oklab, var(--bg) 92%, transparent);
     border-bottom: 1px solid var(--border);
+  }
+  /* Heavy backdrop blur ! desktop only — mobile GPU thrashes during scroll */
+  @media (min-width: 900px) {
+    .site-header {
+      background: color-mix(in oklab, var(--bg) 70%, transparent);
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
+    }
   }
   .brand { display: inline-flex; align-items: center; color: var(--fg); }
   .brand__logo { height: 32px; width: auto; color: currentColor; }
@@ -23,7 +29,9 @@
   .hero {
     position: relative;
     isolation: isolate;
-    min-height: clamp(560px, 92dvh, 900px);
+    /* svh = smallest viewport height — locked to address-bar-visible state on mobile.
+       Avoids hero resizing when mobile URL bar toggles during scroll (jumpiness fix). */
+    min-height: clamp(560px, 92svh, 900px);
     display: grid;
     align-items: center;
     padding: var(--space-7) max(var(--space-5), calc((100% - 1280px) / 2));
@@ -33,7 +41,9 @@
     position: absolute;
     inset: 0;
     z-index: -1;
+    contain: strict;
   }
+  .hero__media picture { display: block; width: 100%; height: 100%; }
   .hero__media img {
     width: 100%;
     height: 100%;

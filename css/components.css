@@ -149,6 +149,7 @@
     width: max-content;
     min-height: 1.15em;
     position: relative;
+    contain: layout paint;
   }
   /* Screen reader fallback (and pre-JS-disabled-safe label) */
   .word-slot__sr {
@@ -196,6 +197,8 @@
   .carousel__viewport {
     overflow: hidden;
     border-radius: var(--radius-lg);
+    /* Isolate paint + layout so track animation doesn't trigger reflow on neighbors */
+    contain: layout paint;
   }
   .carousel__track {
     display: grid;
