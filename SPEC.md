@@ -44,6 +44,8 @@ V12: ⊥ hardcoded px breakpoint when `clamp()` or container query works
 V13: GH Pages root → `index.html` served; `.nojekyll` ! present
 V14: ∀ hero-class viewport unit → `svh` not `dvh`/`vh` (avoid mobile URL-bar resize jank)
 V15: ∀ raster image ≥ 100 KB → `<picture>` w/ webp `<source>` first, original as fallback `<img>`
+V16: CSS source = `css/*.css`. HTML deploys w/ inlined CSS via `build.ts`. ∀ edit to `css/*.css` OR `*.html` source markers → `bun run build.ts` ! before commit. Auto-fired via `.claude/settings.json` PostToolUse hook.
+V17: ⊥ external `<link rel="stylesheet">` in any deployed HTML. ⊥ cross-origin font fetch. (rsms.me, fonts.googleapis.com, etc.)
 
 ## §T TASKS
 id|status|task|cites

@@ -19,12 +19,18 @@
 - `prefers-reduced-motion`: opt out non-essential animations; keep intentional ones (hero word cycler, carousel autoplay) running.
 
 ## Files
-- `index.html`, `about.html`, `blog.html` — pages
-- `css/reset.css`, `tokens.css`, `layout.css`, `components.css`, `pages.css`
+- `index.html`, `about.html`, `blog.html` — pages. CSS is INLINED into `<head>`. Don't hand-edit the `<style>` block between `<!--CSS_INLINE_START-->` / `<!--CSS_INLINE_END-->` markers — edit `css/*.css` source and rerun build.
+- `css/reset.css`, `tokens.css`, `layout.css`, `components.css`, `pages.css` — source of truth for styles.
 - `js/form.js` — 1.4 KB, only file
 - `server.ts` — Bun dev server, `bun run server.ts` → 127.0.0.1:8765
-- `assets/` — images, favicon, og-image
+- `build.ts` — Bun build script. Inlines `css/*.css` + `@font-face` into each HTML between marker comments. Idempotent. Auto-fires via `.claude/settings.json` hook on Edit/Write to `css/*` or HTML pages.
+- `assets/` — images, favicon, og-image, `InterVariable.woff2` (self-hosted, no rsms.me)
 - `SPEC.md` — cavekit spec (source of truth for invariants)
+
+## Build flow
+- Edit `css/<file>.css` → hook auto-runs `bun run build.ts` → HTML inline blocks updated.
+- Manual rebuild: `bun run build.ts` (cheap, ~30 ms).
+- Never commit HTML with stale inline CSS — `git status` will show unstaged HTML changes when build hasn't run.
 
 ## Editing
 - never add CSS framework
