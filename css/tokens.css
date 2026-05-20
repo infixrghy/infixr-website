@@ -10,8 +10,8 @@
     --border-strong: color-mix(in oklab, #ffffff 14%, transparent);
 
     --fg: #f4f4f5;
-    --fg-muted: #b8b8b8;
-    --fg-dim: #8a8a8a;
+    --fg-muted: #c2c2c2;
+    --fg-dim: #a8a8a8;
 
     --accent: #1fd1a1;
     --accent-glow: color-mix(in oklab, var(--accent) 35%, transparent);
