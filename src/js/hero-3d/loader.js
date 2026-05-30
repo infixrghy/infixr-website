@@ -56,10 +56,11 @@
     // zoom/pan/tap handlers, and wheel/touch scroll passes straight through.
     mv.setAttribute("rotation-per-second", "30deg");
     mv.setAttribute("interaction-prompt", "none");
-    // Frame 0. The static webp is a pixel-exact capture of THIS pose, so the model
-    // first renders identically to the webp it replaces. auto-rotate is deliberately
-    // NOT set yet — see the load handler.
-    mv.setAttribute("camera-orbit", "0deg 80deg 105%");
+    // Frame 0 = headset facing the viewer head-on (front lens toward the visitor),
+    // slight top-down for dimension. The static webp is a pixel-exact capture of
+    // THIS pose, so the model first renders identically to the webp it replaces.
+    // auto-rotate is deliberately NOT set yet — see the load handler.
+    mv.setAttribute("camera-orbit", "0deg 82deg 105%");
     mv.setAttribute("shadow-intensity", "1.4");
     mv.setAttribute("shadow-softness", "0.8");
     mv.setAttribute("exposure", "1.05");
