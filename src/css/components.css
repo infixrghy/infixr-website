@@ -512,19 +512,57 @@
   @media (prefers-reduced-motion: reduce) {
     .solution:hover { transform: none; }
   }
-  .solution figure { aspect-ratio: 16 / 10; overflow: hidden; }
-  .solution figure img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transition: transform .6s ease;
-  }
-  .solution:hover figure img { transform: scale(1.04); }
   .solution__body {
     padding: var(--space-5);
     display: grid;
     gap: var(--space-3);
     flex: 1;
+    align-content: start;
   }
+  /* Text-only cards (Corporate, Workforce): glass, no figure, content centered. */
+  .solution--text .solution__body {
+    align-content: center;
+    padding: clamp(var(--space-5), 3cqi, var(--space-7));
+  }
+
+  /* Feature card (Industrial): full-bleed photo with text overlaid top-left.
+     White text over a scrim → AA by construction (same discipline as the hero
+     scrim — robust to the photo). */
+  .solution--feature {
+    position: relative;
+    min-height: clamp(320px, 40vw, 520px);
+    isolation: isolate;
+  }
+  .solution--feature figure {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    overflow: hidden;
+  }
+  .solution--feature figure img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    transition: transform .6s ease;
+  }
+  .solution--feature:hover figure img { transform: scale(1.04); }
+  /* Scrim: darkens where the text/CTA sit, guarantees AA over any photo.
+     Top-left diagonal for the title + a left-edge floor for the CTA below. */
+  .solution--feature::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(160deg, rgba(10,12,14,.85) 0%, rgba(10,12,14,.55) 40%, rgba(10,12,14,.18) 72%),
+      linear-gradient(90deg, rgba(10,12,14,.55) 0%, transparent 55%);
+    pointer-events: none;
+  }
+  .solution--feature .solution__body { align-content: start; }
+  .solution--feature h3,
+  .solution--feature p { color: #f3f4f5; }
+  .solution--feature p { color: color-mix(in oklab, #f3f4f5 86%, transparent); }
+  .solution--feature .link-arrow { color: #f3f4f5; }
+  .solution--feature .link-arrow:hover { color: var(--accent); }
 
   /* ============ BLOG POSTS ============ */
   .post {
