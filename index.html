@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Rotating Quest 3</title>
+  <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+  <style>
+    body { margin: 0; background: #1a1a1a; display: flex; align-items: center; justify-content: center; height: 100vh; }
+    model-viewer {
+      width: 90vw;
+      height: 90vh;
+      background: #1a1a1a;
+    }
+  </style>
+</head>
+<body>
+  <model-viewer
+    src="headset.glb"
+    auto-rotate
+    auto-rotate-delay="0"
+    rotation-per-second="45deg"
+    interaction-prompt="none"
+    disable-zoom
+    disable-pan
+    disable-tap
+    camera-orbit="0deg 75deg auto"
+    exposure="1.0"
+    shadow-intensity="1.8"
+    shadow-softness="0.7"
+    environment-image="https://modelviewer.dev/shared-assets/environments/neutral.hdr"
+    skybox-image=""
+    tone-mapping="aces"
+  ></model-viewer>
+</body>
+</html>
