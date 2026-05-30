@@ -50,6 +50,6 @@
 - commit style: Conventional Commits (`feat:`, `fix:`, `perf:`, `chore:`)
 
 ## Repo
-- remote: github.com/arijit-gogoi/infixr-website
-- live: arijit-gogoi.github.io/infixr-website/
-- auth: arijit-gogoi (gh CLI)
+- remote: github.com/infixrghy/infixr-website (org repo; transferred from arijit-gogoi)
+- live: infixrghy.github.io/infixr-website/ (Pages source = GitHub Actions)
+- auth: gh CLI as `arijit-gogoi` (personal account, member of infixrghy org)

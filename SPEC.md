@@ -30,8 +30,8 @@ static infixr.com rebuild. html+css. minimal js. mobile-OK. GH Pages host.
 - ci: `.github/workflows/deploy.yml` → on push to `main`: build `public/` → deploy via `actions/deploy-pages`.
 - vendor: `vendor/rotating-metaquest3/` → 3D MetaQuest3 viewer (subtree). NOT shipped — hero 3D deferred (V27, T27).
 - env: none required at runtime
-- remote: `github.com/arijit-gogoi/infixr-website` (public)
-- live: `arijit-gogoi.github.io/infixr-website/` (Pages source = GitHub Actions)
+- remote: `github.com/infixrghy/infixr-website` (public)
+- live: `infixrghy.github.io/infixr-website/` (Pages source = GitHub Actions)
 
 ## §V INVARIANTS
 V1: total `src/js/*.js` byte size ≤ 5120 B
