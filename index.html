@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <link rel="preload" as="font" type="font/woff2" href="assets/InterVariable.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="assets/Satoshi-Variable.woff2" crossorigin>
   <link rel="preload" as="image" type="image/webp" href="assets/hero2-1600.webp" imagesrcset="assets/hero2-900.webp 900w, assets/hero2-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -37,12 +37,20 @@
   <!--CSS_INLINE_START-->
 <style>
 @font-face {
-  font-family: 'Inter var';
+  font-family: 'Satoshi';
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 300 900;
   font-display: swap;
-  src: url('assets/InterVariable.woff2') format('woff2-variations'),
-       url('assets/InterVariable.woff2') format('woff2');
+  src: url('assets/Satoshi-Variable.woff2') format('woff2-variations'),
+       url('assets/Satoshi-Variable.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Satoshi';
+  font-style: italic;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('assets/Satoshi-VariableItalic.woff2') format('woff2-variations'),
+       url('assets/Satoshi-VariableItalic.woff2') format('woff2');
 }
 
 @layer reset {
@@ -73,49 +81,76 @@
   :root {
     color-scheme: dark;
 
-    --bg: #1c1c1c;
-    --bg-elev: #232323;
-    --bg-card: #2a2a2a;
-    --bg-card-hover: #303030;
-    --border: color-mix(in oklab, #ffffff 8%, transparent);
-    --border-strong: color-mix(in oklab, #ffffff 14%, transparent);
+    /* ---- Palette (Figma) ---- */
+    --c-bg: #222526;
+    --c-fg: #e0e0e0;
+    --c-accent: #1FD1A1;
 
-    --fg: #f4f4f5;
-    --fg-muted: #c2c2c2;
-    --fg-dim: #a8a8a8;
+    /* ---- Surface derivatives ---- */
+    --bg: var(--c-bg);
+    --bg-elev: color-mix(in oklab, var(--c-bg) 88%, white);
+    --bg-card: color-mix(in oklab, var(--c-bg) 82%, white);
+    --bg-card-hover: color-mix(in oklab, var(--c-bg) 74%, white);
+    --border: color-mix(in oklab, var(--c-fg) 12%, transparent);
+    --border-strong: color-mix(in oklab, var(--c-fg) 20%, transparent);
 
-    --accent: #1fd1a1;
-    --accent-glow: color-mix(in oklab, var(--accent) 35%, transparent);
+    --fg: var(--c-fg);
+    --fg-muted: color-mix(in oklab, var(--c-fg) 78%, transparent);
+    --fg-dim: color-mix(in oklab, var(--c-fg) 60%, transparent);
 
+    --accent: var(--c-accent);
+    --accent-glow: color-mix(in oklab, var(--c-accent) 35%, transparent);
+
+    /* ---- Radius ---- */
     --radius-sm: 8px;
     --radius: 14px;
     --radius-lg: 22px;
     --radius-pill: 999px;
 
-    --space-1: .25rem;
-    --space-2: .5rem;
+    /* ---- Spacing scale (8 px system) ---- */
+    --s-1: .5rem;     /* 8 */
+    --s-2: 1rem;      /* 16 */
+    --s-3: 1.5rem;    /* 24 */
+    --s-4: 2rem;      /* 32 */
+    --s-6: 3rem;      /* 48 */
+    --s-8: 4rem;      /* 64 */
+    --s-12: 6rem;     /* 96 */
+
+    /* Section & rhythm shortcuts (V19) */
+    --pad-section: clamp(120px, 12vw, 160px);       /* derived from --s-15 → --s-20 */
+    --gap-h-p: var(--s-3);                          /* 24px */
+    --gap-p-cta: clamp(2rem, 4vw, 2.5rem);          /* --s-4 → --s-5 */
+
+    /* Legacy spacing aliases (kept so existing components.css survives) */
+    --space-2: var(--s-1);
     --space-3: .75rem;
-    --space-4: 1rem;
-    --space-5: 1.5rem;
-    --space-6: 2rem;
-    --space-7: 3rem;
-    --space-8: 4rem;
-    --space-9: 6rem;
+    --space-4: var(--s-2);
+    --space-5: var(--s-3);
+    --space-6: var(--s-4);
+    --space-7: var(--s-6);
+    --space-8: var(--s-8);
+    --space-9: var(--s-12);
 
-    --container: min(1280px, 100% - 2rem);
+    --container-w: 1280px;
 
-    --font-sans: 'Inter var', 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    --font-feat: 'cv02', 'cv03', 'cv04', 'cv11';
+    /* ---- Type (Satoshi from fontshare, self-hosted) ---- */
+    --font-sans: 'Satoshi', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --font-feat: 'ss01', 'ss03';
 
+    /* Type scale per Figma:
+         body       16-18      1em      - 1.125em
+         subheading 24-32      1.5em    - 2em
+         section    48-64      3em      - 4em
+         heading    72-96      4.5em    - 6em
+    */
     --step--1: clamp(.875rem, .82rem + .25cqi, 1rem);
-    --step-0: clamp(1rem, .94rem + .3cqi, 1.125rem);
-    --step-1: clamp(1.125rem, 1rem + .5cqi, 1.375rem);
-    --step-2: clamp(1.375rem, 1.2rem + .8cqi, 1.75rem);
-    --step-3: clamp(1.75rem, 1.4rem + 1.5cqi, 2.5rem);
-    --step-4: clamp(2.25rem, 1.6rem + 3cqi, 3.75rem);
-    --step-5: clamp(2.75rem, 1.8rem + 5cqi, 5.5rem);
+    --step-0:  clamp(1rem, .94rem + .3cqi, 1.125rem);
+    --step-1:  clamp(1.125rem, 1rem + .5cqi, 1.375rem);
+    --step-2:  clamp(1.5rem, 1.2rem + 1.2cqi, 2rem);          /* subheading */
+    --step-3:  clamp(2rem, 1.4rem + 2cqi, 2.75rem);
+    --step-4:  clamp(3rem, 2rem + 3cqi, 4rem);                /* section heading */
+    --step-5:  clamp(4.5rem, 3rem + 6cqi, 6rem);              /* hero heading */
 
-    --shadow-sm: 0 1px 2px rgba(0,0,0,.4);
     --shadow: 0 10px 30px -8px rgba(0,0,0,.6);
     --shadow-glow: 0 0 60px -10px var(--accent-glow);
   }
@@ -127,6 +162,8 @@
     font-family: var(--font-sans);
     font-feature-settings: var(--font-feat);
     font-size: var(--step-0);
+    line-height: 1.3;
+    letter-spacing: 0;
   }
 }
 
@@ -166,7 +203,7 @@
     min-height: clamp(560px, 92svh, 900px);
     display: grid;
     align-items: center;
-    padding: var(--space-7) max(var(--space-5), calc((100% - 1280px) / 2));
+    padding: var(--space-7) max(var(--space-5), calc((100% - var(--container-w)) / 2));
     overflow: clip;
   }
   .hero__media {
@@ -201,10 +238,17 @@
     margin-top: var(--space-6);
   }
 
-  /* Section base */
+  /* Section base — V21 spacing scale */
   main > section:not(.hero) {
-    padding: var(--space-9) max(var(--space-5), calc((100% - 1280px) / 2));
+    padding: var(--pad-section) max(var(--space-5), calc((100% - var(--container-w)) / 2));
   }
+  /* Heading -> paragraph rhythm (V21) */
+  section h2 + p,
+  section h2 + .eyebrow + p { margin-top: var(--gap-h-p); }
+  /* Paragraph -> CTA rhythm (V21) */
+  section p + .btn,
+  section p + .hero__cta,
+  section p + .link-arrow { margin-top: var(--gap-p-cta); }
 
   /* Who We Are layout */
   .who {
@@ -285,7 +329,7 @@
   /* Footer layout */
   .site-footer {
     border-top: 1px solid var(--border);
-    padding: var(--space-8) max(var(--space-5), calc((100% - 1280px) / 2)) var(--space-5);
+    padding: var(--space-8) max(var(--space-5), calc((100% - var(--container-w)) / 2)) var(--space-5);
     background: color-mix(in oklab, var(--bg) 80%, black);
   }
   .site-footer__grid {
@@ -383,18 +427,25 @@
     .nav-toggle:checked ~ .nav-burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
   }
 
-  /* ============ BUTTONS ============ */
+  /* ============ BUTTONS ============
+     3 variants (V22):
+       .btn.btn--primary  → filled, accent on hover
+       .btn.btn--ghost    → outline (secondary), Figma dashed treatment optional
+       .link-arrow        → tertiary text+arrow
+     All ≥ 44×44 px tap target. Hover = non-color (transform / border).
+  */
   .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: .5rem;
+    min-height: 44px;
     padding: .85rem 1.5rem;
     border-radius: var(--radius-pill);
     font-weight: 600;
     font-size: var(--step-0);
     letter-spacing: .01em;
-    transition: transform .15s, background .2s, color .2s, box-shadow .2s;
+    transition: transform .15s, background .2s, color .2s, box-shadow .2s, border-color .2s;
     border: 1px solid transparent;
     white-space: nowrap;
   }
@@ -404,7 +455,7 @@
   }
   .btn--primary:hover {
     background: var(--accent);
-    color: #001a14;
+    color: var(--c-bg);
     box-shadow: var(--shadow-glow);
     transform: translateY(-1px);
   }
@@ -413,7 +464,14 @@
     color: var(--fg);
     border-color: var(--border-strong);
   }
-  .btn--ghost:hover { border-color: var(--accent); color: var(--accent); }
+  .btn--ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-1px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn:hover { transform: none; }
+  }
 
   .link-arrow {
     color: var(--fg);
@@ -421,10 +479,14 @@
     display: inline-flex;
     align-items: center;
     gap: .35rem;
+    min-height: 44px;
     transition: color .2s, gap .2s;
   }
   .link-arrow:hover { color: var(--accent); gap: .65rem; }
   .link-arrow--bold { font-weight: 600; font-size: var(--step-1); }
+  @media (prefers-reduced-motion: reduce) {
+    .link-arrow:hover { gap: .35rem; }
+  }
 
   /* ============ HERO TITLE ============ */
   .hero__title {
@@ -764,9 +826,10 @@
       <span></span><span></span><span></span>
     </label>
     <ul>
-      <li><a href="#top" aria-current="page">Home</a></li>
-      <li><a href="about.html">About Us</a></li>
+      <li><a href="about.html">Who we are</a></li>
       <li><a href="#solutions">Our Solutions</a></li>
+      <li><a href="#products">Products</a></li>
+      <li><a href="blog.html">Blogs</a></li>
       <li><a class="cta-pill" href="#contact">Contact Us</a></li>
     </ul>
   </nav>

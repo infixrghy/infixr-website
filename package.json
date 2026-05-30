@@ -1,0 +1,10 @@
+{
+  "name": "infixr-website",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun run build.ts",
+    "lint": "bun run lint.ts",
+    "dev": "bun run server.ts"
+  }
+}

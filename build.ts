@@ -20,12 +20,20 @@ const PAGES_CSS = "css/pages.css";
 
 const FONT_FACE = `
 @font-face {
-  font-family: 'Inter var';
+  font-family: 'Satoshi';
   font-style: normal;
-  font-weight: 100 900;
+  font-weight: 300 900;
   font-display: swap;
-  src: url('assets/InterVariable.woff2') format('woff2-variations'),
-       url('assets/InterVariable.woff2') format('woff2');
+  src: url('assets/Satoshi-Variable.woff2') format('woff2-variations'),
+       url('assets/Satoshi-Variable.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Satoshi';
+  font-style: italic;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('assets/Satoshi-VariableItalic.woff2') format('woff2-variations'),
+       url('assets/Satoshi-VariableItalic.woff2') format('woff2');
 }
 `;
 
@@ -51,7 +59,7 @@ async function processHtml(file: string, css: string) {
   // Preloads — injected just inside <head> so they start ASAP.
   // Font: crossorigin attr required even for same-origin font preloads.
   // Image: only on the homepage (it's the only page with a hero image).
-  const fontPreload = `<link rel="preload" as="font" type="font/woff2" href="assets/InterVariable.woff2" crossorigin>`;
+  const fontPreload = `<link rel="preload" as="font" type="font/woff2" href="assets/Satoshi-Variable.woff2" crossorigin>`;
   const heroPreload = file === "index.html"
     ? `\n  <link rel="preload" as="image" type="image/webp" href="assets/hero2-1600.webp" imagesrcset="assets/hero2-900.webp 900w, assets/hero2-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">`
     : "";

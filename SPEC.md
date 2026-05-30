@@ -46,6 +46,15 @@ V14: ∀ hero-class viewport unit → `svh` not `dvh`/`vh` (avoid mobile URL-bar
 V15: ∀ raster image ≥ 100 KB → `<picture>` w/ webp `<source>` first, original as fallback `<img>`
 V16: CSS source = `css/*.css`. HTML deploys w/ inlined CSS via `build.ts`. ∀ edit to `css/*.css` OR `*.html` source markers → `bun run build.ts` ! before commit. Auto-fired via `.claude/settings.json` PostToolUse hook.
 V17: ⊥ external `<link rel="stylesheet">` in any deployed HTML. ⊥ cross-origin font fetch. (rsms.me, fonts.googleapis.com, etc.)
+V18: tokens.css ! encode Figma palette: --c-bg:#222526; --c-fg:#e0e0e0; --c-accent:#1FD1A1
+V19: body font = Satoshi, self-hosted from `assets/Satoshi-Variable.woff2` (fontshare.com source), w/ system-ui fallback chain. ⊥ Inter. ⊥ Google Fonts.
+V20: type scale uses `clamp()`. heading 4.5em–6em; section 3em–4em; subheading 1.5em–2em; body 1em–1.125em. rem-based.
+V21: spacing scale = 8 px multiples. tokens --s-1 (8px) … --s-20 (160px). section pad = clamp(120px,12vw,160px). heading→para gap = 24px. para→cta gap = clamp(32px,4vw,40px)
+V22: ∀ button → 3 variants (primary filled, secondary outline, tertiary link+arrow). ! ≥ 44×44 px tap target. hover state non-color (transform OR border). reduced-motion safe.
+V23: nav top-right links: WHO WE ARE · OUR SOLUTIONS · PRODUCTS · BLOGS · CONTACT US (button). collapse to hamburger ≤ 640 px viewport.
+V24: large card → rounded 16–24 px, dark bg, product img top, h2 + body + CTA. hover state defined. carousel uses `scroll-snap`. reduced-motion → autoplay stops.
+V25: `build.ts` emits cache-busted asset hashes (e.g. `hero.abc1234.webp`) in HTML refs. ⊥ stale browser cache on deploy.
+V26: ∀ token in `css/tokens.css` ! referenced ≥ 1 time in `css/{components,pages,layout}.css`. dead token → `bun run lint` warns.
 
 ## §T TASKS
 id|status|task|cites
@@ -66,6 +75,11 @@ T14|x|GH Pages deploy|V13
 T15|x|fix mobile jumpiness near hero+carousel|B1,V6,V7
 T16|.|wire real form endpoint (placeholder now)|I.script
 T17|.|custom domain config|-
+T18|x|fetch Satoshi from fontshare.com → `assets/Satoshi-Variable.woff2`|V19
+T19|x|encode Figma tokens in `css/tokens.css` (palette, font, type-scale clamp, spacing-8)|V18,V19,V20,V21
+T20|.|build 3 button variants + nav + card components per Figma|V22,V23,V24
+T21|.|extend `build.ts`: inject Satoshi @font-face + `<link rel=preload>` + cache-bust asset hashes|V19,V25
+T22|x|add `bun run lint` script: dead-token check `tokens.css` vs `{components,pages,layout}.css`|V26
 
 ## §B BUGS
 id|date|cause|fix

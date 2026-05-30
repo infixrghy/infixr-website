@@ -6,3 +6,7 @@ Thumbs.db
 .idea/
 .vscode/
 .claude/settings.local.json
+
+# scratch / design refs (local only)
+.figma-ref-*.png
+.satoshi-fontshare.css

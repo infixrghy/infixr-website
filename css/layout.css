@@ -34,7 +34,7 @@
     min-height: clamp(560px, 92svh, 900px);
     display: grid;
     align-items: center;
-    padding: var(--space-7) max(var(--space-5), calc((100% - 1280px) / 2));
+    padding: var(--space-7) max(var(--space-5), calc((100% - var(--container-w)) / 2));
     overflow: clip;
   }
   .hero__media {
@@ -69,10 +69,17 @@
     margin-top: var(--space-6);
   }
 
-  /* Section base */
+  /* Section base — V21 spacing scale */
   main > section:not(.hero) {
-    padding: var(--space-9) max(var(--space-5), calc((100% - 1280px) / 2));
+    padding: var(--pad-section) max(var(--space-5), calc((100% - var(--container-w)) / 2));
   }
+  /* Heading -> paragraph rhythm (V21) */
+  section h2 + p,
+  section h2 + .eyebrow + p { margin-top: var(--gap-h-p); }
+  /* Paragraph -> CTA rhythm (V21) */
+  section p + .btn,
+  section p + .hero__cta,
+  section p + .link-arrow { margin-top: var(--gap-p-cta); }
 
   /* Who We Are layout */
   .who {
@@ -153,7 +160,7 @@
   /* Footer layout */
   .site-footer {
     border-top: 1px solid var(--border);
-    padding: var(--space-8) max(var(--space-5), calc((100% - 1280px) / 2)) var(--space-5);
+    padding: var(--space-8) max(var(--space-5), calc((100% - var(--container-w)) / 2)) var(--space-5);
     background: color-mix(in oklab, var(--bg) 80%, black);
   }
   .site-footer__grid {
