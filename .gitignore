@@ -10,7 +10,8 @@ Thumbs.db
 .vscode/
 .claude/settings.local.json
 
-# scratch / design refs (local only)
-.figma-ref-*.png
+# scratch (local only)
 .satoshi-fontshare.css
-infixr-figma-final/
+
+# design refs — Figma exports, mockups (local only; Figma is canonical)
+design/
