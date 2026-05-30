@@ -37,6 +37,7 @@ import { indexMeta } from "./src/pages/index.ts";
 import { aboutMeta } from "./src/pages/about.ts";
 import { blogMeta } from "./src/pages/blog.ts";
 import { renderBlogBody, renderPost, postPageMeta, loadPosts } from "./src/blog.ts";
+import { renderHomeBody } from "./src/home.ts";
 
 const SRC = "src";
 const OUT = "public";
@@ -187,14 +188,13 @@ const program = Effect.gen(function* () {
   const coreCss = yield* Effect.promise(() => readCss(CSS_ORDER));
   const pagesCss = yield* Effect.promise(() => readCss([PAGES_CSS]));
 
-  // Page bodies: index/about are static partials; blog is rendered from posts.
-  const indexBody = yield* Effect.promise(() =>
-    readFile(join(SRC, "pages/index.body.html"), "utf8")
-  );
+  // Page bodies: about is a static partial; index + blog are rendered from posts
+  // (home pulls the latest posts into its blog mosaic — see src/home.ts).
   const aboutBody = yield* Effect.promise(() =>
     readFile(join(SRC, "pages/about.body.html"), "utf8")
   );
   const posts = yield* loadPosts;
+  const indexBody = renderHomeBody(posts);
   const blogBody = renderBlogBody(posts);
 
   // 2. build HTML pages

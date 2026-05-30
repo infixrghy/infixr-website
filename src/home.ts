@@ -1,4 +1,86 @@
-<main id="top">
+/**
+ * home.ts — the homepage <main>, rendered from templates + live post data.
+ *
+ * Was src/pages/index.body.html (a hand-authored static partial). Promoted to a
+ * render fn for two reasons:
+ *   1. The blog section was a hand-copied snapshot of content/posts/*.md that had
+ *      already drifted — wrong links (all → blog.html, never the per-post page),
+ *      invented read-times, and a fixed top-5 that silently ignored new posts.
+ *      It's now driven by the same validated BlogPost[] the blog index uses.
+ *   2. The 5 repeated <picture> blocks (hero + 3 who cards + solution feature) now
+ *      go through the typed picture() helper — no copied srcset / mismatched w/h.
+ *
+ * Everything else (hero copy, who/solutions/contact markup) is the SAME content as
+ * the old partial — just authored here now. Output is byte-stable with the prior
+ * build. The trailing hero-3d loader <script> is part of this body (it sat after
+ * </main> in the partial), so it's appended after the closing tag here too.
+ *
+ * Mirrors blog.ts: a `posts → string` render fn fed by loadPosts in build.ts.
+ */
+import { html, esc } from "./templates/html.ts";
+import { picture } from "./templates/picture.ts";
+import { displayDate } from "./blog.ts";
+import type { BlogPost } from "./schema/post.ts";
+
+/**
+ * The homepage blog grid is a fixed 5-cell mosaic (CSS grid-template-areas:
+ * a b / c people / d people). Each slot has a hardcoded photo/gradient surface
+ * and grid-area class, plus whether it carries the corner arrow badge. The DATA
+ * (title, date, read-time, link) fills each slot; this map is the LAYOUT and
+ * stays literal — it's design, not content. Order matches newest-first posts:
+ * the two large feature photos lead, two small gradient cards, then the tall
+ * people-photo card. Exactly 5 — the grid has no 6th cell.
+ */
+const HOME_BLOG_SLOTS: ReadonlyArray<{ cls: string; badge: boolean }> = [
+  { cls: "u-card u-card--overlay u-card--feature surf-headset-a blog-a", badge: true },
+  { cls: "u-card u-card--overlay u-card--feature surf-headset-b blog-b", badge: true },
+  { cls: "u-card u-card--overlay surf-grad blog-c", badge: false },
+  { cls: "u-card u-card--overlay surf-grad blog-d", badge: false },
+  { cls: "u-card u-card--overlay u-card--feature surf-people blog-people", badge: true },
+];
+
+/**
+ * One homepage blog card: an overlay card linking to the post's own page. Meta is
+ * date + read-time only (no category — the homepage cards never showed one). The
+ * surface + grid-area + badge come from the positional slot; title/date/href from
+ * the post. Fixes the drift: href is the per-post page, read-time is the real
+ * front-matter value. Post fields are our own validated data but esc()'d at the
+ * boundary regardless (title may contain author punctuation).
+ */
+const renderHomeBlogCard = (
+  p: BlogPost,
+  slot: { cls: string; badge: boolean }
+): string => {
+  const badge = slot.badge
+    ? `\n          <span class="u-card__badge" aria-hidden="true">&rarr;</span>`
+    : "";
+  return html`<li class="${slot.cls}">
+        <a class="u-card__link" href="blog/${esc(p.slug)}.html">
+          <div class="u-card__overlay">
+            <p class="u-card__meta"><time datetime="${p.date}">${displayDate(
+    p.date
+  )}</time> &middot; ${String(p.readMinutes)} min read</p>
+            <h3>${esc(p.title)}</h3>
+          </div>${badge}
+        </a>
+      </li>`;
+};
+
+/**
+ * Render the full homepage <main> + trailing hero-3d loader script.
+ * @param posts validated, newest-first BlogPost[] (from loadPosts). The blog
+ *   section uses the first up-to-5; fewer posts simply fill fewer slots.
+ */
+export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
+  // Newest-first already (loadPosts sorts). Take up to 5 to fill the mosaic; zip
+  // each with its positional slot so a short post list never indexes past the map.
+  const homePosts = posts.slice(0, HOME_BLOG_SLOTS.length);
+  const blogCards = homePosts
+    .map((p, i) => "\n      " + renderHomeBlogCard(p, HOME_BLOG_SLOTS[i]))
+    .join("");
+
+  return (
+    html`<main id="top">
 
   <!-- HERO -->
   <section class="hero" aria-labelledby="hero-title">
@@ -51,10 +133,16 @@
            contact shadow, transparent bg). Square 1500² so it occupies the SAME
            box as .hero__model — when the 3D reveals at frame 0 the pixels match and
            rotation begins from here, so the handoff is seamless. -->
-      <picture class="hero__headset">
-        <source type="image/webp" srcset="assets/hero-headset-1200.webp">
-        <img src="assets/hero-headset-1200.png" alt="" width="1500" height="1500" loading="eager" fetchpriority="high" decoding="async">
-      </picture>
+      ${picture({
+      webp: "assets/hero-headset-1200.webp",
+      png: "assets/hero-headset-1200.png",
+      alt: "",
+      width: 1500,
+      height: 1500,
+      loading: "eager",
+      fetchpriority: "high",
+      className: "hero__headset",
+    })}
     </div>
   </section>
 
@@ -77,10 +165,14 @@
       <ol class="carousel__track">
         <li class="card" id="who-1">
           <figure>
-            <picture>
-              <source type="image/webp" srcset="assets/who-headset-white.webp">
-              <img src="assets/who-headset-white.png" alt="Meta Quest VR headset on a clean studio table" loading="lazy" width="900" height="317" decoding="async">
-            </picture>
+            ${picture({
+      webp: "assets/who-headset-white.webp",
+      png: "assets/who-headset-white.png",
+      alt: "Meta Quest VR headset on a clean studio table",
+      width: 900,
+      height: 317,
+      loading: "lazy",
+    })}
           </figure>
           <div class="card__body">
             <h3>We Create VR Apps For Real-World Challenges</h3>
@@ -89,10 +181,14 @@
         </li>
         <li class="card" id="who-2">
           <figure>
-            <picture>
-              <source type="image/webp" srcset="assets/who-headset-white.webp">
-              <img src="assets/who-headset-white.png" alt="Meta Quest VR headset on a clean studio table" loading="lazy" width="900" height="317" decoding="async">
-            </picture>
+            ${picture({
+      webp: "assets/who-headset-white.webp",
+      png: "assets/who-headset-white.png",
+      alt: "Meta Quest VR headset on a clean studio table",
+      width: 900,
+      height: 317,
+      loading: "lazy",
+    })}
           </figure>
           <div class="card__body">
             <h3>Scalable &amp; Accessible</h3>
@@ -101,10 +197,14 @@
         </li>
         <li class="card" id="who-3">
           <figure>
-            <picture>
-              <source type="image/webp" srcset="assets/who-headset-white.webp">
-              <img src="assets/who-headset-white.png" alt="Meta Quest VR headset on a clean studio table" loading="lazy" width="900" height="317" decoding="async">
-            </picture>
+            ${picture({
+      webp: "assets/who-headset-white.webp",
+      png: "assets/who-headset-white.png",
+      alt: "Meta Quest VR headset on a clean studio table",
+      width: 900,
+      height: 317,
+      loading: "lazy",
+    })}
           </figure>
           <div class="card__body">
             <h3>Practical, Not Experimental</h3>
@@ -150,10 +250,14 @@
       <!-- 1 large photo feature card (overlay, spans both rows) -->
       <li class="u-card u-card--overlay u-card--feature solution-feature">
         <div class="u-card__media">
-          <picture>
-            <source type="image/webp" srcset="assets/sol-industrial-feature.webp">
-            <img src="assets/sol-industrial-feature.png" alt="Industrial and safety training simulation in a warehouse" loading="lazy" width="512" height="230" decoding="async">
-          </picture>
+          ${picture({
+      webp: "assets/sol-industrial-feature.webp",
+      png: "assets/sol-industrial-feature.png",
+      alt: "Industrial and safety training simulation in a warehouse",
+      width: 512,
+      height: 230,
+      loading: "lazy",
+    })}
         </div>
         <div class="u-card__body">
           <h3>Industrial &amp; Safety Training</h3>
@@ -172,53 +276,7 @@
       <p class="blog__lead">Exploring immersive experiences, spatial storytelling, and where VR training goes next.</p>
       <a class="link-arrow link-arrow--bold blog__more" href="blog.html">View More &rarr;</a>
     </header>
-    <ul class="blog__grid">
-      <!-- Row 1: 2 large overlay feature cards — headset photo surface, title overlaid -->
-      <li class="u-card u-card--overlay u-card--feature surf-headset-a blog-a">
-        <a class="u-card__link" href="blog.html">
-          <div class="u-card__overlay">
-            <p class="u-card__meta"><time datetime="2026-05-01">May 1, 2026</time> &middot; 7 min read</p>
-            <h3>Why Spatial Computing Is the Next Training Platform</h3>
-          </div>
-          <span class="u-card__badge" aria-hidden="true">&rarr;</span>
-        </a>
-      </li>
-      <li class="u-card u-card--overlay u-card--feature surf-headset-b blog-b">
-        <a class="u-card__link" href="blog.html">
-          <div class="u-card__overlay">
-            <p class="u-card__meta"><time datetime="2026-04-18">Apr 18, 2026</time> &middot; 6 min read</p>
-            <h3>Measuring What Immersive Training Changes</h3>
-          </div>
-          <span class="u-card__badge" aria-hidden="true">&rarr;</span>
-        </a>
-      </li>
-      <!-- Row 2: 2 small gradient overlay cards (CSS gradient surface) stacked left -->
-      <li class="u-card u-card--overlay surf-grad blog-c">
-        <a class="u-card__link" href="blog.html">
-          <div class="u-card__overlay">
-            <p class="u-card__meta"><time datetime="2026-03-22">Mar 22, 2026</time> &middot; 3 min read</p>
-            <h3>Designing Safe-to-Fail Simulations</h3>
-          </div>
-        </a>
-      </li>
-      <li class="u-card u-card--overlay surf-grad blog-d">
-        <a class="u-card__link" href="blog.html">
-          <div class="u-card__overlay">
-            <p class="u-card__meta"><time datetime="2026-02-28">Feb 28, 2026</time> &middot; 4 min read</p>
-            <h3>From Pilot to Rollout: Scaling VR Training</h3>
-          </div>
-        </a>
-      </li>
-      <!-- Large people-in-VR overlay card, spans right column over 2 rows -->
-      <li class="u-card u-card--overlay u-card--feature surf-people blog-people">
-        <a class="u-card__link" href="blog.html">
-          <div class="u-card__overlay">
-            <p class="u-card__meta"><time datetime="2026-02-10">Feb 10, 2026</time> &middot; 5 min read</p>
-            <h3>Inside a Live Cohort Training in VR</h3>
-          </div>
-          <span class="u-card__badge" aria-hidden="true">&rarr;</span>
-        </a>
-      </li>
+    <ul class="blog__grid">${blogCards}
     </ul>
   </section>
 
@@ -240,7 +298,7 @@
         </div>
         <div class="field">
           <label for="cf-phone">Phone Number</label>
-          <input id="cf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\-]{6,20}" maxlength="20">
+          <input id="cf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\\-]{6,20}" maxlength="20">
         </div>
         <div class="field field--full">
           <label for="cf-message">Message</label>
@@ -260,4 +318,6 @@
      static webp on desktop, motion allowed. Index-only. The model-viewer runtime
      lives under js/hero-3d/ — outside the V1 5 KB budget per Ari-approved
      exception; this loader stays tiny. defer = off the critical path. -->
-<script src="js/hero-3d/loader.js" defer></script>
+<script src="js/hero-3d/loader.js" defer></script>`
+  );
+};

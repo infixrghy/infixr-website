@@ -4,10 +4,11 @@
  *
  * Build inputs (since the SSG/templating refactor):
  *   - src/css/*.css            — styles inlined into pages
- *   - src/templates/*.ts       — shared head/nav/footer render fns + html helper
+ *   - src/templates/*.ts       — shared head/nav/footer render fns + html/picture helpers
  *   - src/schema/*.ts          — Effect Schema for page meta + posts
  *   - src/pages/*.ts           — per-page meta config
- *   - src/pages/*.body.html    — static page body partials
+ *   - src/pages/*.body.html    — static page body partials (about only now)
+ *   - src/home.ts, src/blog.ts — top-level body render fns (home + blog index/posts)
  *   - content/posts/*.md       — blog post sources (data-driven)
  *   - build.ts                 — the pipeline itself
  *
@@ -20,7 +21,7 @@ try { input = JSON.parse(raw); } catch { /* nothing on stdin */ }
 const p = (input.tool_input?.file_path ?? input.tool_input?.path ?? "").replace(/\\/g, "/");
 // Rebuild on edits to any build input (path normalised to forward slashes above).
 const re =
-  /(?:^|\/)src\/(?:css\/.+\.css|(?:templates|schema|pages)\/.+\.ts|pages\/.+\.body\.html)$|(?:^|\/)content\/posts\/.+\.md$|(?:^|\/)build\.ts$/;
+  /(?:^|\/)src\/(?:css\/.+\.css|(?:templates|schema|pages)\/.+\.ts|pages\/.+\.body\.html|(?:home|blog)\.ts)$|(?:^|\/)content\/posts\/.+\.md$|(?:^|\/)build\.ts$/;
 
 if (!re.test(p)) process.exit(0);
 
