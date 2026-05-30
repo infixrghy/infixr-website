@@ -148,11 +148,13 @@
       radial-gradient(45% 55% at 85% 80%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 70%);
     pointer-events: none;
   }
-  /* Head: headline left, lead + "View More" right (mock). */
+  /* Head: headline left, lead + "View More" right (mock). Tight margin to the
+     grid (var(--head-gap)) — was var(--space-7)/96px which floated the heading
+     in a void above the cards. */
   .solutions__head {
     display: grid;
     gap: var(--space-3);
-    margin-bottom: var(--space-7);
+    margin-bottom: var(--head-gap);
     align-items: end;
   }
   @media (min-width: 760px) {
@@ -178,7 +180,8 @@
       grid-template-columns: 1fr 1.25fr;
       grid-template-rows: auto auto;
     }
-    .solution--feature { grid-column: 2; grid-row: 1 / 3; }
+    /* feature photo card spans both rows on the right */
+    .solution-feature { grid-column: 2; grid-row: 1 / 3; }
   }
 
   /* Blog head: headline + lead left, "View More" right (mirrors solutions). */

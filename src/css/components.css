@@ -473,105 +473,201 @@
     .card__body { grid-column: 1; grid-row: 2; }
   }
 
-  /* ============ SOLUTIONS — glassmorphism (V29) ============
-     Fallback (no backdrop-filter): a near-opaque card so text stays legible.
-     Enhanced (@supports): translucent pane + blur over the section glow behind.
-  */
-  .solution {
-    /* Fallback bg — opaque enough to read without blur support */
-    background: color-mix(in oklab, var(--c-bg) 86%, white);
-    border: 1px solid var(--border-strong);
+  /* ============ UNIFIED CARD (.u-card) ============
+     ONE card system across the whole site — solutions, blog, about value tiles,
+     blog-list, contact shell. (Carousel `.card` is exempt — keeps its own split
+     slide-card.) Variants:
+       .u-card--text     plain surface card: heading + body + optional CTA/meta
+       .u-card--media    card with an image region (.u-card__media) above the body
+       .u-card--overlay  image fills the card, text overlaid bottom-left over a
+                         scrim (white text → AA by construction)
+       .u-card--feature  larger overlay: taller + bigger title (hero/photo cards)
+     Authored with native CSS nesting (V32). card-rise defined once here; the old
+     per-component duplicates are gone. */
+  .u-card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
     border-radius: var(--radius-lg);
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    overflow: clip;
+    isolation: isolate;
     transition: background .25s, border-color .25s, transform .25s, box-shadow .25s;
-    opacity: 1;
-  }
-  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .solution {
-      /* Translucent glass — the section glow behind shows through the blur */
-      background: color-mix(in oklab, var(--c-bg) 48%, transparent);
-      -webkit-backdrop-filter: blur(16px) saturate(140%);
-              backdrop-filter: blur(16px) saturate(140%);
-      /* Light-catch: brighter top edge + soft depth shadow */
-      border-color: color-mix(in oklab, var(--c-fg) 22%, transparent);
-      box-shadow:
-        inset 0 1px 0 color-mix(in oklab, white 14%, transparent),
-        0 12px 40px -16px rgba(0,0,0,.7);
-    }
-  }
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .solution {
-        animation: card-rise linear both;
-        animation-timeline: view();
-        animation-range: entry 0% cover 30%;
+
+    /* Scroll-in fade-up — progressive, reduced-motion-gated (V5). One definition
+       for every card on the site. */
+    @supports (animation-timeline: view()) {
+      @media (prefers-reduced-motion: no-preference) {
+        & {
+          animation: card-rise linear both;
+          animation-timeline: view();
+          animation-range: entry 0% cover 30%;
+        }
       }
     }
-  }
-  .solution:hover {
-    border-color: color-mix(in oklab, var(--accent) 70%, transparent);
-    transform: translateY(-4px);
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklab, white 18%, transparent),
-      0 18px 50px -18px rgba(0,0,0,.75),
-      0 0 40px -16px var(--accent-glow);
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .solution:hover { transform: none; }
-  }
-  .solution__body {
-    padding: var(--space-5);
-    display: grid;
-    gap: var(--space-3);
-    flex: 1;
-    align-content: start;
-  }
-  /* Text-only cards (Corporate, Workforce): glass, no figure, content centered. */
-  .solution--text .solution__body {
-    align-content: center;
-    padding: clamp(var(--space-5), 3cqi, var(--space-7));
+
+    /* Hover = accent hairline + lift + depth (non-color motion is reduced-motion
+       gated; the border/shadow change stays). Unifies the 3 different hovers that
+       existed before into one. */
+    &:hover {
+      border-color: color-mix(in oklab, var(--accent) 55%, var(--border-strong));
+      background: var(--bg-card-hover);
+      transform: translateY(-4px);
+      box-shadow:
+        inset 0 1px 0 color-mix(in oklab, white 12%, transparent),
+        0 18px 50px -18px rgba(0,0,0,.7),
+        0 0 40px -18px var(--accent-glow);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      &:hover { transform: none; }
+    }
+
+    /* Body: tight token-driven rhythm (24px internal gap = V21 heading→para). */
+    & .u-card__body {
+      padding: clamp(var(--space-5), 3cqi, var(--space-7));
+      display: grid;
+      gap: var(--space-3);
+      align-content: start;
+    }
+
+    /* Media region — definite-height grid container so object-fit:cover crops
+       (the B4 fix, now shared by every media card). */
+    & .u-card__media {
+      display: grid;
+      overflow: clip;
+      background: var(--bg-elev);
+
+      & img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        transition: transform .6s ease;
+      }
+    }
+    &:hover .u-card__media img { transform: scale(1.04); }
+    @media (prefers-reduced-motion: reduce) {
+      &:hover .u-card__media img { transform: none; }
+    }
   }
 
-  /* Feature card (Industrial): full-bleed photo with text overlaid top-left.
-     White text over a scrim → AA by construction (same discipline as the hero
-     scrim — robust to the photo). */
-  .solution--feature {
-    position: relative;
-    min-height: clamp(320px, 40vw, 520px);
-    isolation: isolate;
+  /* Text card — content vertically centered, no media. */
+  .u-card--text {
+    container-type: inline-size;
+    & .u-card__body { align-content: center; }
   }
-  .solution--feature figure {
-    position: absolute;
-    inset: 0;
-    z-index: -2;
-    overflow: hidden;
+
+  /* Media card — image sits above the body (stacked). */
+  .u-card--media {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    & .u-card__media { aspect-ratio: 16 / 10; }
   }
-  .solution--feature figure img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    transition: transform .6s ease;
+
+  /* Overlay card — image fills, text overlaid bottom-left over a scrim.
+     The whole card is one link (.u-card__link). White text → AA by construction
+     (scrim guarantees contrast regardless of the photo behind). */
+  .u-card--overlay {
+    min-height: 240px;
+    container-type: inline-size;
+
+    /* Bottom-up scrim under the text. */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(0deg,
+        rgba(8,10,12,.86) 0%, rgba(8,10,12,.45) 36%, transparent 68%);
+      pointer-events: none;
+    }
+    & .u-card__link {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: clamp(var(--space-4), 3cqi, var(--space-6));
+      color: #f4f5f6;
+    }
+    & .u-card__overlay { display: grid; gap: var(--space-2); }
+    & .u-card__meta { color: color-mix(in oklab, #f4f5f6 78%, transparent); font-size: var(--step--1); }
+    & h3 { color: #f4f5f6; font-size: var(--step-1); line-height: 1.18; letter-spacing: -.01em; }
+
+    /* Arrow badge — blurred pill, bottom-right. */
+    & .u-card__badge {
+      position: absolute;
+      z-index: 1;
+      right: var(--space-4);
+      bottom: var(--space-4);
+      display: grid;
+      place-items: center;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: color-mix(in oklab, var(--bg) 55%, transparent);
+      border: 1px solid color-mix(in oklab, #fff 30%, transparent);
+      color: #f4f5f6;
+      -webkit-backdrop-filter: blur(6px);
+              backdrop-filter: blur(6px);
+    }
   }
-  .solution--feature:hover figure img { transform: scale(1.04); }
-  /* Scrim: darkens where the text/CTA sit, guarantees AA over any photo.
-     Top-left diagonal for the title + a left-edge floor for the CTA below. */
-  .solution--feature::before {
-    content: "";
+
+  /* Feature overlay — larger, with a top-left diagonal scrim leg so a bigger
+     title stays legible. */
+  .u-card--feature {
+    min-height: clamp(300px, 38vw, 520px);
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        linear-gradient(160deg, rgba(8,10,12,.78) 0%, rgba(8,10,12,.32) 42%, transparent 72%);
+      pointer-events: none;
+    }
+    & h3 { font-size: var(--step-2); }
+  }
+
+  /* When an overlay card carries a real <img> media region (not a bg-image),
+     the media must FILL the card behind the scrim, and the body floats over it
+     at the bottom (white text → AA via the two stacked scrims above). Used by
+     the solutions feature card. */
+  .u-card--overlay .u-card__media {
     position: absolute;
     inset: 0;
     z-index: -1;
-    background:
-      linear-gradient(160deg, rgba(10,12,14,.85) 0%, rgba(10,12,14,.55) 40%, rgba(10,12,14,.18) 72%),
-      linear-gradient(90deg, rgba(10,12,14,.55) 0%, transparent 55%);
-    pointer-events: none;
+    aspect-ratio: auto;
   }
-  .solution--feature .solution__body { align-content: start; }
-  .solution--feature h3,
-  .solution--feature p { color: #f3f4f5; }
-  .solution--feature p { color: color-mix(in oklab, #f3f4f5 86%, transparent); }
-  .solution--feature .link-arrow { color: #f3f4f5; }
-  .solution--feature .link-arrow:hover { color: var(--accent); }
+  .solution-feature {
+    & .u-card__body {
+      position: relative;
+      z-index: 1;
+      align-content: end;          /* bottom-align the title block over the scrim */
+      color: #f3f4f5;
+      & h3 { color: #f3f4f5; }
+      & p { color: color-mix(in oklab, #f3f4f5 86%, transparent); }
+      & .link-arrow {
+        color: #f3f4f5;
+        &:hover { color: var(--accent); }
+      }
+    }
+  }
+
+  /* Glass — V29 mandates glassmorphism on the SOLUTIONS dark cards specifically.
+     Scope it to that section so value tiles / blog-list stay flat opaque.
+     Progressive-enhanced: the base opaque surface is the no-blur fallback. */
+  .solutions .u-card--text {
+    @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      & {
+        background: color-mix(in oklab, var(--c-bg) 48%, transparent);
+        -webkit-backdrop-filter: blur(16px) saturate(140%);
+                backdrop-filter: blur(16px) saturate(140%);
+        border-color: color-mix(in oklab, var(--c-fg) 22%, transparent);
+        box-shadow:
+          inset 0 1px 0 color-mix(in oklab, white 14%, transparent),
+          0 12px 40px -16px rgba(0,0,0,.7);
+      }
+      &:hover { background: color-mix(in oklab, var(--c-bg) 40%, transparent); }
+    }
+  }
 
   /* ============ BLOG POSTS — image-forward overlay cards (V30) ============
      Each card is a photo/gradient surface with the title overlaid bottom-left
