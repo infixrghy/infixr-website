@@ -103,6 +103,22 @@
   .who__link:hover { color: color-mix(in oklab, var(--accent) 70%, white); }
 
   /* Solutions layout */
+  .solutions {
+    position: relative;
+    isolation: isolate;
+  }
+  /* Backdrop the glass cards refract: twin accent glows + a faint grid.
+     z-index:-1 keeps it behind the cards but inside the section's stacking ctx. */
+  .solutions::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(40% 50% at 15% 20%, var(--accent-glow), transparent 70%),
+      radial-gradient(45% 55% at 85% 80%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 70%);
+    pointer-events: none;
+  }
   .solutions__head {
     display: grid;
     gap: var(--space-2);

@@ -375,16 +375,33 @@
     .card__body { padding: 0 var(--space-5) var(--space-5); }
   }
 
-  /* ============ SOLUTIONS ============ */
+  /* ============ SOLUTIONS — glassmorphism (V29) ============
+     Fallback (no backdrop-filter): a near-opaque card so text stays legible.
+     Enhanced (@supports): translucent pane + blur over the section glow behind.
+  */
   .solution {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
+    /* Fallback bg — opaque enough to read without blur support */
+    background: color-mix(in oklab, var(--c-bg) 86%, white);
+    border: 1px solid var(--border-strong);
     border-radius: var(--radius-lg);
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    transition: background .25s, border-color .25s, transform .25s;
+    transition: background .25s, border-color .25s, transform .25s, box-shadow .25s;
     opacity: 1;
+  }
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .solution {
+      /* Translucent glass — the section glow behind shows through the blur */
+      background: color-mix(in oklab, var(--c-bg) 48%, transparent);
+      -webkit-backdrop-filter: blur(16px) saturate(140%);
+              backdrop-filter: blur(16px) saturate(140%);
+      /* Light-catch: brighter top edge + soft depth shadow */
+      border-color: color-mix(in oklab, var(--c-fg) 22%, transparent);
+      box-shadow:
+        inset 0 1px 0 color-mix(in oklab, white 14%, transparent),
+        0 12px 40px -16px rgba(0,0,0,.7);
+    }
   }
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
@@ -396,9 +413,15 @@
     }
   }
   .solution:hover {
-    background: var(--bg-card-hover);
-    border-color: var(--accent);
+    border-color: color-mix(in oklab, var(--accent) 70%, transparent);
     transform: translateY(-4px);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, white 18%, transparent),
+      0 18px 50px -18px rgba(0,0,0,.75),
+      0 0 40px -16px var(--accent-glow);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .solution:hover { transform: none; }
   }
   .solution figure { aspect-ratio: 16 / 10; overflow: hidden; }
   .solution figure img {
