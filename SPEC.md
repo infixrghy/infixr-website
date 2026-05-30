@@ -14,6 +14,7 @@ static infixr.com rebuild. html+css. minimal js. mobile-OK. GH Pages host.
 - Bun toolchain. ⊥ npm/yarn.
 - layout: `src/` = hand-edited source of truth; `build.ts` emits `public/` (generated, gitignored).
 - GH Pages served from `public/` via GitHub Actions (`.github/workflows/deploy.yml`). `.nojekyll` emitted into `public/`.
+- build pipeline = Effect.ts (Schema + Option, ⊥ null) as build-time-only LIBRARY (ships 0 client bytes — ✓ ⊥-framework). templating = typed `Data → string` render fns, ⊥ templating DSL. markdown via `marked`, build-time only, 0 client bytes.
 
 ## §I INTERFACES
 - page: `src/index.html` → home (hero, who-we-are carousel, solutions, blog teaser, contact form, footer)
@@ -25,7 +26,7 @@ static infixr.com rebuild. html+css. minimal js. mobile-OK. GH Pages host.
 - asset: `src/assets/favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`, `og-image.png`
 - file: `src/manifest.webmanifest` → PWA manifest
 - script: `src/js/form.js` → contact form submit handler + year stamp. ENDPOINT placeholder `https://example.com/api/contact`.
-- build: `build.ts` → `src/` → `public/`. inline CSS + @font-face, inject preloads, copy assets/js/manifest, emit `.nojekyll`. NEVER writes `src/`. `bun run build.ts`.
+- build: `build.ts` → Effect SSG: `src/` + `content/` → `public/`. per page: decode PageMeta (Schema) → assemble shell (head+nav+body+footer from templates) → inline CSS + @font-face → inject preloads → write. emits `public/blog/<slug>.html` per post. copy assets/js/manifest, emit `.nojekyll`. NEVER writes `src/`. `bun run build.ts` (no args — hook depends).
 - build: `lint.ts` → dead-token check `src/css/tokens.css` vs consumers. `bun run lint`.
 - script: `server.ts` → Bun dev server, serves `public/`. `bun run server.ts` (or `bun run dev` = build+serve) → 127.0.0.1:8765
 - ci: `.github/workflows/deploy.yml` → on push to `main`: build `public/` → deploy via `actions/deploy-pages`.
@@ -67,6 +68,8 @@ V29: §our-solutions = ASYMMETRIC grid: 2 small dark-glass cards (Corporate Trai
 V30: §blogs → IMAGE-FORWARD overlay cards: title text overlaid on photo (white over scrim, AA by construction — reuse hero scrim pattern). 2 large feature cards (headset photo bg) top row + mixed grid below: small cards (gradient-headset bg, CSS gradient — no asset) w/ date + read-time meta + large people-in-VR photo card. heading "THE FUTURE OF SPATIAL EXPERIENCES" (uppercase). @360px: 1-col. KEEP real Phase-A copy (⊥ lorem from mock).
 V31: `public/` is build output only — gitignored, ∄ in commits. deploy = CI builds fresh from `src/`. ∀ asset referenced by built HTML ! exist under `src/assets/` (build copies to `public/assets/`).
 V32: ∀ `src/css/*.css` → native CSS nesting. child/variant/state rules nested in parent block (`&:hover`, `& .child`, nested `@media`/`@supports`). ⊥ flat repeated selector chains where nesting works (`.a{} .a .b{} .a:hover{}` → nest under `.a`). ⊥ preprocessor — browser-native nesting only. `@layer` blocks stay; rules nest inside them. exception: cross-cutting base rules legitimately shared by unrelated selectors may stay flat.
+V33: build = Effect.ts SSG. shared chrome (head/nav/footer) rendered ONCE from `src/templates/*.ts` as typed `Data → string` fns — ⊥ templating DSL, ⊥ 3 hand-copied chrome blocks (the drift that gave missing-Home-link / stale-hardcoded-year / mismatched-footer-label is structurally ∄ now). page meta Schema-validated w/ `Option` (⊥ null) → malformed config fails BUILD not browser. page bodies = `src/pages/*.body.html` partials; blog body data-driven from `content/posts/*.md`. ACCEPTANCE = byte-diff identity: `base=""` path-prefix threads thru renderHead/renderNav/renderFooter/assembleShell and `base=""` ! be string-IDENTITY → root pages (index/about/blog) byte-stable vs pre-refactor `.baseline`; ⊥ any `../` prefix leakage on root output. Effect/marked = build-time libs, 0 client bytes (✓ V3/V17).
+V34: ∀ `content/posts/<slug>.md` → ! emit standalone `public/blog/<slug>.html` (blog-index cards link there; pre-refactor those were dead links — marked `bodyHtml` computed then discarded). post page uses `base="../"` so root-relative refs (favicon, manifest, fonts, `js/form.js`, sibling pages, `index.html#…` anchors) resolve one dir deep; canonical + og:url carry FULL `https://infixr.com/blog/<slug>.html`. post body wrapped in `.prose` which ! style every tag marked emits (h2/p/ul/ol/li/strong/a) — ⊥ fall to browser defaults. cites V30 (blog), V33 (templated chrome), V32 (`.prose` native-nested).
 
 ## §T TASKS
 id|status|task|cites
