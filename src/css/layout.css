@@ -12,17 +12,21 @@
     padding: var(--space-4) var(--space-5);
     background: color-mix(in oklab, var(--bg) 92%, transparent);
     border-bottom: 1px solid var(--border);
-  }
-  /* Heavy backdrop blur ! desktop only — mobile GPU thrashes during scroll */
-  @media (min-width: 900px) {
-    .site-header {
-      background: color-mix(in oklab, var(--bg) 70%, transparent);
-      backdrop-filter: blur(12px) saturate(140%);
-      -webkit-backdrop-filter: blur(12px) saturate(140%);
+    /* Heavy backdrop blur ! desktop only — mobile GPU thrashes during scroll */
+    @media (min-width: 900px) {
+      & {
+        background: color-mix(in oklab, var(--bg) 70%, transparent);
+        backdrop-filter: blur(12px) saturate(140%);
+        -webkit-backdrop-filter: blur(12px) saturate(140%);
+      }
     }
   }
-  .brand { display: inline-flex; align-items: center; color: var(--fg); }
-  .brand__logo { height: 32px; width: auto; color: currentColor; }
+  .brand {
+    display: inline-flex;
+    align-items: center;
+    color: var(--fg);
+    & .brand__logo { height: 32px; width: auto; color: currentColor; }
+  }
   .site-footer__logo { height: 38px; width: auto; color: var(--fg); }
 
   /* Hero — flat --bg (no photo); text left, decorative headset+ring right.
@@ -42,11 +46,11 @@
     align-items: start;
     padding: var(--space-8) max(var(--space-5), calc((100% - var(--container-w)) / 2)) var(--space-7);
     overflow: clip;
-  }
-  @media (min-width: 900px) {
-    .hero {
-      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
-      gap: var(--space-6);
+    @media (min-width: 900px) {
+      & {
+        grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+        gap: var(--space-6);
+      }
     }
   }
   .hero__content {
@@ -64,18 +68,20 @@
 
   /* Hero visual: headset still floating over flattened orbital rings.
      Decorative — hidden below 900px (mobile = text only, AA-safe). */
-  .hero__visual { display: none; }
-  @media (min-width: 900px) {
-    .hero__visual {
-      display: grid;
-      place-items: center;
-      position: relative;
-      aspect-ratio: 1 / 1;
-      /* hero content top-aligns now; keep the headset optically centered in the
-         column rather than tracking the headline to the top (B4). */
-      align-self: center;
-      /* let the headset bleed slightly off the right edge like the mock */
-      margin-right: calc(-1 * var(--space-7));
+  .hero__visual {
+    display: none;
+    @media (min-width: 900px) {
+      & {
+        display: grid;
+        place-items: center;
+        position: relative;
+        aspect-ratio: 1 / 1;
+        /* hero content top-aligns now; keep the headset optically centered in the
+           column rather than tracking the headline to the top (B4). */
+        align-self: center;
+        /* let the headset bleed slightly off the right edge like the mock */
+        margin-right: calc(-1 * var(--space-7));
+      }
     }
   }
   .hero__ring {
@@ -91,12 +97,12 @@
     z-index: 1;
     display: block;
     width: clamp(320px, 34vw, 560px);
-  }
-  .hero__headset img {
-    width: 100%;
-    height: auto;
-    /* lift the white product off the dark bg */
-    filter: drop-shadow(0 30px 50px rgba(0,0,0,.55));
+    & img {
+      width: 100%;
+      height: auto;
+      /* lift the white product off the dark bg */
+      filter: drop-shadow(0 30px 50px rgba(0,0,0,.55));
+    }
   }
 
   /* Section base — V21 spacing scale */
@@ -227,15 +233,12 @@
     .blog-people { grid-area: people; }
   }
 
-  /* Contact layout */
+  /* Contact layout — the card shell is now a .u-card; the layout-level bits
+     (width, centered) live here. Surface/glow + interactive-state suppression
+     live in components.css with .u-card (same @layer, so the override wins). */
   .contact { display: grid; place-items: center; }
   .contact__card {
     width: min(720px, 100%);
-    background: var(--bg-elev);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: clamp(var(--space-5), 4vw, var(--space-8));
-    box-shadow: var(--shadow), var(--shadow-glow);
     text-align: center;
   }
   .contact__lead {
