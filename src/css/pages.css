@@ -32,23 +32,50 @@
     max-width: 60ch;
   }
 
-  /* ============ PROSE ============ */
+  /* ============ PROSE ============
+     Long-form body for a single post (blog/<slug>.html). marked emits
+     h2 / p / ul / ol / li / strong / a from the markdown — every one of those
+     is styled here so the post body never falls back to browser defaults. */
   .prose {
     padding: var(--space-7) max(var(--space-5), calc((100% - 760px) / 2));
     display: grid;
     gap: var(--space-5);
     container-type: inline-size;
+
+    & h2 {
+      font-size: var(--step-3);
+      margin-top: var(--space-7);
+      letter-spacing: -.02em;
+    }
+    & h2:first-of-type { margin-top: 0; }
+    & p {
+      font-size: var(--step-1);
+      color: var(--fg-muted);
+      line-height: 1.7;
+    }
+    & ul, & ol {
+      font-size: var(--step-1);
+      color: var(--fg-muted);
+      line-height: 1.7;
+      padding-left: 1.4em;
+      display: grid;
+      gap: var(--space-2);
+    }
+    & li { padding-left: .2em; }
+    & strong { color: var(--fg); font-weight: 700; }
+    & a {
+      color: var(--accent);
+      text-underline-offset: .18em;
+      &:hover { text-decoration-thickness: 2px; }
+    }
   }
-  .prose h2 {
-    font-size: var(--step-3);
-    margin-top: var(--space-7);
-    letter-spacing: -.02em;
-  }
-  .prose h2:first-of-type { margin-top: 0; }
-  .prose p {
-    font-size: var(--step-1);
-    color: var(--fg-muted);
-    line-height: 1.7;
+
+  /* Single-post page: header (.page-hero) + body (.prose) self-pad; only the
+     back-link needs placing. Shares the .prose measure so it lines up under the
+     body text rather than the wider hero. */
+  .post-page__back {
+    padding: 0 max(var(--space-5), calc((100% - 760px) / 2)) var(--space-9);
+    margin-top: calc(-1 * var(--space-3));
   }
 
   /* Value grid (About) — .value-grid is just the grid container now; each <li>

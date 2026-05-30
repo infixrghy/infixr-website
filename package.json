@@ -6,5 +6,12 @@
     "build": "bun run build.ts",
     "lint": "bun run lint.ts",
     "dev": "bun run build.ts && bun run server.ts"
+  },
+  "dependencies": {
+    "effect": "^3.21.2",
+    "marked": "^18.0.4"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1"
   }
 }

@@ -1,7 +1,15 @@
 /**
- * PostToolUse hook: when an Edit/Write/MultiEdit touches css/*.css, build.ts,
- * or any of the deployed HTML pages, regenerate the inlined CSS block by
- * running `bun run build.ts`. Skips otherwise.
+ * PostToolUse hook: when an Edit/Write/MultiEdit touches any build input, run
+ * `bun run build.ts` to regenerate public/. Skips otherwise.
+ *
+ * Build inputs (since the SSG/templating refactor):
+ *   - src/css/*.css            — styles inlined into pages
+ *   - src/templates/*.ts       — shared head/nav/footer render fns + html helper
+ *   - src/schema/*.ts          — Effect Schema for page meta + posts
+ *   - src/pages/*.ts           — per-page meta config
+ *   - src/pages/*.body.html    — static page body partials
+ *   - content/posts/*.md       — blog post sources (data-driven)
+ *   - build.ts                 — the pipeline itself
  *
  * Wired in .claude/settings.json. Reads tool input JSON on stdin.
  */
@@ -9,9 +17,10 @@ const raw = await Bun.stdin.text();
 let input: { tool_input?: { file_path?: string; path?: string } } = {};
 try { input = JSON.parse(raw); } catch { /* nothing on stdin */ }
 
-const p = input.tool_input?.file_path ?? input.tool_input?.path ?? "";
-// Rebuild on edits to CSS source, src HTML pages, or build.ts itself.
-const re = /(?:^|[\\/])src[\\/](?:css[\\/].+\.css|index\.html|about\.html|blog\.html)$|(?:^|[\\/])build\.ts$/;
+const p = (input.tool_input?.file_path ?? input.tool_input?.path ?? "").replace(/\\/g, "/");
+// Rebuild on edits to any build input (path normalised to forward slashes above).
+const re =
+  /(?:^|\/)src\/(?:css\/.+\.css|(?:templates|schema|pages)\/.+\.ts|pages\/.+\.body\.html)$|(?:^|\/)content\/posts\/.+\.md$|(?:^|\/)build\.ts$/;
 
 if (!re.test(p)) process.exit(0);
 
