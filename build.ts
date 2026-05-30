@@ -1,22 +1,38 @@
 /**
- * build.ts — inline all CSS + the @font-face block into each HTML <head>.
+ * build.ts — static site build: src/ → public/
  *
- * Why: PSI flagged 5 render-blocking CSS files (~690 ms est savings on mobile).
- * Inlining removes them from the critical path entirely. Re-run after editing
- * any CSS or the font setup. The HTML files are the source of truth committed;
- * this script overwrites the marked block in-place.
+ * Pipeline:
+ *   1. wipe public/ for a clean build
+ *   2. for each src HTML page: inline @font-face + all CSS into the
+ *      <!--CSS_INLINE--> block, inject font + hero preloads, write to public/
+ *   3. copy static assets (assets/, js/, manifest, .nojekyll) into public/
+ *
+ * src/ is the source of truth and is NEVER written to. public/ is generated
+ * and gitignored; GitHub Actions builds it and deploys via actions/deploy-pages.
+ *
+ * Why inline CSS: PSI flagged render-blocking CSS files (~690ms mobile). Inlining
+ * removes them from the critical path. Why a build step: keeps src/ clean and
+ * editable while shipping an optimized, single-request-per-page artifact.
  *
  * Usage: `bun run build.ts`
  */
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, mkdir, rm, cp, readdir } from "node:fs/promises";
+import { join } from "node:path";
+
+const SRC = "src";
+const OUT = "public";
 
 const CSS_ORDER = [
-  "css/reset.css",
-  "css/tokens.css",
-  "css/layout.css",
-  "css/components.css",
+  "src/css/reset.css",
+  "src/css/tokens.css",
+  "src/css/layout.css",
+  "src/css/components.css",
 ];
-const PAGES_CSS = "css/pages.css";
+const PAGES_CSS = "src/css/pages.css";
+
+// Static dirs/files copied verbatim from src/ into public/.
+const COPY_DIRS = ["assets", "js"];
+const COPY_FILES = ["manifest.webmanifest"];
 
 const FONT_FACE = `
 @font-face {
@@ -46,24 +62,23 @@ async function readCss(paths: string[]): Promise<string> {
   return parts.join("\n");
 }
 
-async function processHtml(file: string, css: string) {
-  let html = await readFile(file, "utf8");
+/** Read a src HTML page, inline CSS + inject preloads, write to public/. */
+async function processHtml(page: string, css: string): Promise<string> {
+  let html = await readFile(join(SRC, page), "utf8");
 
-  // Strip existing <link rel="stylesheet" href="css/...> and rsms.me Inter link
+  // Strip any stray stylesheet/preload links so the build is the only source.
   html = html
     .replace(/<link rel="preconnect" href="https:\/\/rsms\.me">\s*/g, "")
     .replace(/<link rel="stylesheet" href="https:\/\/rsms\.me\/[^"]+">\s*/g, "")
-    .replace(/<link rel="stylesheet" href="css\/[^"]+">\s*/g, "")
-    .replace(/<link rel="preload" as="font"[^>]*>\s*/g, "");
+    .replace(/<link rel="stylesheet" href="css\/[^"]+">\s*/g, "");
 
-  // Preloads — injected just inside <head> so they start ASAP.
-  // Font: crossorigin attr required even for same-origin font preloads.
-  // Image: only on the homepage (it's the only page with a hero image).
+  // Preloads injected just inside <head> so they start ASAP.
+  // Font: crossorigin required even same-origin. Image: homepage hero only.
   const fontPreload = `<link rel="preload" as="font" type="font/woff2" href="assets/Satoshi-Variable.woff2" crossorigin>`;
-  const heroPreload = file === "index.html"
+  const heroPreload = page === "index.html"
     ? `\n  <link rel="preload" as="image" type="image/webp" href="assets/hero2-1600.webp" imagesrcset="assets/hero2-900.webp 900w, assets/hero2-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">`
     : "";
-  html = html.replace(/<head>([\s\S]*?)<title>/, (m, headInside) => {
+  html = html.replace(/<head>([\s\S]*?)<title>/, (_m, headInside) => {
     const cleaned = headInside
       .replace(/\s*<link rel="preload" as="font"[^>]*>/g, "")
       .replace(/\s*<link rel="preload" as="image"[^>]*>/g, "");
@@ -71,25 +86,41 @@ async function processHtml(file: string, css: string) {
   });
 
   const block = `${START}\n<style>${FONT_FACE}\n${css}\n</style>\n${END}`;
-
   if (html.includes(START) && html.includes(END)) {
     html = html.replace(new RegExp(`${START}[\\s\\S]*?${END}`), block);
   } else {
-    // Inject before </head>
     html = html.replace(/<\/head>/, `${block}\n</head>`);
   }
 
-  await writeFile(file, html);
-  return file;
+  const outPath = join(OUT, page);
+  await writeFile(outPath, html);
+  return outPath;
 }
 
+// 1. clean public/
+await rm(OUT, { recursive: true, force: true });
+await mkdir(OUT, { recursive: true });
+
+// 2. build HTML pages
 const coreCss = await readCss(CSS_ORDER);
 const pagesCss = await readCss([PAGES_CSS]);
 
-const results: string[] = [];
-results.push(await processHtml("index.html", coreCss));
-results.push(await processHtml("about.html", coreCss + "\n" + pagesCss));
-results.push(await processHtml("blog.html", coreCss + "\n" + pagesCss));
+const pages: string[] = [];
+pages.push(await processHtml("index.html", coreCss));
+pages.push(await processHtml("about.html", coreCss + "\n" + pagesCss));
+pages.push(await processHtml("blog.html", coreCss + "\n" + pagesCss));
 
-console.log("inlined:", results.join(", "));
-console.log("size:", coreCss.length + pagesCss.length, "bytes (concat)");
+// 3. copy static assets
+for (const d of COPY_DIRS) {
+  await cp(join(SRC, d), join(OUT, d), { recursive: true });
+}
+for (const f of COPY_FILES) {
+  await cp(join(SRC, f), join(OUT, f));
+}
+// .nojekyll: belt-and-suspenders (Actions artifact path doesn't run Jekyll anyway)
+await writeFile(join(OUT, ".nojekyll"), "");
+
+const assetCount = (await readdir(join(OUT, "assets"))).length;
+console.log("built pages:", pages.join(", "));
+console.log(`copied: assets/ (${assetCount} files), js/, manifest.webmanifest, .nojekyll`);
+console.log("css inlined:", coreCss.length + pagesCss.length, "bytes (concat)");

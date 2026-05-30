@@ -2,7 +2,8 @@ import { serve } from "bun";
 import { join, extname } from "node:path";
 import { stat } from "node:fs/promises";
 
-const ROOT = import.meta.dir;
+// Serve the built site. Run `bun run build.ts` first (or `bun run dev` which chains both).
+const ROOT = join(import.meta.dir, "public");
 const PORT = Number(process.env.PORT ?? 8765);
 
 const TYPES: Record<string, string> = {

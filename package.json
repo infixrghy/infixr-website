@@ -5,6 +5,6 @@
   "scripts": {
     "build": "bun run build.ts",
     "lint": "bun run lint.ts",
-    "dev": "bun run server.ts"
+    "dev": "bun run build.ts && bun run server.ts"
   }
 }

@@ -10,7 +10,8 @@ let input: { tool_input?: { file_path?: string; path?: string } } = {};
 try { input = JSON.parse(raw); } catch { /* nothing on stdin */ }
 
 const p = input.tool_input?.file_path ?? input.tool_input?.path ?? "";
-const re = /(?:^|[\\/])(?:css[\\/].+\.css|index\.html|about\.html|blog\.html|build\.ts)$/;
+// Rebuild on edits to CSS source, src HTML pages, or build.ts itself.
+const re = /(?:^|[\\/])src[\\/](?:css[\\/].+\.css|index\.html|about\.html|blog\.html)$|(?:^|[\\/])build\.ts$/;
 
 if (!re.test(p)) process.exit(0);
 

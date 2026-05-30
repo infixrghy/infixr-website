@@ -2,11 +2,12 @@
 
 ## Stack
 - static HTML + CSS. no framework, ever.
-- Bun for tooling (server, asset gen). no npm.
-- GH Pages target. `.nojekyll` present.
+- Bun for tooling (build, server, asset gen). no npm.
+- `src/` = source of truth; `build.ts` emits `public/` (generated, gitignored).
+- GH Pages serves `public/` via GitHub Actions (`.github/workflows/deploy.yml`). Pages source = "GitHub Actions".
 
 ## JS Rules
-- budget: ≤5 KB total across all `.js` files.
+- budget: ≤5 KB total across all `src/js/*.js` files.
 - only allowed: form handler, year stamp.
 - ANY new JS needs Ari approval first. ask, do not assume.
 - prefer CSS / HTML / browser-native every time.
@@ -19,18 +20,22 @@
 - `prefers-reduced-motion`: opt out non-essential animations; keep intentional ones (hero word cycler, carousel autoplay) running.
 
 ## Files
-- `index.html`, `about.html`, `blog.html` — pages. CSS is INLINED into `<head>`. Don't hand-edit the `<style>` block between `<!--CSS_INLINE_START-->` / `<!--CSS_INLINE_END-->` markers — edit `css/*.css` source and rerun build.
-- `css/reset.css`, `tokens.css`, `layout.css`, `components.css`, `pages.css` — source of truth for styles.
-- `js/form.js` — 1.4 KB, only file
-- `server.ts` — Bun dev server, `bun run server.ts` → 127.0.0.1:8765
-- `build.ts` — Bun build script. Inlines `css/*.css` + `@font-face` into each HTML between marker comments. Idempotent. Auto-fires via `.claude/settings.json` hook on Edit/Write to `css/*` or HTML pages.
-- `assets/` — images, favicon, og-image, `InterVariable.woff2` (self-hosted, no rsms.me)
+- `src/index.html`, `src/about.html`, `src/blog.html` — page SOURCE. clean: bare `<!--CSS_INLINE_START-->`/`<!--CSS_INLINE_END-->` markers, no inline CSS, no preload tags. build injects those into `public/`. Edit these directly.
+- `src/css/reset.css`, `tokens.css`, `layout.css`, `components.css`, `pages.css` — source of truth for styles.
+- `src/js/form.js` — 1.4 KB, only JS file
+- `src/assets/` — images, favicon, og-image, `Satoshi-Variable.woff2` + `Satoshi-VariableItalic.woff2` (self-hosted, fontshare; no rsms.me/Google Fonts)
+- `src/manifest.webmanifest` — PWA manifest
+- `public/` — GENERATED build output. gitignored. NEVER hand-edit. CI deploys this.
+- `build.ts` — Bun build: `src/` → `public/`. inlines `src/css/*` + `@font-face`, injects preloads, copies assets/js/manifest, emits `.nojekyll`. NEVER writes `src/`. Auto-fires via `.claude/settings.json` hook on Edit/Write to `src/css/*` or `src/*.html` or `build.ts`.
+- `lint.ts` — dead-token check (`bun run lint`): every `src/css/tokens.css` var must be used in a consumer.
+- `.github/workflows/deploy.yml` — CI: push to main → build → deploy `public/` to Pages.
+- `vendor/rotating-metaquest3/` — 3D viewer subtree. NOT shipped (hero 3D deferred, needs JS-budget exception).
 - `SPEC.md` — cavekit spec (source of truth for invariants)
 
 ## Build flow
-- Edit `css/<file>.css` → hook auto-runs `bun run build.ts` → HTML inline blocks updated.
-- Manual rebuild: `bun run build.ts` (cheap, ~30 ms).
-- Never commit HTML with stale inline CSS — `git status` will show unstaged HTML changes when build hasn't run.
+- Edit `src/css/<file>.css` or `src/*.html` → hook auto-runs `bun run build.ts` → `public/` regenerated.
+- Manual: `bun run build.ts` (cheap). Dev: `bun run dev` (build + serve). Lint: `bun run lint`.
+- `src/` is the only thing committed. `public/` is gitignored — no stale-inline-CSS problem anymore; CI rebuilds from `src/` on every push.
 
 ## Editing
 - never add CSS framework

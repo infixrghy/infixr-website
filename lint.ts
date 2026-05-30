@@ -10,8 +10,8 @@
 import { readFile } from "node:fs/promises";
 import { Glob } from "bun";
 
-const TOKENS_FILE = "css/tokens.css";
-const CONSUMER_GLOB = "css/{components,pages,layout,reset}.css";
+const TOKENS_FILE = "src/css/tokens.css";
+const CONSUMER_GLOB = "src/css/{components,pages,layout,reset}.css";
 
 const tokensSrc = await readFile(TOKENS_FILE, "utf8");
 
