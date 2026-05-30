@@ -36,8 +36,18 @@ for (const m of tokensSrc.matchAll(/var\(--([a-z][a-z0-9-]*)/gi)) {
   referenced.add(m[1]);
 }
 
+// Component-local custom props declared INSIDE a consumer file (e.g. `.card { --tilt: … }`)
+// are not design tokens — they're local state. Exempt them from orphan-ref checks so a
+// legit local var() doesn't false-positive. (V26 only governs tokens.css design tokens.)
+const localProps = new Set<string>();
+for (const m of consumerSrc.matchAll(/--([a-z][a-z0-9-]*)\s*:/gi)) {
+  localProps.add(m[1]);
+}
+
 const dead = [...declared].filter((t) => !referenced.has(t)).sort();
-const orphanRefs = [...referenced].filter((r) => !declared.has(r)).sort();
+const orphanRefs = [...referenced]
+  .filter((r) => !declared.has(r) && !localProps.has(r))
+  .sort();
 
 console.log(`tokens declared: ${declared.size}`);
 console.log(`tokens referenced: ${referenced.size}`);

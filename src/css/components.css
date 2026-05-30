@@ -207,14 +207,27 @@
   /* ============ WHO INTRO ============ */
   .who__title { margin-top: var(--space-3); }
 
-  /* ============ CAROUSEL ============ */
+  /* ============ CAROUSEL ============
+     Autoplay (keyframe) is the default. Choosing a dot checks a radio, and
+     `:checked` pins that slide + halts the keyframe — CSS-only nav, 0 JS (V28).
+  */
   .carousel {
     position: relative;
     container-type: inline-size;
   }
+  /* Radios visually hidden but focusable (NOT display:none — keep keyboard nav) */
+  .carousel__radio {
+    position: absolute;
+    width: 1px; height: 1px;
+    opacity: 0;
+    pointer-events: none;
+  }
   .carousel__viewport {
     overflow: hidden;
     border-radius: var(--radius-lg);
+    /* Tilted cards bleed past the row box; pad so rotate()+shadow isn't clipped */
+    padding: 12px;
+    margin: -12px;
     /* Isolate paint + layout so track animation doesn't trigger reflow on neighbors */
     contain: layout paint;
   }
@@ -233,36 +246,69 @@
     to   { transform: translateX(-300%); }
   }
 
-  /* Pause on hover / focus-within / when reduced-motion */
+  /* Pause on hover / focus-within */
   .carousel:hover .carousel__track,
   .carousel:focus-within .carousel__track {
     animation-play-state: paused;
   }
   /* Carousel auto-advance is intentional. User can pause via hover/focus. */
+  /* Reduced-motion: stop the spin outright; radio default pins slide 1 (V5). */
+  @media (prefers-reduced-motion: reduce) {
+    .carousel__track { animation: none; }
+  }
 
-  /* Carousel dots: active dot tracks the auto-advance step via its own animation */
+  /* Radio override: a checked dot halts autoplay and pins its slide.
+     Track is `~` of the radios (siblings before .carousel__viewport). */
+  .carousel__radio:checked ~ .carousel__viewport .carousel__track {
+    animation: none;
+  }
+  #who-nav-1:checked ~ .carousel__viewport .carousel__track { transform: translateX(0); }
+  #who-nav-2:checked ~ .carousel__viewport .carousel__track { transform: translateX(-100%); }
+  #who-nav-3:checked ~ .carousel__viewport .carousel__track { transform: translateX(-200%); }
+
+  /* Carousel dots: clickable labels. Pre-interaction they pulse with the autoplay
+     step; once a radio is checked, :checked drives the active state. */
   .carousel__dots {
     display: flex;
     justify-content: center;
     gap: var(--space-3);
     margin-top: var(--space-5);
   }
-  .carousel__dots li {
+  .carousel__dot {
     width: 8px; height: 8px;
     border-radius: 50%;
     background: var(--border-strong);
-    transition: background .3s, transform .3s, width .3s;
+    cursor: pointer;
+    transition: background .3s, width .3s;
     animation: dot-pulse 18s steps(3, jump-end) infinite;
   }
-  .carousel__dots li:nth-child(2) { animation-delay: -12s; }
-  .carousel__dots li:nth-child(3) { animation-delay: -6s; }
+  .carousel__dot:nth-of-type(2) { animation-delay: -12s; }
+  .carousel__dot:nth-of-type(3) { animation-delay: -6s; }
   @keyframes dot-pulse {
     0%, 33.32%   { background: var(--accent); width: 24px; }
     33.34%, 100% { background: var(--border-strong); width: 8px; }
   }
-  .carousel:hover .carousel__dots li,
-  .carousel:focus-within .carousel__dots li {
+  .carousel:hover .carousel__dot,
+  .carousel:focus-within .carousel__dot {
     animation-play-state: paused;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .carousel__dot { animation: none; }
+  }
+  /* Checked dot = solid accent pill; stop its pulse so it stays put (V28 indicator). */
+  #who-nav-1:checked ~ .carousel__dots .carousel__dot:nth-of-type(1),
+  #who-nav-2:checked ~ .carousel__dots .carousel__dot:nth-of-type(2),
+  #who-nav-3:checked ~ .carousel__dots .carousel__dot:nth-of-type(3) {
+    animation: none;
+    background: var(--accent);
+    width: 24px;
+  }
+  /* Keyboard focus ring → reflect only onto the dot the focused radio controls. */
+  #who-nav-1:focus-visible ~ .carousel__dots .carousel__dot:nth-of-type(1),
+  #who-nav-2:focus-visible ~ .carousel__dots .carousel__dot:nth-of-type(2),
+  #who-nav-3:focus-visible ~ .carousel__dots .carousel__dot:nth-of-type(3) {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
   }
 
   /* ============ CARDS ============ */
@@ -274,10 +320,27 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     overflow: hidden;
-    transition: background .25s, border-color .25s, transform .25s;
+    /* Slight tilt (V28) — static transform, set per-card below. */
+    transition: background .25s, border-color .25s, transform .25s, box-shadow .25s;
 
     /* Scroll-driven fade-in (progressive enhancement) */
     opacity: 1;
+  }
+  /* Alternating tilt ≤3deg (V28) — a STATIC resting transform, carried via --tilt
+     so the card-rise animation (below) can include it in its keyframes and they
+     don't fight over `transform` (a filling animation outranks a static decl). */
+  .card { --tilt: -1.4deg; transform: rotate(var(--tilt)); }
+  .card:nth-child(even) { --tilt: 1.4deg; }
+  .card:hover,
+  .card:focus-within {
+    transform: rotate(0deg) translateY(-4px);
+    box-shadow: var(--shadow);
+  }
+  /* Reduced-motion: tilt is static (not motion) so it STAYS; only the hover
+     lift/straighten transition is suppressed (V5 = no animation, keep static design). */
+  @media (prefers-reduced-motion: reduce) {
+    .card:hover,
+    .card:focus-within { transform: rotate(var(--tilt)); }
   }
   @supports (animation-timeline: view()) {
     @media (prefers-reduced-motion: no-preference) {
@@ -289,8 +352,8 @@
     }
   }
   @keyframes card-rise {
-    from { opacity: 0; transform: translateY(40px) scale(.98); }
-    to   { opacity: 1; transform: none; }
+    from { opacity: 0; transform: translateY(40px) scale(.98) rotate(var(--tilt, 0deg)); }
+    to   { opacity: 1; transform: rotate(var(--tilt, 0deg)); }
   }
   .card:hover { background: var(--bg-card-hover); border-color: var(--border-strong); }
   .card figure { overflow: hidden; }
