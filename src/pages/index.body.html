@@ -38,9 +38,14 @@
         <circle class="hero__node hero__node--accent" cx="92" cy="356" r="7"/>
         <circle class="hero__node" cx="360" cy="178" r="3.5"/>
       </svg>
+      <!-- Static fallback = the model-viewer's exact frame-0 render (captured from
+           the live renderer: same orbit 0deg/80deg/105%, neutral PBR lighting,
+           contact shadow, transparent bg). Square 1500² so it occupies the SAME
+           box as .hero__model — when the 3D reveals at frame 0 the pixels match and
+           rotation begins from here, so the handoff is seamless. -->
       <picture class="hero__headset">
         <source type="image/webp" srcset="assets/hero-headset-1200.webp">
-        <img src="assets/hero-headset-1200.png" alt="" width="900" height="785" loading="eager" fetchpriority="high" decoding="async">
+        <img src="assets/hero-headset-1200.png" alt="" width="1500" height="1500" loading="eager" fetchpriority="high" decoding="async">
       </picture>
     </div>
   </section>

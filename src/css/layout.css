@@ -96,12 +96,18 @@
     position: relative;
     z-index: 1;
     display: block;
-    width: clamp(320px, 34vw, 560px);
+    /* SAME box as .hero__model (square, identical width clamp) so the static frame
+       and the 3D occupy an identical footprint — the captured webp IS the model's
+       frame 0, so a matched box makes the reveal swap invisible. */
+    width: clamp(360px, 38vw, 600px);
+    aspect-ratio: 1 / 1;
     & img {
       width: 100%;
-      height: auto;
-      /* lift the white product off the dark bg */
-      filter: drop-shadow(0 30px 50px rgba(0,0,0,.55));
+      height: 100%;
+      object-fit: contain;
+      /* No CSS drop-shadow: the capture already bakes in model-viewer's own contact
+         shadow (shadow-intensity 1.4). A second shadow here would make the still
+         look heavier than the live model and reintroduce a pop on swap. */
     }
   }
 
@@ -109,22 +115,26 @@
      js/hero-3d/loader.js (desktop + motion only) into .hero__visual, stacked in
      the SAME grid cell as the static .hero__headset webp. The webp is the LCP
      element and stays visible until the model fires `load`; then loader.js adds
-     .hero__visual--3d, which fades the 3D in and the webp out. Both share the
-     grid cell, so the swap is pure opacity — no reflow, no CLS. */
+     .hero__visual--3d, swapping the 3D in and the webp out. The swap is INSTANT
+     (no fade): the webp is a pixel-exact capture of the model's frame 0, so the
+     first model frame is identical to the webp — a crossfade between two identical
+     images would only risk a faint double-image. Both share the grid cell → no
+     reflow, no CLS. Rotation starts only AFTER this swap (loader sets auto-rotate
+     in the load handler), so the turntable begins from frame 0. */
   .hero__model {
     grid-area: 1 / 1;
     z-index: 2;
     /* model-viewer ships a hardcoded `:host { height: 150px }` in its shadow DOM,
        and `aspect-ratio` is inert when height is already set (it only derives the
-       MISSING axis). So size BOTH axes explicitly — a square box scaled to the
-       static webp's footprint — or the model renders in a 150px letterbox strip. */
+       MISSING axis). So size BOTH axes explicitly — square, same width clamp as the
+       static .hero__headset — or the model renders in a 150px letterbox strip. */
     width: clamp(360px, 38vw, 600px);
     height: clamp(360px, 38vw, 600px);
     /* model-viewer's own background is transparent by default; keep it so the
        flat --bg + orbital ring show through behind the headset. */
     --poster-color: transparent;
+    /* hidden until load; revealed instantly (no transition) on .hero__visual--3d */
     opacity: 0;
-    transition: opacity .6s ease;
   }
   .hero__visual {
     /* place both children (ring SVG + webp, and later the model) in one cell so
@@ -132,12 +142,6 @@
     & .hero__headset { grid-area: 1 / 1; }
     &.hero__visual--3d .hero__model { opacity: 1; }
     &.hero__visual--3d .hero__headset { opacity: 0; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    /* Belt-and-suspenders: loader.js already refuses to inject under
-       reduced-motion (V5), so .hero__model normally never exists here. If it
-       somehow does, kill the reveal transition. */
-    .hero__model { transition: none; }
   }
 
   /* Section base — V21 spacing scale */

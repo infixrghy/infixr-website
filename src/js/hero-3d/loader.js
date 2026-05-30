@@ -52,13 +52,13 @@
     mv.className = "hero__model";
     // Relative .glb (copied to public/assets/ by the build's assets/ copy step).
     mv.setAttribute("src", "assets/headset.glb");
-    // Passive turntable: auto-rotate immediately on reveal, no user interaction.
-    // No `camera-controls` → no interaction prompt, no zoom/pan/tap handlers, and
-    // wheel/touch scroll passes straight through to the page.
-    mv.setAttribute("auto-rotate", "");
-    mv.setAttribute("auto-rotate-delay", "0");
+    // Passive turntable: no `camera-controls` → no interaction prompt, no
+    // zoom/pan/tap handlers, and wheel/touch scroll passes straight through.
     mv.setAttribute("rotation-per-second", "30deg");
     mv.setAttribute("interaction-prompt", "none");
+    // Frame 0. The static webp is a pixel-exact capture of THIS pose, so the model
+    // first renders identically to the webp it replaces. auto-rotate is deliberately
+    // NOT set yet — see the load handler.
     mv.setAttribute("camera-orbit", "0deg 80deg 105%");
     mv.setAttribute("shadow-intensity", "1.4");
     mv.setAttribute("shadow-softness", "0.8");
@@ -66,14 +66,21 @@
     // No `environment-image` → model-viewer's built-in neutral lighting (Khronos
     // PBR neutral). No cross-origin .hdr fetch — V17 stays clean.
 
-    // Reveal the 3D once it has actually rendered a frame, then retire the static
-    // webp. Until then the webp remains the visible (and LCP) element — no flash
-    // of empty canvas. The webp stays in the box reserving layout, so swapping
-    // visibility causes no CLS.
+    // Seamless handoff. The static webp IS the model's frame 0. On `load` we reveal
+    // the model (instant swap, no fade: the pixels are identical, so a crossfade
+    // would only risk a faint double-image) and ONLY THEN start auto-rotate — on
+    // the next frame, so rotation begins FROM frame 0 rather than from wherever a
+    // turntable that had been spinning since context-init happened to be. Without
+    // this defer, at 30°/s the model would already be ~tens of degrees past frame 0
+    // by reveal, and the eye catches the jump.
     mv.addEventListener(
       "load",
       () => {
         visual.classList.add("hero__visual--3d");
+        requestAnimationFrame(() => {
+          mv.setAttribute("auto-rotate", "");
+          mv.setAttribute("auto-rotate-delay", "0");
+        });
       },
       { once: true }
     );
