@@ -676,98 +676,32 @@
     }
   }
 
-  /* ============ BLOG POSTS — image-forward overlay cards (V30) ============
-     Each card is a photo/gradient surface with the title overlaid bottom-left
-     over a scrim (white text → AA by construction, same discipline as the hero
-     + solutions feature). The whole card is one link. */
-  .post {
-    position: relative;
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    isolation: isolate;
-    min-height: 240px;
-    transition: transform .25s, box-shadow .25s;
-    opacity: 1;
-  }
-  .post__link {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: clamp(var(--space-4), 3cqi, var(--space-6));
-    color: #f4f5f6;
-  }
-  .post__overlay { display: grid; gap: var(--space-2); position: relative; z-index: 1; }
-  /* Scrim under the overlaid text — bottom-up + slight left bias for AA. */
-  .post::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background: linear-gradient(0deg, rgba(8,10,12,.86) 0%, rgba(8,10,12,.45) 36%, transparent 68%);
-    pointer-events: none;
-  }
-  .post__meta { color: color-mix(in oklab, #f4f5f6 78%, transparent); font-size: var(--step--1); }
-  .post h3 { font-size: var(--step-1); color: #f4f5f6; line-height: 1.18; letter-spacing: -.01em; }
-  /* Arrow badge — bottom-right pill on media features (mock). */
-  .post__badge {
-    position: absolute;
-    z-index: 1;
-    right: var(--space-4);
-    bottom: var(--space-4);
-    display: grid;
-    place-items: center;
-    width: 38px; height: 38px;
-    border-radius: 50%;
-    background: color-mix(in oklab, var(--bg) 55%, transparent);
-    border: 1px solid color-mix(in oklab, #fff 30%, transparent);
-    color: #f4f5f6;
-    -webkit-backdrop-filter: blur(6px);
-            backdrop-filter: blur(6px);
-  }
-  .post:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
-  @media (prefers-reduced-motion: reduce) {
-    .post:hover { transform: none; }
-  }
-  @supports (animation-timeline: view()) {
-    @media (prefers-reduced-motion: no-preference) {
-      .post {
-        animation: card-rise linear both;
-        animation-timeline: view();
-        animation-range: entry 0% cover 30%;
-      }
-    }
-  }
-
-  /* Larger title on the feature + people cards. */
-  .post--feature h3,
-  .post--people h3 { font-size: var(--step-2); }
-  .post--feature, .post--people { min-height: 300px; }
-
-  /* Photo surfaces — background-image so the title overlays it (image-forward).
-     Headset render (transparent) sits on a soft tinted gradient so it reads. */
-  .post--a, .post--b {
+  /* ============ BLOG SURFACES (V30) ============
+     The blog overlay cards are .u-card--overlay (structure + scrim + link +
+     badge defined above). These classes ONLY bind the per-card image/gradient
+     surface — separating "what image" from "what card". */
+  /* Headset photo surfaces — render sits on a soft tinted gradient so it reads. */
+  .surf-headset-a, .surf-headset-b {
     background:
       url("assets/hero-headset-1200.webp") right 30% bottom 20% / 78% no-repeat,
       radial-gradient(120% 120% at 70% 30%, #d9dde2 0%, #b9c0c8 55%, #8e97a1 100%);
   }
-  .post--b {
+  .surf-headset-b {
     background:
       url("assets/hero-headset-1200.webp") right -10% bottom 10% / 90% no-repeat,
       radial-gradient(120% 120% at 60% 35%, #d3d8de 0%, #aeb6bf 60%, #868f99 100%);
   }
-  .post--people {
+  .surf-people {
     background: url("assets/who-1.webp") center / cover no-repeat, #15171a;
   }
-  /* Gradient (no-asset) small cards — iridescent headset vibe via CSS only. */
-  .post--grad {
+  /* Gradient (no-asset) small cards — iridescent headset vibe via CSS only.
+     Lighter scrim than photo cards (the gradient is already dark-ish). */
+  .surf-grad {
     background:
       conic-gradient(from 210deg at 70% 30%, #ff79b0, #8a6bff 40%, #2bd4c4 72%, #ff79b0);
-    min-height: 200px;
-  }
-  .post--grad::after {
-    background: linear-gradient(0deg, rgba(8,10,12,.78) 0%, rgba(8,10,12,.3) 42%, transparent 72%);
+    &.u-card--overlay::after {
+      background: linear-gradient(0deg, rgba(8,10,12,.78) 0%, rgba(8,10,12,.3) 42%, transparent 72%);
+    }
   }
 
   /* ============ FORM ============ */

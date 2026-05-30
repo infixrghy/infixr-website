@@ -184,12 +184,13 @@
     .solution-feature { grid-column: 2; grid-row: 1 / 3; }
   }
 
-  /* Blog head: headline + lead left, "View More" right (mirrors solutions). */
+  /* Blog head: headline + lead left, "View More" right (mirrors solutions).
+     Tight --head-gap to the grid (was --space-7/96px void). */
   .blog__head {
     display: grid;
     gap: var(--space-3);
     align-items: end;
-    margin-bottom: var(--space-7);
+    margin-bottom: var(--head-gap);
   }
   .blog__lead { color: var(--fg-muted); max-width: 48ch; }
   @media (min-width: 760px) {
@@ -217,11 +218,11 @@
         "c people"
         "d people";
     }
-    .post--a { grid-area: a; }
-    .post--b { grid-area: b; }
-    .post--c { grid-area: c; }
-    .post--d { grid-area: d; }
-    .post--people { grid-area: people; }
+    .blog-a { grid-area: a; }
+    .blog-b { grid-area: b; }
+    .blog-c { grid-area: c; }
+    .blog-d { grid-area: d; }
+    .blog-people { grid-area: people; }
   }
 
   /* Contact layout */
