@@ -51,7 +51,8 @@
       <span></span><span></span><span></span>
     </label>
     <ul>
-      <li><a href="about.html">Who we are</a></li>
+      <li><a class="is-active" href="#top" aria-current="page">Home</a></li>
+      <li><a href="about.html">Who We Are</a></li>
       <li><a href="#solutions">Our Solutions</a></li>
       <li><a href="#products">Products</a></li>
       <li><a href="blog.html">Blogs</a></li>
@@ -64,14 +65,6 @@
 
   <!-- HERO -->
   <section class="hero" aria-labelledby="hero-title">
-    <div class="hero__media" aria-hidden="true">
-      <picture>
-        <source media="(max-width: 700px)" type="image/webp" srcset="assets/hero2-900.webp">
-        <source type="image/webp" srcset="assets/hero2-1600.webp">
-        <img src="assets/hero2-1600.png" alt="" width="1600" height="1067" loading="eager" fetchpriority="high" decoding="async">
-      </picture>
-      <div class="hero__veil"></div>
-    </div>
     <div class="hero__content">
       <h1 id="hero-title" class="hero__title">
         <span class="hero__line">VR Solutions,</span>
@@ -92,6 +85,25 @@
         <a class="btn btn--primary" href="#contact">Request a Demo</a>
         <a class="btn btn--ghost" href="#solutions">Explore Our Work</a>
       </div>
+    </div>
+
+    <!-- Decorative headset still (rendered from vendored .glb) orbiting a CSS/SVG
+         ring. Purely ornamental → aria-hidden. Hidden ≤720px (text gets the room,
+         and a light headset behind cream text would break AA — see V27/V4). -->
+    <div class="hero__visual" aria-hidden="true">
+      <svg class="hero__ring" viewBox="0 0 600 600" fill="none" preserveAspectRatio="xMidYMid meet">
+        <!-- perspective-flattened orbital ellipses -->
+        <ellipse class="hero__ring-arc" cx="300" cy="300" rx="250" ry="120" transform="rotate(-18 300 300)"/>
+        <ellipse class="hero__ring-arc hero__ring-arc--2" cx="300" cy="300" rx="200" ry="96" transform="rotate(-18 300 300)"/>
+        <!-- node dots riding the outer ring -->
+        <circle class="hero__node" cx="535" cy="262" r="5"/>
+        <circle class="hero__node hero__node--accent" cx="92" cy="356" r="6"/>
+        <circle class="hero__node" cx="360" cy="178" r="4"/>
+      </svg>
+      <picture class="hero__headset">
+        <source type="image/webp" srcset="assets/hero-headset-1200.webp">
+        <img src="assets/hero-headset-1200.png" alt="" width="900" height="785" loading="eager" fetchpriority="high" decoding="async">
+      </picture>
     </div>
   </section>
 

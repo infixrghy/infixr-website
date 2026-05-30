@@ -19,18 +19,29 @@
   }
   .primary-nav a {
     font-weight: 500;
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: .12em;
     color: var(--fg-muted);
     transition: color .2s;
   }
   .primary-nav a:hover { color: var(--fg); }
+  /* Active page (HOME on the home route) — brighter, matches the mock */
+  .primary-nav a.is-active { color: var(--fg); font-weight: 600; }
   .primary-nav .cta-pill {
-    padding: .55rem 1.1rem;
+    padding: .55rem 1.15rem;
     border-radius: var(--radius-pill);
-    background: var(--fg);
-    color: var(--bg);
+    border: 1px solid var(--border-strong);
+    background: color-mix(in oklab, var(--c-bg) 55%, transparent);
+    color: var(--fg);
     font-weight: 600;
+    transition: background .2s, color .2s, border-color .2s;
   }
-  .primary-nav .cta-pill:hover { background: var(--accent); color: #001a14; }
+  .primary-nav .cta-pill:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #001a14;
+  }
 
   .nav-burger { display: none; }
   @media (max-width: 800px) {
@@ -124,6 +135,26 @@
     .btn:hover { transform: none; }
   }
 
+  /* Hero CTAs: uppercase dark pills per the mock. Primary here = dark glass pill
+     (not the global light-fill primary, which still drives the contact form). */
+  .hero__cta .btn {
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: var(--step--1);
+    font-weight: 600;
+    padding: .8rem 1.4rem;
+  }
+  .hero__cta .btn--primary {
+    background: color-mix(in oklab, var(--c-bg) 40%, transparent);
+    border-color: var(--border-strong);
+    color: var(--fg);
+  }
+  .hero__cta .btn--primary:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--c-bg);
+  }
+
   .link-arrow {
     color: var(--fg);
     font-weight: 500;
@@ -203,6 +234,37 @@
     to   { transform: translateY(-4.6em); }
   }
   /* Word cycle is intentional and runs regardless of motion pref */
+
+  /* ============ HERO ORBITAL RING ============
+     Thin perspective-flattened ellipses + node dots around the headset.
+     Slow rotation is decorative → opt out under reduced-motion (V5). */
+  .hero__ring-arc {
+    stroke: color-mix(in oklab, var(--c-fg) 16%, transparent);
+    stroke-width: 1;
+    transform-box: view-box;
+    transform-origin: center;
+  }
+  .hero__ring-arc--2 { stroke: color-mix(in oklab, var(--c-fg) 10%, transparent); }
+  .hero__node {
+    fill: color-mix(in oklab, var(--c-fg) 55%, transparent);
+  }
+  .hero__node--accent {
+    fill: var(--accent);
+    filter: drop-shadow(0 0 6px var(--accent-glow));
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .hero__ring { animation: ring-spin 48s linear infinite; transform-box: view-box; transform-origin: center; }
+    .hero__node { animation: node-pulse 4s ease-in-out infinite; }
+    .hero__node--accent { animation: node-pulse 4s ease-in-out infinite .8s; }
+  }
+  @keyframes ring-spin {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+  @keyframes node-pulse {
+    0%, 100% { opacity: .5; }
+    50%      { opacity: 1; }
+  }
 
   /* ============ WHO INTRO ============ */
   .who__title { margin-top: var(--space-3); }

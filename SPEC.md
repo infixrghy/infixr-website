@@ -60,10 +60,10 @@ V23: nav top-right links: WHO WE ARE · OUR SOLUTIONS · PRODUCTS · BLOGS · CO
 V24: large card → rounded 16–24 px, dark bg, product img top, h2 + body + CTA. hover state defined. carousel uses `scroll-snap`. reduced-motion → autoplay stops.
 V25: `build.ts` emits cache-busted asset hashes (e.g. `hero.abc1234.webp`) in HTML refs. ⊥ stale browser cache on deploy.
 V26: ∀ token in `src/css/tokens.css` ! referenced ≥ 1 time in `src/css/{components,pages,layout,reset}.css`. dead token → `bun run lint` warns.
-V27: hero → sticky header. headline "VR Solutions, Built Around Your <cycler>." in Satoshi. word-cycler KEPT (one frame = "Experiences."). CTAs = "Request a Demo" (primary) + "Explore Our Work" (ghost). bg = gradient veil, text ! WCAG AA contrast. hero 3D headset DEFERRED — ⊥ model-viewer / WebGL / cross-origin HDR until §V17 budget exception approved by Ari.
-V28: §who-we-are carousel → cards slight tilt (`transform: rotate(≤3deg)`), default + hover state, indicator dots, clickable nav. ⊥ new JS > 5 KB budget → nav via CSS (`scroll-snap` + `:target`/radio-label). headline "VR For Real World Challenges".
-V29: §our-solutions cards = glassmorphism (`backdrop-filter: blur()` + semi-transparent bg + border highlight). progressive-enhance via `@supports (backdrop-filter)`. 3 cards: Corporate Training / Workforce Training / Industrial & Safety Training. headline "From Idea To Immersive Reality".
-V30: §blogs → feature cards (large, 2-up) + post cards (small, w/ date + read-time meta). headline "The Future of Spatial Experiences".
+V27: hero → sticky header. headline "VR Solutions, Built Around Your <cycler>." in Satoshi; cycler word = accent (--c-accent) color, rest = --c-fg. word-cycler KEPT. CTAs = "Request a Demo" (primary) + "Explore Our Work" (ghost), UPPERCASE dark pill shape. nav links UPPERCASE incl active HOME. bg = FLAT --c-bg (⊥ full-bleed photo); decorative headset still (static PNG, render from vendored .glb, NOT model-viewer) floats RIGHT + CSS/SVG orbital ring (thin ellipse arcs + node dots). text ! WCAG AA contrast. @360px: headset hidden (text-priority, AA-safe). hero 3D (interactive) DEFERRED — ⊥ model-viewer / WebGL / cross-origin HDR until §V17 budget exception approved by Ari (T27).
+V28: §who-we-are carousel → CENTER card = light/white, dark text + headset photo right; FLANKING peek cards = gradient (pink/blue/purple) headset slivers visible at edges (peek layout via viewport padding, 0 new JS). cards slight tilt (`transform: rotate(≤3deg)`), default + hover state, indicator dots (active = wide pill), clickable nav via CSS radio-label. section heading CENTERED: eyebrow "WHO WE ARE" + "VR For Real World Challenges" + "Learn More →". @360px: center card only (peeks hidden). ⊥ new JS > 5 KB.
+V29: §our-solutions = ASYMMETRIC grid: 2 small dark-glass cards (Corporate Training, Workforce Training — text only) + 1 large card (Industrial & Safety Training) with industrial/warehouse photo bg + overlaid text, spanning 2 rows. glassmorphism on dark cards (`backdrop-filter: blur()` + semi-transparent bg + border highlight), progressive-enhance via `@supports`. EXACTLY 3 cards (mock's empty filler cards ⊥ shipped). heading "FROM IDEA TO IMMERSIVE REALITY" (uppercase) LEFT + descriptor right + "VIEW MORE →". @360px: 1-col stack.
+V30: §blogs → IMAGE-FORWARD overlay cards: title text overlaid on photo (white over scrim, AA by construction — reuse hero scrim pattern). 2 large feature cards (headset photo bg) top row + mixed grid below: small cards (gradient-headset bg, CSS gradient — no asset) w/ date + read-time meta + large people-in-VR photo card. heading "THE FUTURE OF SPATIAL EXPERIENCES" (uppercase). @360px: 1-col. KEEP real Phase-A copy (⊥ lorem from mock).
 V31: `public/` is build output only — gitignored, ∄ in commits. deploy = CI builds fresh from `src/`. ∀ asset referenced by built HTML ! exist under `src/assets/` (build copies to `public/assets/`).
 
 ## §T TASKS
@@ -90,13 +90,15 @@ T19|x|encode Figma tokens in `css/tokens.css` (palette, font, type-scale clamp, 
 T20|.|build 3 button variants + nav + card components per Figma|V22,V23,V24
 T21|.|extend `build.ts`: inject Satoshi @font-face + `<link rel=preload>` + cache-bust asset hashes|V19,V25
 T22|x|add `bun run lint` script: dead-token check `tokens.css` vs `{components,pages,layout}.css`|V26
-T23|x|hero: relabel CTAs, static/gradient bg, keep word cycler, AA contrast|V27
-T24|x|who-we-are: tilt carousel cards + default/hover + indicator + CSS-only clickable nav|V28
-T25|x|our-solutions: glassmorphism cards + 3 training categories + new copy|V29
-T26|x|blogs: feature + post card layout, date/read-time meta|V30
+T23|~|hero: flat bg + headset still right + CSS orbital ring + uppercase nav/CTA + teal cycler|V27
+T24|~|who-we-are: peek carousel (light center + gradient flanks) + tilt + dots + CSS nav|V28
+T25|~|our-solutions: asymmetric glass grid (2 dark + 1 photo span)|V29
+T26|~|blogs: image-forward overlay cards (2 feature + mixed grid)|V30
 T27|blocked|integrate rotating-metaquest3 hero 3D — needs JS-budget exception from Ari|V17,V27
+T28|~|re-skin home to match design/figma-final/png (PNG = ground truth, supersedes PDF)|V27,V28,V29,V30,V4,B3
 
 ## §B BUGS
 id|date|cause|fix
 B1|2026-05-20|mobile jank @ hero+carousel. causes: hero `<img>` missing w/h (CLS), `92dvh` resized on URL-bar toggle, `backdrop-filter` on sticky header GPU-thrashed during carousel anim|V6,V7,V14
 B2|2026-05-20|hero png 1.2 MB → slow LCP on mobile. webp 121 KB / 48 KB now via `<picture>` srcset|V15
+B3|2026-05-30|built home diverged from real design. cause: V27-30 distilled from un-renderable PDFs (pdftoppm/IM unavailable) → built to spec-text, not pixels. fix: ffmpeg-crop the PNG mockups (design/figma-final/png) as ground truth, re-skin to match. PNG supersedes PDF as design source. NOT a regression — design never matched pixels|V27,V28,V29,V30
