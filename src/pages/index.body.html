@@ -24,18 +24,19 @@
       </div>
     </div>
 
-    <!-- Decorative headset still (rendered from vendored .glb) orbiting a CSS/SVG
-         ring. Purely ornamental → aria-hidden. Hidden ≤720px (text gets the room,
-         and a light headset behind cream text would break AA — see V27/V4). -->
+    <!-- Decorative headset (3D on desktop/motion via js/hero-3d, else static webp)
+         orbiting a single static SVG ellipse. Purely ornamental → aria-hidden.
+         The ring is the ONLY still element framing the rotating headset: one point
+         of motion (the headset), one static frame (the orbit). Hidden ≤900px. -->
     <div class="hero__visual" aria-hidden="true">
       <svg class="hero__ring" viewBox="0 0 600 600" fill="none" preserveAspectRatio="xMidYMid meet">
-        <!-- perspective-flattened orbital ellipses -->
+        <!-- single perspective-flattened orbit (was 2 concentric ellipses spinning;
+             now 1 static — confident, less stock-decoration) -->
         <ellipse class="hero__ring-arc" cx="300" cy="300" rx="250" ry="120" transform="rotate(-18 300 300)"/>
-        <ellipse class="hero__ring-arc hero__ring-arc--2" cx="300" cy="300" rx="200" ry="96" transform="rotate(-18 300 300)"/>
-        <!-- node dots riding the outer ring -->
-        <circle class="hero__node" cx="535" cy="262" r="5"/>
-        <circle class="hero__node hero__node--accent" cx="92" cy="356" r="6"/>
-        <circle class="hero__node" cx="360" cy="178" r="4"/>
+        <!-- static waypoint nodes riding the orbit; the teal one is the single accent -->
+        <circle class="hero__node" cx="535" cy="262" r="4"/>
+        <circle class="hero__node hero__node--accent" cx="92" cy="356" r="7"/>
+        <circle class="hero__node" cx="360" cy="178" r="3.5"/>
       </svg>
       <picture class="hero__headset">
         <source type="image/webp" srcset="assets/hero-headset-1200.webp">
@@ -241,3 +242,9 @@
   </section>
 
 </main>
+
+<!-- Hero 3D (T27): lazy-loads the rotating Meta Quest 3 (model-viewer) over the
+     static webp on desktop, motion allowed. Index-only. The model-viewer runtime
+     lives under js/hero-3d/ — outside the V1 5 KB budget per Ari-approved
+     exception; this loader stays tiny. defer = off the critical path. -->
+<script src="js/hero-3d/loader.js" defer></script>

@@ -194,17 +194,19 @@
     max-width: 42ch;
   }
 
-  /* Word slot — Effect-style vertical word cycler */
+  /* Word slot — words FALL in from above, hold, then drop out the bottom.
+     Per-word animation (grid-stacked, not a scrolling stack): every <li> shares
+     one grid cell and runs the SAME `word-fall` keyframe, staggered by
+     animation-delay so one shows at a time. This decouples the fall DISTANCE
+     (a fixed translate) from the slot SIZE (descender room) — a scrolling stack
+     would tie them together and the word would fall through an empty gap. */
   .word-slot {
-    display: inline-grid;
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: 1.15em;
-    overflow: hidden;
+    display: inline-block;
     vertical-align: bottom;
-    width: max-content;
-    min-height: 1.15em;
-    position: relative;
-    contain: layout paint;
+    /* Tall enough to fully contain the line box (incl. g/y/p/j descenders). The
+       clip hides each word until it falls into place + after it drops away. */
+    height: 1.5em;
+    overflow: hidden;
   }
   /* Screen reader fallback (and pre-JS-disabled-safe label) */
   .word-slot__sr {
@@ -214,62 +216,95 @@
     clip-path: inset(50%);
     white-space: nowrap;
   }
+  /* inline-grid with every li in the SAME cell: stacks the words (overlap, like
+     position:absolute) BUT still sizes the slot to the widest word — absolute
+     children would collapse the slot to 0 width. */
   .word-slot__list {
-    grid-column: 1; grid-row: 1;
-    animation: word-cycle 12s steps(5, jump-none) infinite;
-    will-change: transform;
+    display: inline-grid;
+    grid-template-columns: minmax(0, max-content);
+    grid-template-rows: 1fr;
   }
   .word-slot__list li {
-    height: 1.15em;
-    line-height: 1.15;
+    grid-column: 1;
+    grid-row: 1;
+    /* 1.4 (was 1.15): background-clip:text paints the gradient only inside the
+       line box; a tight line-height cut Satoshi's g/y/p descender tails even with
+       the slot clip loosened. 1.4 gives the descender room INSIDE the paint box. */
+    line-height: 1.4;
+    white-space: nowrap;
     display: block;
     background: linear-gradient(180deg, var(--accent) 0%, color-mix(in oklab, var(--accent) 55%, white) 100%);
     -webkit-background-clip: text;
             background-clip: text;
     -webkit-text-fill-color: transparent;
     color: transparent;
+    /* Each word: same 10s cycle, offset by 2s (5 words → 1/5 each). Out of its
+       own ~2s window it sits at opacity 0 above the line, invisible. */
+    opacity: 0;
+    animation: word-fall 10s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    will-change: transform, opacity;
   }
+  .word-slot__list li:nth-child(1) { animation-delay: 0s; }
+  .word-slot__list li:nth-child(2) { animation-delay: 2s; }
+  .word-slot__list li:nth-child(3) { animation-delay: 4s; }
+  .word-slot__list li:nth-child(4) { animation-delay: 6s; }
+  .word-slot__list li:nth-child(5) { animation-delay: 8s; }
   /* Fallback if background-clip not supported */
   @supports not (background-clip: text) {
     .word-slot__list li { color: var(--accent); -webkit-text-fill-color: currentColor; }
   }
-  /* 5 unique words, 5 hold positions. jump-none with steps(5) → 5 stops at progress {0,.25,.5,.75,1}.
-     Want each stop to align to a li boundary (1.15em). Translate range = 4 li (last stop = -4.6em). */
-  @keyframes word-cycle {
-    from { transform: translateY(0); }
-    to   { transform: translateY(-4.6em); }
+  /* One word's life within the 10s loop (each li offset by 2s = 20%). The
+     visible span is wider than 20% so consecutive words OVERLAP — the incoming
+     word is fully in BEFORE the outgoing one leaves, so there is never an empty
+     frame (the bug: adjacent, non-overlapping windows flashed a blank slot):
+       0%   parked just above the line, invisible
+       3%   fallen into place + faded in (the "drop")
+       20%  still fully held … (next word starts its own drop here)
+       24%  still visible while the next word finishes arriving (cross-fade)
+       28%  dropped out the bottom + faded, next word now solo
+       →100% parked above again (invisible) until its next turn
+     Fall distance = 0.9em — a clear drop from above (the clip masks the word
+     until it crosses into the line, so a taller start needs no bigger box). */
+  @keyframes word-fall {
+    0%   { transform: translateY(-0.9em); opacity: 0; }
+    3%   { transform: translateY(-0.9em); opacity: 0; }
+    9%   { transform: translateY(0);      opacity: 1; }
+    20%  { transform: translateY(0);      opacity: 1; }
+    24%  { transform: translateY(0);      opacity: 1; }
+    28%  { transform: translateY(0.7em);  opacity: 0; }
+    100% { transform: translateY(-0.9em); opacity: 0; }
   }
-  /* Word cycle is intentional and runs regardless of motion pref */
+  /* The fall translate is NEW motion (the cycler itself is grandfathered, V27).
+     Under reduced-motion: keep cycling words but swap via fade only — no fall. */
+  @media (prefers-reduced-motion: reduce) {
+    .word-slot__list li {
+      animation-name: word-fade;
+      animation-timing-function: ease;
+    }
+    @keyframes word-fade {
+      0%, 24%, 100% { opacity: 0; transform: none; }
+      4%, 20%       { opacity: 1; transform: none; }
+    }
+  }
 
   /* ============ HERO ORBITAL RING ============
-     Thin perspective-flattened ellipses + node dots around the headset.
-     Slow rotation is decorative → opt out under reduced-motion (V5). */
+     A SINGLE static perspective-flattened ellipse + 3 static waypoint nodes,
+     framing the headset. Deliberately NOT animated: the headset (model-viewer
+     auto-rotate) is the one point of motion in the hero; a still frame around
+     moving focal content reads stronger than competing rotations. The old
+     ring-spin + node-pulse keyframes were removed for this reason. */
   .hero__ring-arc {
-    stroke: color-mix(in oklab, var(--c-fg) 16%, transparent);
+    stroke: color-mix(in oklab, var(--c-fg) 18%, transparent);
     stroke-width: 1;
-    transform-box: view-box;
-    transform-origin: center;
   }
-  .hero__ring-arc--2 { stroke: color-mix(in oklab, var(--c-fg) 10%, transparent); }
   .hero__node {
-    fill: color-mix(in oklab, var(--c-fg) 55%, transparent);
+    fill: color-mix(in oklab, var(--c-fg) 50%, transparent);
   }
   .hero__node--accent {
     fill: var(--accent);
-    filter: drop-shadow(0 0 6px var(--accent-glow));
-  }
-  @media (prefers-reduced-motion: no-preference) {
-    .hero__ring { animation: ring-spin 48s linear infinite; transform-box: view-box; transform-origin: center; }
-    .hero__node { animation: node-pulse 4s ease-in-out infinite; }
-    .hero__node--accent { animation: node-pulse 4s ease-in-out infinite .8s; }
-  }
-  @keyframes ring-spin {
-    from { transform: rotate(0deg); }
-    to   { transform: rotate(360deg); }
-  }
-  @keyframes node-pulse {
-    0%, 100% { opacity: .5; }
-    50%      { opacity: 1; }
+    /* the single spark of colour — stronger glow so the static dot reads as an
+       intentional focal accent, not a leftover from the removed pulse. */
+    filter: drop-shadow(0 0 8px var(--accent-glow));
   }
 
   /* ============ WHO INTRO ============ */

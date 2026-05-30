@@ -105,6 +105,41 @@
     }
   }
 
+  /* Hero 3D upgrade (T27): the rotating model-viewer is injected by
+     js/hero-3d/loader.js (desktop + motion only) into .hero__visual, stacked in
+     the SAME grid cell as the static .hero__headset webp. The webp is the LCP
+     element and stays visible until the model fires `load`; then loader.js adds
+     .hero__visual--3d, which fades the 3D in and the webp out. Both share the
+     grid cell, so the swap is pure opacity — no reflow, no CLS. */
+  .hero__model {
+    grid-area: 1 / 1;
+    z-index: 2;
+    /* model-viewer ships a hardcoded `:host { height: 150px }` in its shadow DOM,
+       and `aspect-ratio` is inert when height is already set (it only derives the
+       MISSING axis). So size BOTH axes explicitly — a square box scaled to the
+       static webp's footprint — or the model renders in a 150px letterbox strip. */
+    width: clamp(360px, 38vw, 600px);
+    height: clamp(360px, 38vw, 600px);
+    /* model-viewer's own background is transparent by default; keep it so the
+       flat --bg + orbital ring show through behind the headset. */
+    --poster-color: transparent;
+    opacity: 0;
+    transition: opacity .6s ease;
+  }
+  .hero__visual {
+    /* place both children (ring SVG + webp, and later the model) in one cell so
+       the 3D overlays the webp rather than pushing layout. */
+    & .hero__headset { grid-area: 1 / 1; }
+    &.hero__visual--3d .hero__model { opacity: 1; }
+    &.hero__visual--3d .hero__headset { opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    /* Belt-and-suspenders: loader.js already refuses to inject under
+       reduced-motion (V5), so .hero__model normally never exists here. If it
+       somehow does, kill the reveal transition. */
+    .hero__model { transition: none; }
+  }
+
   /* Section base — V21 spacing scale */
   main > section:not(.hero) {
     padding: var(--pad-section) max(var(--space-5), calc((100% - var(--container-w)) / 2));
