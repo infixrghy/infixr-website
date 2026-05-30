@@ -89,7 +89,7 @@ T16|.|wire real form endpoint (placeholder now)|I.script
 T17|.|custom domain config|-
 T18|x|fetch Satoshi from fontshare.com → `assets/Satoshi-Variable.woff2`|V19
 T19|x|encode Figma tokens in `css/tokens.css` (palette, font, type-scale clamp, spacing-8)|V18,V19,V20,V21
-T20|.|build 3 button variants + nav + card components per Figma|V22,V23,V24
+T20|x|build 3 button variants + nav + card components per Figma|V22,V23,V24
 T21|.|extend `build.ts`: inject Satoshi @font-face + `<link rel=preload>` + cache-bust asset hashes|V19,V25
 T22|x|add `bun run lint` script: dead-token check `tokens.css` vs `{components,pages,layout}.css`|V26
 T23|x|hero: flat bg + headset still right + CSS orbital ring + uppercase nav/CTA + teal cycler|V27
@@ -98,6 +98,7 @@ T25|x|our-solutions: asymmetric glass grid (2 dark + 1 photo span)|V29
 T26|x|blogs: image-forward overlay cards (2 feature + mixed grid)|V30
 T27|blocked|integrate rotating-metaquest3 hero 3D — needs JS-budget exception from Ari|V17,V27
 T28|x|re-skin home to match design/figma-final/png (PNG = ground truth, supersedes PDF)|V27,V28,V29,V30,V4,B3
+T29|x|fresh redesign: unify card system (.u-card everywhere, carousel exempt) + kill section voids + native CSS nesting sweep|V32,V24,V29,V30,V4,V9,B4
 
 ## §B BUGS
 id|date|cause|fix
