@@ -11,6 +11,48 @@
   h2 { font-size: var(--step-4); font-weight: 700; letter-spacing: -.02em; }
   h3 { font-size: var(--step-2); font-weight: 600; letter-spacing: -.01em; }
 
+  /* ============ CUSTOM CURSOR ============ */
+  /* Pure-CSS accent dot. No JS — `cursor:` swaps the pointer IMAGE only, so all
+     hover/click handling stays native. Inline SVG data-URI = zero extra file.
+     Gated to real pointing devices: touch/coarse pointers keep the native cursor
+     (a custom dot is useless without a hoverable, precise pointer). */
+  @media (hover: hover) and (pointer: fine) {
+    html,
+    body {
+      cursor:
+        url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16"%3E%3Ccircle cx="8" cy="8" r="6" fill="%231FD1A1"/%3E%3C/svg%3E') 8 8,
+        auto;
+    }
+    /* Larger dot over interactive elements as a clickability cue: same 22px size,
+       but a DARKER accent (#17A37D vs base #1FD1A1) so the dot reads as "pressed"
+       — it recedes into the element on a dark background.
+       (Color is hardcoded — a cursor SVG can't read CSS vars / color-mix.)
+       `pointer` fallback after the comma keeps the hand if the SVG fails to load. */
+    a,
+    button,
+    [role="button"],
+    summary,
+    label,
+    select,
+    input[type="submit"],
+    input[type="checkbox"],
+    input[type="radio"] {
+      cursor:
+        url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 22 22"%3E%3Ccircle cx="11" cy="11" r="9" fill="%2317A37D"/%3E%3C/svg%3E') 11 11,
+        pointer;
+    }
+    /* Text-entry fields keep the I-beam — a dot over a text field reads as "not editable". */
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="search"],
+    input[type="url"],
+    input[type="number"],
+    textarea {
+      cursor: text;
+    }
+  }
+
   /* ============ NAV ============ */
   .primary-nav {
     & ul {
