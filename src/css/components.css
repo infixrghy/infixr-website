@@ -514,9 +514,12 @@
     /* Hover = accent hairline + lift + depth (non-color motion is reduced-motion
        gated; the border/shadow change stays). Unifies the 3 different hovers that
        existed before into one. */
+    /* base hover = border + lift + glow ONLY. NOT background — overlay cards
+       carry their image as `background-image` on a .surf-* class, and setting
+       `background:<color>` here would reset it to none (drop the photo). The
+       surface tint lives on .u-card--text:hover instead. */
     &:hover {
       border-color: color-mix(in oklab, var(--accent) 75%, var(--border-strong));
-      background: var(--bg-card-hover);
       transform: translateY(-6px);
       box-shadow:
         inset 0 1px 0 color-mix(in oklab, white 16%, transparent),
@@ -580,13 +583,9 @@
       font-size: var(--step--1);
       letter-spacing: .01em;
     }
-  }
-
-  /* Media card — image sits above the body (stacked). */
-  .u-card--media {
-    display: grid;
-    grid-template-rows: auto 1fr;
-    & .u-card__media { aspect-ratio: 16 / 10; }
+    /* surface tint on hover lives HERE (not base .u-card) so overlay cards keep
+       their background-image photo. glass cards override this with their own. */
+    &:hover { background: var(--bg-card-hover); }
   }
 
   /* Overlay card — image fills, text overlaid bottom-left over a scrim.
@@ -666,9 +665,13 @@
   }
   .solution-feature {
     & .u-card__body {
-      position: relative;
+      /* fill the card + push content to the bottom over the scrim (mirrors the
+         overlay __link mechanism so it matches the blog feature cards; a normal
+         -flow block left the title mid-card with empty photo below). */
+      position: absolute;
+      inset: 0;
       z-index: 1;
-      align-content: end;          /* bottom-align the title block over the scrim */
+      align-content: end;
       color: #f3f4f5;
       & h3 { color: #f3f4f5; }
       & p { color: color-mix(in oklab, #f3f4f5 86%, transparent); }
