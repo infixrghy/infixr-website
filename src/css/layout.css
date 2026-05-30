@@ -31,12 +31,16 @@
     position: relative;
     isolation: isolate;
     /* svh = smallest viewport height — locked to address-bar-visible state on mobile.
-       Avoids hero resizing when mobile URL bar toggles during scroll (V14). */
-    min-height: clamp(560px, 90svh, 880px);
+       Avoids hero resizing when mobile URL bar toggles during scroll (V14).
+       Trimmed 90→82svh: at 90svh the centered content row left CTAs kissing the
+       fold (B4). Lower ceiling + top-align pulls the headline up under the header. */
+    min-height: clamp(540px, 82svh, 820px);
     display: grid;
     grid-template-columns: 1fr;
-    align-items: center;
-    padding: var(--space-7) max(var(--space-5), calc((100% - var(--container-w)) / 2));
+    /* start (not center): content hugs the top padding so the gap above the
+       headline shrinks and the CTAs clear the bottom edge (B4). */
+    align-items: start;
+    padding: var(--space-8) max(var(--space-5), calc((100% - var(--container-w)) / 2)) var(--space-7);
     overflow: clip;
   }
   @media (min-width: 900px) {
@@ -67,6 +71,9 @@
       place-items: center;
       position: relative;
       aspect-ratio: 1 / 1;
+      /* hero content top-aligns now; keep the headset optically centered in the
+         column rather than tracking the headline to the top (B4). */
+      align-self: center;
       /* let the headset bleed slightly off the right edge like the mock */
       margin-right: calc(-1 * var(--space-7));
     }
