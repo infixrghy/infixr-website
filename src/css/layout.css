@@ -144,7 +144,11 @@
     display: grid;
     gap: var(--space-5);
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    /* named query container so .post--feature can switch to 2-up by row width */
+    container: blog / inline-size;
   }
+  /* Feature post spans the full row; small posts auto-fit beneath it (V30) */
+  .blog__grid .post--feature { grid-column: 1 / -1; }
 
   /* Contact layout */
   .contact { display: grid; place-items: center; }

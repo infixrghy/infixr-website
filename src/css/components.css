@@ -458,8 +458,40 @@
     }
   }
   .post:hover { border-color: var(--accent); transform: translateY(-3px); }
+  @media (prefers-reduced-motion: reduce) {
+    .post:hover { transform: none; }
+  }
   .post__meta { color: var(--fg-dim); font-size: var(--step--1); }
   .post h3 { font-size: var(--step-1); }
+
+  /* Feature post (V30): large, spans the grid row, 2-up internal layout.
+     Defined here (not pages.css) because index.html only inlines core CSS.
+     The 2-up toggles via a container query on .blog__grid (the query container;
+     a card can't query its own width). The feature spans the full row, so the
+     grid's inline-size ~ the card's width. */
+  .post--feature {
+    padding: clamp(var(--space-5), 4vw, var(--space-8));
+    gap: var(--space-5);
+  }
+  .post--feature .post__lead { display: grid; gap: var(--space-3); align-content: start; }
+  .post--feature h3 {
+    font-size: var(--step-3);
+    line-height: 1.12;
+    letter-spacing: -.02em;
+  }
+  .post--feature .post__detail { display: grid; gap: var(--space-4); align-content: start; }
+  .post--feature .post__detail p {
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+    line-height: 1.6;
+  }
+  /* 2-up: lead (title+meta) beside detail (body+cta) once the row is wide enough */
+  @container blog (min-width: 620px) {
+    .post--feature {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+    }
+  }
 
   /* ============ FORM ============ */
   .field { display: grid; gap: var(--space-2); }

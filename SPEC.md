@@ -93,7 +93,7 @@ T22|x|add `bun run lint` script: dead-token check `tokens.css` vs `{components,p
 T23|.|hero: relabel CTAs, static/gradient bg, keep word cycler, AA contrast|V27
 T24|x|who-we-are: tilt carousel cards + default/hover + indicator + CSS-only clickable nav|V28
 T25|x|our-solutions: glassmorphism cards + 3 training categories + new copy|V29
-T26|.|blogs: feature + post card layout, date/read-time meta|V30
+T26|x|blogs: feature + post card layout, date/read-time meta|V30
 T27|blocked|integrate rotating-metaquest3 hero 3D — needs JS-budget exception from Ari|V17,V27
 
 ## §B BUGS
