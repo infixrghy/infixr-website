@@ -413,9 +413,9 @@
   }
 
   /* ============ CAROUSEL CARDS ============
-     Mock: light/white card, dark text LEFT + product photo RIGHT, straight
-     (no tilt — the white center card reads flat in the mock). Floats over the
-     dark section on a soft shadow. */
+     Mock: light/white card, dark text LEFT + product photo RIGHT, sitting flat
+     (the white center card reads flat in the mock). Floats over the dark section
+     on a soft shadow. */
   .card {
     display: grid;
     grid-template-columns: 1.02fr 1fr;
@@ -429,7 +429,7 @@
     transition: box-shadow .25s;
     opacity: 1;
   }
-  /* Text left, image right (mock). card-rise = gentle fade-up, no tilt now. */
+  /* Text left, image right (mock). card-rise = gentle fade-up. */
   .card__body {
     grid-column: 1;
     grid-row: 1;
