@@ -552,6 +552,12 @@
   .u-card--text {
     container-type: inline-size;
     & .u-card__body { align-content: center; }
+    /* meta line on text cards (blog-list, about) — muted on the card surface. */
+    & .post__meta {
+      color: var(--fg-dim);
+      font-size: var(--step--1);
+      letter-spacing: .01em;
+    }
   }
 
   /* Media card — image sits above the body (stacked). */

@@ -51,25 +51,16 @@
     line-height: 1.7;
   }
 
-  /* Value grid (4 cards on About) */
+  /* Value grid (About) — .value-grid is just the grid container now; each <li>
+     is a unified .u-card.u-card--text (surface/hover/padding come from there). */
   .value-grid {
     display: grid;
     gap: var(--space-5);
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     margin: var(--space-5) 0;
+    & h3 { font-size: var(--step-1); }
+    & p { font-size: var(--step-0); color: var(--fg-muted); margin: 0; }
   }
-  .value-grid li {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: var(--space-5);
-    display: grid;
-    gap: var(--space-3);
-    transition: border-color .25s, transform .25s, background .25s;
-  }
-  .value-grid li:hover { border-color: var(--accent); transform: translateY(-3px); background: var(--bg-card-hover); }
-  .value-grid h3 { font-size: var(--step-1); }
-  .value-grid p { font-size: var(--step-0); color: var(--fg-muted); margin: 0; }
 
   /* ============ CTA BAND ============ */
   .cta-band {
@@ -87,33 +78,29 @@
   .cta-band p { color: var(--fg-muted); max-width: 50ch; }
   .cta-band .btn { margin-top: var(--space-3); }
 
-  /* ============ BLOG LIST PAGE ============ */
+  /* ============ BLOG LIST PAGE ============
+     Cards are unified .u-card.u-card--text. .blog-featured is just a hook for
+     the larger featured title + wider lead. */
   .blog-list {
     padding: var(--space-7) max(var(--space-5), calc((100% - 1100px) / 2)) var(--space-9);
     display: grid;
     gap: var(--space-7);
-  }
-  .post--featured {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: clamp(var(--space-5), 4vw, var(--space-8));
-    display: grid;
-    gap: var(--space-4);
-    transition: border-color .25s, transform .25s, background .25s;
-  }
-  .post--featured:hover { border-color: var(--accent); background: var(--bg-card-hover); }
-  .post--featured h2 {
-    font-size: var(--step-3);
-    line-height: 1.15;
-    letter-spacing: -.02em;
-  }
-  .post--featured h2 a:hover { color: var(--accent); }
-  .post--featured > p:not(.post__meta) {
-    font-size: var(--step-1);
-    color: var(--fg-muted);
-    max-width: 70ch;
-  }
 
-  .blog-list .post h3 a:hover { color: var(--accent); }
+    /* link hover inside text cards on this page */
+    & .u-card h2 a:hover,
+    & .u-card h3 a:hover { color: var(--accent); }
+  }
+  .blog-featured {
+    & h2 {
+      font-size: var(--step-3);
+      line-height: 1.15;
+      letter-spacing: -.02em;
+    }
+    /* the lead paragraph (not the meta line) */
+    & .u-card__body > p:not(.post__meta) {
+      font-size: var(--step-1);
+      color: var(--fg-muted);
+      max-width: 70ch;
+    }
+  }
 }
