@@ -90,7 +90,7 @@ T19|x|encode Figma tokens in `css/tokens.css` (palette, font, type-scale clamp, 
 T20|.|build 3 button variants + nav + card components per Figma|V22,V23,V24
 T21|.|extend `build.ts`: inject Satoshi @font-face + `<link rel=preload>` + cache-bust asset hashes|V19,V25
 T22|x|add `bun run lint` script: dead-token check `tokens.css` vs `{components,pages,layout}.css`|V26
-T23|.|hero: relabel CTAs, static/gradient bg, keep word cycler, AA contrast|V27
+T23|x|hero: relabel CTAs, static/gradient bg, keep word cycler, AA contrast|V27
 T24|x|who-we-are: tilt carousel cards + default/hover + indicator + CSS-only clickable nav|V28
 T25|x|our-solutions: glassmorphism cards + 3 training categories + new copy|V29
 T26|x|blogs: feature + post card layout, date/read-time meta|V30

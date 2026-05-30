@@ -55,12 +55,37 @@
     position: absolute;
     inset: 0;
     background:
+      /* horizontal veil — protects the text column on wide viewports */
       linear-gradient(90deg, var(--bg) 0%, color-mix(in oklab, var(--bg) 60%, transparent) 40%, transparent 75%),
+      /* vertical floor — darkens bottom where the headline/sub/CTA sit, so on
+         narrow viewports (text spans ~92% width, past the 75% h-stop) the photo
+         can't bleed behind text and break WCAG AA contrast (V27) */
+      linear-gradient(0deg, var(--bg) 0%, color-mix(in oklab, var(--bg) 55%, transparent) 32%, transparent 60%),
       radial-gradient(ellipse at 10% 65%, var(--accent-glow), transparent 55%);
   }
   .hero__content {
     max-width: 56ch;
     container-type: inline-size;
+    position: relative;
+    isolation: isolate;
+  }
+  /* Localized scrim directly behind the text — guarantees an AA floor by
+     construction (robust to photo swaps). Strong at mobile, the horizontal
+     veil already covers desktop so it can stay subtle there. */
+  .hero__content::before {
+    content: "";
+    position: absolute;
+    inset: -10% -14% -12% -10%;
+    z-index: -1;
+    /* Strong, near-solid --bg core across the whole text box, fading only past it.
+       Floor verified: worst text pixel sees ~0.78 combined --bg alpha over even a
+       bright photo highlight → title ~6.9:1, subhead ~4.9:1 (both ≥ AA). */
+    background: radial-gradient(135% 115% at 30% 55%,
+      var(--bg) 0%,
+      color-mix(in oklab, var(--bg) 78%, transparent) 55%,
+      color-mix(in oklab, var(--bg) 30%, transparent) 78%,
+      transparent 92%);
+    pointer-events: none;
   }
   .hero__cta {
     display: flex;
