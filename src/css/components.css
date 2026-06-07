@@ -881,6 +881,57 @@
     & h3 { font-size: var(--step-2); }
   }
 
+  /* ---- Homepage blog teaser refinements (scoped to .blog) ----
+     The 3-card hybrid: 1 photo feature (.blog-feature) + 2 editorial text cards
+     (.blog-text). These tune only the homepage section; the blog index + other
+     u-cards are untouched. */
+  .blog {
+    /* Feature title: cap the measure so a long headline wraps to ~2 lines
+       (editorial) instead of one wide line skimming the card's right edge. */
+    & .blog-feature h3 {
+      max-width: 18ch;
+      text-wrap: balance;
+    }
+    /* Text cards: an accent kicker rule under the heading on hover, and a touch
+       more space before the muted meta line so it reads as a footer, not body. */
+    & .blog-text {
+      & h3 a {
+        color: inherit;
+        transition: color .2s;
+      }
+      &:hover h3 a { color: var(--accent); }
+      & .post__meta { margin-top: var(--space-2); }
+      & p:not(.post__meta) { color: var(--fg-muted); text-wrap: pretty; }
+
+      /* Frosted glass — SAME material as the Solutions cards (cohesion is what
+         was chosen). The .blog::before glow behind the right column is what the
+         blur refracts into frost. Progressive-enhanced: the base opaque u-card
+         surface is the no-blur fallback, so non-supporting browsers stay legible.
+         The accent kicker keeps the section's teal thread through the glass. */
+      & .eyebrow { color: color-mix(in oklab, var(--accent) 90%, white); }
+
+      @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+        & {
+          background: color-mix(in oklab, var(--c-bg) 52%, transparent);
+          -webkit-backdrop-filter: blur(22px) saturate(165%);
+                  backdrop-filter: blur(22px) saturate(165%);
+          border-color: color-mix(in oklab, var(--c-fg) 28%, transparent);
+          box-shadow:
+            inset 0 1px 0 color-mix(in oklab, white 20%, transparent),
+            inset 0 0 0 1px color-mix(in oklab, white 5%, transparent),
+            0 14px 44px -16px rgba(0,0,0,.72);
+        }
+        /* hover already lifts + glows via base .u-card; just thin the frost so
+           the card brightens as it rises (mirrors the solutions hover). */
+        &:hover {
+          background: color-mix(in oklab, var(--c-bg) 44%, transparent);
+          -webkit-backdrop-filter: blur(26px) saturate(175%);
+                  backdrop-filter: blur(26px) saturate(175%);
+        }
+      }
+    }
+  }
+
   /* When an overlay card carries a real <img> media region (not a bg-image),
      the media must FILL the card behind the scrim, and the body floats over it
      at the bottom (white text → AA via the two stacked scrims above). Used by
@@ -932,34 +983,6 @@
         -webkit-backdrop-filter: blur(26px) saturate(175%);
                 backdrop-filter: blur(26px) saturate(175%);
       }
-    }
-  }
-
-  /* ============ BLOG SURFACES (V30) ============
-     The blog overlay cards are .u-card--overlay (structure + scrim + link +
-     badge defined above). These classes ONLY bind the per-card image/gradient
-     surface — separating "what image" from "what card". */
-  /* Headset photo surfaces — render sits on a soft tinted gradient so it reads. */
-  .surf-headset-a, .surf-headset-b {
-    background:
-      url("assets/hero-headset-1200.webp") right 30% bottom 20% / 78% no-repeat,
-      radial-gradient(120% 120% at 70% 30%, #d9dde2 0%, #b9c0c8 55%, #8e97a1 100%);
-  }
-  .surf-headset-b {
-    background:
-      url("assets/hero-headset-1200.webp") right -10% bottom 10% / 90% no-repeat,
-      radial-gradient(120% 120% at 60% 35%, #d3d8de 0%, #aeb6bf 60%, #868f99 100%);
-  }
-  .surf-people {
-    background: url("assets/who-1.webp") center / cover no-repeat, #15171a;
-  }
-  /* Gradient (no-asset) small cards — iridescent headset vibe via CSS only.
-     Lighter scrim than photo cards (the gradient is already dark-ish). */
-  .surf-grad {
-    background:
-      conic-gradient(from 210deg at 70% 30%, #ff79b0, #8a6bff 40%, #2bd4c4 72%, #ff79b0);
-    &.u-card--overlay::after {
-      background: linear-gradient(0deg, rgba(8,10,12,.78) 0%, rgba(8,10,12,.3) 42%, transparent 72%);
     }
   }
 

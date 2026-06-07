@@ -23,48 +23,69 @@ import { displayDate } from "./blog.ts";
 import type { BlogPost } from "./schema/post.ts";
 
 /**
- * The homepage blog grid is a fixed 5-cell mosaic (CSS grid-template-areas:
- * a b / c people / d people). Each slot has a hardcoded photo/gradient surface
- * and grid-area class, plus whether it carries the corner arrow badge. The DATA
- * (title, date, read-time, link) fills each slot; this map is the LAYOUT and
- * stays literal — it's design, not content. Order matches newest-first posts:
- * the two large feature photos lead, two small gradient cards, then the tall
- * people-photo card. Exactly 5 — the grid has no 6th cell.
+ * The homepage blog teaser is 3 cards, NOT the full index (a "View More →" link
+ * carries the rest). The shape is a hybrid: ONE large photo card leads (the
+ * featured/newest post), and TWO editorial text cards stack beside it.
+ *
+ * Why not the old 5-cell photo mosaic? Posts carry no image field
+ * (title/date/readMinutes/category/slug/excerpt — see schema/post.ts), so the
+ * old grid FAKED imagery: two cells reused the hero headset render, two were
+ * stock conic gradients, one borrowed a who-carousel face. That "ran out of
+ * pictures" look is the weakness. The hybrid is honest — the one card that gets
+ * a photo uses `sol-corporate` (a real render that's otherwise UNUSED on the
+ * homepage, so no third repeat of the headset / who faces), and the text cards
+ * own their type instead of hiding it under a gradient. Meta line: date +
+ * read-time only (the homepage teaser never showed a category eyebrow on the
+ * photo card — the text cards do, where it reads as editorial kicker).
  */
-const HOME_BLOG_SLOTS: ReadonlyArray<{ cls: string; badge: boolean }> = [
-  { cls: "u-card u-card--overlay u-card--feature surf-headset-a blog-a", badge: true },
-  { cls: "u-card u-card--overlay u-card--feature surf-headset-b blog-b", badge: true },
-  { cls: "u-card u-card--overlay surf-grad blog-c", badge: false },
-  { cls: "u-card u-card--overlay surf-grad blog-d", badge: false },
-  { cls: "u-card u-card--overlay u-card--feature surf-people blog-people", badge: true },
-];
+const HOME_FEATURE_IMG = "sol-corporate";
 
 /**
- * One homepage blog card: an overlay card linking to the post's own page. Meta is
- * date + read-time only (no category — the homepage cards never showed one). The
- * surface + grid-area + badge come from the positional slot; title/date/href from
- * the post. Fixes the drift: href is the per-post page, read-time is the real
- * front-matter value. Post fields are our own validated data but esc()'d at the
- * boundary regardless (title may contain author punctuation).
+ * The lead card: a real photo (sol-corporate) fills it, the title + meta sit at
+ * the bottom over the .u-card--overlay scrim, the whole card is one link. Photo
+ * is decorative (alt="") — it isn't of this post, it sets the workspace tone;
+ * the heading/meta carry the meaning. Spans both rows of the grid (blog-feature).
  */
-const renderHomeBlogCard = (
-  p: BlogPost,
-  slot: { cls: string; badge: boolean }
-): string => {
-  const badge = slot.badge
-    ? `\n          <span class="u-card__badge" aria-hidden="true">&rarr;</span>`
-    : "";
-  return html`<li class="${slot.cls}">
+const renderHomeFeature = (p: BlogPost): string =>
+  html`<li class="u-card u-card--overlay u-card--feature blog-feature">
+        <div class="u-card__media">
+          ${picture({
+    webp: `assets/${HOME_FEATURE_IMG}.webp`,
+    png: `assets/${HOME_FEATURE_IMG}.png`,
+    alt: "",
+    width: 800,
+    height: 450,
+    loading: "lazy",
+  })}
+        </div>
         <a class="u-card__link" href="blog/${esc(p.slug)}.html">
           <div class="u-card__overlay">
             <p class="u-card__meta"><time datetime="${p.date}">${displayDate(
     p.date
   )}</time> &middot; ${String(p.readMinutes)} min read</p>
             <h3>${esc(p.title)}</h3>
-          </div>${badge}
+          </div>
+          <span class="u-card__badge" aria-hidden="true">&rarr;</span>
         </a>
       </li>`;
-};
+
+/**
+ * An editorial text card (the unified .u-card--text — same component the blog
+ * index uses, see blog.ts renderCard). Category kicker + linked title + excerpt
+ * + a meta line, no photo. Posts are our own validated data but esc()'d at the
+ * boundary regardless (titles/excerpts may carry author punctuation).
+ */
+const renderHomeTextCard = (p: BlogPost): string =>
+  html`<li class="u-card u-card--text blog-text">
+        <div class="u-card__body">
+          <p class="eyebrow">${esc(p.category)}</p>
+          <h3><a href="blog/${esc(p.slug)}.html">${esc(p.title)}</a></h3>
+          <p>${esc(p.excerpt)}</p>
+          <p class="post__meta"><time datetime="${p.date}">${displayDate(
+    p.date
+  )}</time> &middot; ${String(p.readMinutes)} min read</p>
+        </div>
+      </li>`;
 
 /**
  * "Who We Are" carousel slides — the 3 real cards, as data. Each maps a distinct
@@ -142,12 +163,14 @@ const renderWhoSlide = (
  *   section uses the first up-to-5; fewer posts simply fill fewer slots.
  */
 export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
-  // Newest-first already (loadPosts sorts). Take up to 5 to fill the mosaic; zip
-  // each with its positional slot so a short post list never indexes past the map.
-  const homePosts = posts.slice(0, HOME_BLOG_SLOTS.length);
-  const blogCards = homePosts
-    .map((p, i) => "\n      " + renderHomeBlogCard(p, HOME_BLOG_SLOTS[i]))
-    .join("");
+  // Newest-first already (loadPosts sorts). 3-card teaser: the FEATURED post (or
+  // newest as fallback) is the photo lead; the next two are editorial text cards.
+  // Fewer than 3 posts simply renders fewer cards (no index-past-end).
+  const feature = posts.find((p) => p.featured) ?? posts[0];
+  const textPosts = posts.filter((p) => p !== feature).slice(0, 2);
+  const blogCards =
+    (feature ? "\n      " + renderHomeFeature(feature) : "") +
+    textPosts.map((p) => "\n      " + renderHomeTextCard(p)).join("");
 
   return (
     html`<main id="top">

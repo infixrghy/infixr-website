@@ -231,6 +231,30 @@
     .solution-feature { grid-column: 2; grid-row: 1 / 3; }
   }
 
+  /* Blog section: its own stacking context so the glow backdrop sits behind the
+     cards but inside the section (z-index:-1 stays scoped here, not page-global).
+     The glass text cards (components.css) need something behind them to refract —
+     this glow IS what the backdrop-filter blurs into "frost". */
+  .blog {
+    position: relative;
+    isolation: isolate;
+  }
+  /* Accent-glow backdrop — deliberately RIGHT-weighted (the glass text cards live
+     in the right column; the glow must land behind THEM to read as frost). This
+     also gives blog a different glow signature from the Solutions section
+     directly above it (which is left-weighted) — same glass vocabulary, different
+     composition, so the two adjacent sections don't read as one pasted twice. */
+  .blog::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(42% 48% at 82% 32%, var(--accent-glow), transparent 70%),
+      radial-gradient(38% 50% at 90% 82%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 72%);
+    pointer-events: none;
+  }
+
   /* Blog head: headline + lead left, "View More" right (mirrors solutions).
      Tight --head-gap to the grid (was --space-7/96px void). */
   .blog__head {
@@ -250,26 +274,32 @@
     .blog__lead { grid-column: 1; }
     .blog__more { grid-column: 2; grid-row: 1 / 4; align-self: start; justify-self: end; }
   }
-  /* Image-forward blog: 2 feature cards (row 1), then 2 small gradient cards
-     stacked left + 1 tall people-photo card right (rows 2-3). Mock layout. */
+  /* Base grid: single column, cards stack (mobile + blog-index default). NOTE
+     this rule is SHARED with the blog index (renderBlogBody → .blog-list); the
+     homepage's 3-card hybrid layout is scoped under `.blog .blog__grid` below so
+     it never reaches the index. */
   .blog__grid {
     display: grid;
     gap: var(--space-5);
     grid-template-columns: 1fr;
   }
+
+  /* Homepage blog TEASER (3 cards): one large photo card on the left spanning
+     both rows, two editorial text cards stacked on the right. Asymmetric — the
+     photo earns the width, the text cards carry the rest honestly (no filler
+     gradients). Mobile keeps the inherited single-column stack (feature first).
+     Scoped to `.blog` so the blog-index grid is untouched. */
   @media (min-width: 760px) {
-    .blog__grid {
-      grid-template-columns: 1.4fr 1fr;
+    .blog .blog__grid {
+      grid-template-columns: 1.5fr 1fr;
       grid-template-areas:
-        "a b"
-        "c people"
-        "d people";
+        "feature text1"
+        "feature text2";
+      align-items: stretch;
     }
-    .blog-a { grid-area: a; }
-    .blog-b { grid-area: b; }
-    .blog-c { grid-area: c; }
-    .blog-d { grid-area: d; }
-    .blog-people { grid-area: people; }
+    .blog .blog-feature { grid-area: feature; }
+    .blog .blog-text:nth-of-type(2) { grid-area: text1; }
+    .blog .blog-text:nth-of-type(3) { grid-area: text2; }
   }
 
   /* Contact layout — the card shell is now a .u-card; the layout-level bits
