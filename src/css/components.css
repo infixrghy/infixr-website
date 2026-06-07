@@ -182,7 +182,11 @@
   }
 
   /* Hero CTAs: uppercase dark pills per the mock. Primary here = dark glass pill
-     (not the global light-fill primary, which still drives the contact form). */
+     (not the global light-fill primary, which still drives the contact form).
+     DISTINCT borders (Ari): both pills rest on an accent-tinted edge + a soft teal
+     glow halo instead of the near-invisible grey --border-strong, so they read as
+     branded glass on the dark hero before any hover. The two share the accent rim
+     as a matched pair; hover still resolves to the solid accent fill. */
   .hero__cta {
     & .btn {
       text-transform: uppercase;
@@ -191,14 +195,34 @@
       font-weight: 600;
       padding: .8rem 1.4rem;
     }
+    /* Glass-fill primary ("Request a Demo"): brighter accent rim + an inner
+       light-catch hairline (top) so it reads as a teal-rimmed glass pill, plus a
+       faint outer glow. Border thickened to 1.5px to carry the accent. */
     & .btn--primary {
       background: color-mix(in oklab, var(--c-bg) 40%, transparent);
-      border-color: var(--border-strong);
+      border: 1.5px solid color-mix(in oklab, var(--accent) 55%, transparent);
       color: var(--fg);
+      box-shadow:
+        inset 0 1px 0 color-mix(in oklab, white 18%, transparent),
+        0 0 0 1px color-mix(in oklab, var(--accent) 12%, transparent),
+        0 6px 22px -10px color-mix(in oklab, var(--accent) 45%, transparent);
       &:hover {
         background: var(--accent);
         border-color: var(--accent);
         color: var(--c-bg);
+        box-shadow:
+          var(--shadow-glow),
+          0 8px 26px -10px color-mix(in oklab, var(--accent) 60%, transparent);
+      }
+    }
+    /* Ghost secondary ("Explore Our Work"): accent-tinted resting border + a soft
+       teal glow ring, so it's clearly a button — not a faint grey ghost. */
+    & .btn--ghost {
+      border: 1.5px solid color-mix(in oklab, var(--accent) 50%, var(--border-strong));
+      box-shadow: 0 0 18px -8px color-mix(in oklab, var(--accent) 50%, transparent);
+      &:hover {
+        border-color: var(--accent);
+        box-shadow: 0 0 24px -6px color-mix(in oklab, var(--accent) 60%, transparent);
       }
     }
   }
