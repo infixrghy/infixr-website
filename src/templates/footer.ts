@@ -38,8 +38,8 @@ export const renderFooter = (isHome: boolean, base = ""): string => {
       <h3 class="footer-h">Quick Links</h3>
       <ul class="footer-links">
         <li><a href="${home}">Home</a></li>
-        <li><a href="${about}">About Us</a></li>
         <li><a href="${sec("#solutions")}">Our Solutions</a></li>
+        <li><a href="${about}">About Us</a></li>
         <li><a href="${sec("#contact")}">Contact</a></li>
       </ul>
     </div>

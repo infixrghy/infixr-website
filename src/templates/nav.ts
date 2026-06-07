@@ -52,8 +52,8 @@ export const renderNav = (active: NavId, isHome: boolean, base = ""): string => 
     </label>
     <ul>
       ${navItem("home", active, homeHref, "Home")}
-      ${navItem("about", active, `${base}about.html`, "Who We Are")}
       ${navItem("solutions", active, sec("#solutions"), "Our Solutions")}
+      ${navItem("about", active, `${base}about.html`, "Who We Are")}
       ${navItem("products", active, sec("#products"), "Products")}
       ${navItem("blog", active, `${base}blog.html`, "Blogs")}
       <li><a class="cta-pill" href="${sec("#contact")}">Contact Us</a></li>

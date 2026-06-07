@@ -36,15 +36,19 @@
     isolation: isolate;
     /* svh = smallest viewport height — locked to address-bar-visible state on mobile.
        Avoids hero resizing when mobile URL bar toggles during scroll (V14).
-       Trimmed 90→82svh: at 90svh the centered content row left CTAs kissing the
-       fold (B4). Lower ceiling + top-align pulls the headline up under the header. */
-    min-height: clamp(540px, 82svh, 820px);
+       Trimmed again 82→72svh (floor 540→480, cap 820→720): with align-items:start
+       the row stretched to the floor and dumped a tall dead band BELOW the CTAs —
+       that void is what read as "CTAs stranded near the bottom" (Ari). Lower hero =
+       no void, content sits balanced. */
+    min-height: clamp(480px, 72svh, 720px);
     display: grid;
     grid-template-columns: 1fr;
     /* start (not center): content hugs the top padding so the gap above the
        headline shrinks and the CTAs clear the bottom edge (B4). */
     align-items: start;
-    padding: var(--space-8) max(var(--space-5), calc((100% - var(--container-w)) / 2)) var(--space-7);
+    /* top padding trimmed --space-8(64)→--space-6(32): pulls the headline + headset
+       up closer under the sticky header so the hero "starts earlier" (Ari). */
+    padding: var(--space-6) max(var(--space-5), calc((100% - var(--container-w)) / 2)) var(--space-7);
     overflow: clip;
     @media (min-width: 900px) {
       & {
@@ -240,10 +244,10 @@
     isolation: isolate;
   }
   /* Accent-glow backdrop — deliberately RIGHT-weighted (the glass text cards live
-     in the right column; the glow must land behind THEM to read as frost). This
-     also gives blog a different glow signature from the Solutions section
-     directly above it (which is left-weighted) — same glass vocabulary, different
-     composition, so the two adjacent sections don't read as one pasted twice. */
+     in the right column; the glow must land behind THEM to read as frost). Also a
+     different glow signature from Solutions (left-weighted) — same glass vocabulary,
+     different composition. (Section order is now Hero→Solutions→Who→Blog, so Who
+     sits between the two glass sections; the contrast still reads as you scroll.) */
   .blog::before {
     content: "";
     position: absolute;

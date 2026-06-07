@@ -220,7 +220,11 @@
 
   /* ============ HERO TITLE ============ */
   .hero__title {
-    font-size: var(--step-5);
+    /* Scoped down from the shared --step-5 token (still used by .page-title on the
+       About/Blog heroes — don't shrink those). "A little bit" smaller per Ari:
+       ~12% off at every width (floor+mid+cap all cut, not just the cap), so the
+       headline reads big without dominating the fold. cqi keeps it container-fluid. */
+    font-size: clamp(4rem, 2.75rem + 5cqi, 5.25rem);
     font-weight: 700;
     letter-spacing: -.03em;
     line-height: 1.05;

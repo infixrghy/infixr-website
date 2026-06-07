@@ -239,43 +239,6 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
     </div>
   </section>
 
-  <!-- WHO WE ARE -->
-  <section class="who" id="about" aria-labelledby="who-title">
-    <div class="who__intro">
-      <p class="eyebrow">Who We Are</p>
-      <h2 id="who-title" class="who__title">VR for Real-World Challenges</h2>
-      <a class="who__link link-arrow" href="about.html">Learn More &rarr;</a>
-    </div>
-
-    <div class="carousel" role="region" aria-label="Who we are highlights" aria-roledescription="carousel">
-      <!-- Transform-track carousel: the track translateX-shifts inside a clip
-           viewport (NOT a scroll container — a scroll container can't center the
-           first AND last card without runway hacks that fight flexbox). Clone-
-           padded [3'][1][2][3][1']; the carousel code in main.js shifts one card per
-           step and, on transitionend at an edge clone, instant-jumps to its real
-           twin → seamless infinite loop. Own dots + corner buttons drive it (the
-           native ::scroll-marker/::scroll-button APIs can't do seamless-loop +
-           one-card-step + centered-peek together). data-carousel="3" = real count. -->
-      <div class="carousel__viewport">
-        <ol class="carousel__track" data-carousel="3">
-          ${renderWhoSlide(WHO_SLIDES[2], true)}
-          ${renderWhoSlide(WHO_SLIDES[0])}
-          ${renderWhoSlide(WHO_SLIDES[1])}
-          ${renderWhoSlide(WHO_SLIDES[2])}
-          ${renderWhoSlide(WHO_SLIDES[0], true)}
-        </ol>
-      </div>
-      <!-- Control band: prev/next in the lower corners, own dots centered between. -->
-      <button type="button" class="carousel__btn carousel__btn--prev" data-carousel-prev aria-label="Previous slide">&lsaquo;</button>
-      <div class="carousel__dots" role="tablist" aria-label="Choose slide" data-carousel-dots>
-        <button type="button" class="carousel__dot" role="tab" aria-label="Slide 1: VR Apps for Real-World Challenges"></button>
-        <button type="button" class="carousel__dot" role="tab" aria-label="Slide 2: Scalable and Accessible"></button>
-        <button type="button" class="carousel__dot" role="tab" aria-label="Slide 3: Practical, Not Experimental"></button>
-      </div>
-      <button type="button" class="carousel__btn carousel__btn--next" data-carousel-next aria-label="Next slide">&rsaquo;</button>
-    </div>
-  </section>
-
   <!-- OUR SOLUTIONS -->
   <section class="solutions" id="solutions" aria-labelledby="solutions-title">
     <header class="solutions__head">
@@ -321,6 +284,43 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
         </div>
       </li>
     </ul>
+  </section>
+
+  <!-- WHO WE ARE -->
+  <section class="who" id="about" aria-labelledby="who-title">
+    <div class="who__intro">
+      <p class="eyebrow">Who We Are</p>
+      <h2 id="who-title" class="who__title">VR for Real-World Challenges</h2>
+      <a class="who__link link-arrow" href="about.html">Learn More &rarr;</a>
+    </div>
+
+    <div class="carousel" role="region" aria-label="Who we are highlights" aria-roledescription="carousel">
+      <!-- Transform-track carousel: the track translateX-shifts inside a clip
+           viewport (NOT a scroll container — a scroll container can't center the
+           first AND last card without runway hacks that fight flexbox). Clone-
+           padded [3'][1][2][3][1']; the carousel code in main.js shifts one card per
+           step and, on transitionend at an edge clone, instant-jumps to its real
+           twin → seamless infinite loop. Own dots + corner buttons drive it (the
+           native ::scroll-marker/::scroll-button APIs can't do seamless-loop +
+           one-card-step + centered-peek together). data-carousel="3" = real count. -->
+      <div class="carousel__viewport">
+        <ol class="carousel__track" data-carousel="3">
+          ${renderWhoSlide(WHO_SLIDES[2], true)}
+          ${renderWhoSlide(WHO_SLIDES[0])}
+          ${renderWhoSlide(WHO_SLIDES[1])}
+          ${renderWhoSlide(WHO_SLIDES[2])}
+          ${renderWhoSlide(WHO_SLIDES[0], true)}
+        </ol>
+      </div>
+      <!-- Control band: prev/next in the lower corners, own dots centered between. -->
+      <button type="button" class="carousel__btn carousel__btn--prev" data-carousel-prev aria-label="Previous slide">&lsaquo;</button>
+      <div class="carousel__dots" role="tablist" aria-label="Choose slide" data-carousel-dots>
+        <button type="button" class="carousel__dot" role="tab" aria-label="Slide 1: VR Apps for Real-World Challenges"></button>
+        <button type="button" class="carousel__dot" role="tab" aria-label="Slide 2: Scalable and Accessible"></button>
+        <button type="button" class="carousel__dot" role="tab" aria-label="Slide 3: Practical, Not Experimental"></button>
+      </div>
+      <button type="button" class="carousel__btn carousel__btn--next" data-carousel-next aria-label="Next slide">&rsaquo;</button>
+    </div>
   </section>
 
   <!-- BLOG -->
