@@ -87,12 +87,12 @@ async function readCss(paths: string[]): Promise<string> {
  * Assemble a full HTML document from the shared templates + a body string.
  * Reproduces the source byte structure exactly: doctype, html, head, then
  * `<body>` + blank line + header + blank line + body + blank line + footer +
- * blank line + form.js script + body/html close + trailing newline.
+ * blank line + main.js script + body/html close + trailing newline.
  *
  * `isHome` switches nav/footer section links between same-page anchors and
- * cross-page `index.html#…`. The form.js script ships on every page now so the
- * single shared `<span id="year">` is stamped site-wide (it no-ops the form half
- * where there's no contact form).
+ * cross-page `index.html#…`. The main.js script ships on every page now so the
+ * single shared `<span id="year">` is stamped site-wide (each behavior no-ops
+ * where its target is absent: form on non-contact pages, carousel off the home).
  */
 function assembleShell(
   meta: PageMeta,
@@ -112,7 +112,7 @@ function assembleShell(
     body +
     `\n\n` +
     footer +
-    `\n\n<script src="${base}js/form.js" defer></script>\n</body>\n</html>\n`
+    `\n\n<script src="${base}js/main.js" defer></script>\n</body>\n</html>\n`
   );
 }
 
@@ -208,7 +208,7 @@ const program = Effect.gen(function* () {
   );
 
   // 2b. build one page per post at blog/<slug>.html. base="../" so the shared
-  // head/nav/footer + font preload + form.js resolve from one directory deep.
+  // head/nav/footer + font preload + main.js resolve from one directory deep.
   // Post pages get core + pages.css (the .prose long-form rules live in pages.css).
   yield* Effect.promise(() => mkdir(join(OUT, "blog"), { recursive: true }));
   const postCss = coreCss + "\n" + pagesCss;

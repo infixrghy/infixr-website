@@ -8,7 +8,7 @@
 
 ## JS Rules
 - budget: ≤5 KB total across all `src/js/*.js` files.
-- only allowed: form handler, year stamp.
+- only allowed: form handler, year stamp, who-carousel (transform-track loop + autoplay + nav; Ari-approved exception). All three live in one bundle: `src/js/main.js`.
 - ANY new JS needs Ari approval first. ask, do not assume.
 - prefer CSS / HTML / browser-native every time.
 
@@ -27,7 +27,7 @@
 - `src/schema/*.ts` (`page.ts`, `post.ts`) — Effect Schema for page meta + blog front-matter; malformed data fails the build, not the browser.
 - `content/posts/*.md` — blog post sources (front-matter + markdown). `src/blog.ts` validates + `marked`-renders them (build-time only, 0 client bytes) into the blog index AND one page each at `public/blog/<slug>.html`. Latest few also surface in the homepage blog mosaic (`src/home.ts`).
 - `src/css/reset.css`, `tokens.css`, `layout.css`, `components.css`, `pages.css` — source of truth for styles.
-- `src/js/form.js` — 1.4 KB, only JS file
+- `src/js/main.js` — ~3.5 KB, the only shipped JS file (year stamp + contact form + who-carousel; each no-ops where its target is absent). Ships on every page via `build.ts`.
 - `src/assets/` — images, favicon, og-image, `Satoshi-Variable.woff2` + `Satoshi-VariableItalic.woff2` (self-hosted, fontshare; no rsms.me/Google Fonts)
 - `src/manifest.webmanifest` — PWA manifest
 - `public/` — GENERATED build output. gitignored. NEVER hand-edit. CI deploys this.

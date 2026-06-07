@@ -4,7 +4,7 @@
  * Unifies three drifted footers: index used #top/#about anchors + a JS-stamped
  * <span id="year">; about/blog used index.html/about.html links + a hardcoded
  * "2026". Now ONE template: `isHome` switches anchor vs cross-page links, and a
- * single <span id="year"> means the sanctioned year-stamp JS (form.js) updates the
+ * single <span id="year"> means the sanctioned year-stamp JS (main.js) updates the
  * year on EVERY page — previously only index could be stamped. Footer "Our
  * Applications" is canonicalised to "Our Solutions" to match the nav.
  */

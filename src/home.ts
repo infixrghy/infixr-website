@@ -67,6 +67,76 @@ const renderHomeBlogCard = (
 };
 
 /**
+ * "Who We Are" carousel slides — the 3 real cards, as data. Each maps a distinct
+ * VR photo to its message (team/office, engineer/factory, lab/research).
+ */
+const WHO_SLIDES: ReadonlyArray<{
+  img: string;
+  alt: string;
+  index: string;
+  title: string;
+  body: string;
+  name: string;
+}> = [
+  {
+    img: "who-1",
+    alt: "A diverse team wearing VR headsets collaborating around a meeting table",
+    index: "01",
+    title: "VR Apps for Real-World Challenges",
+    body: "Immersive experiences engineered to solve real operational, training, and performance problems.",
+    name: "VR Apps for Real-World Challenges",
+  },
+  {
+    img: "who-2",
+    alt: "An engineer in VR manipulating a 3D model on a factory floor",
+    index: "02",
+    title: "Scalable &amp; Accessible",
+    body: "One XR platform across VR, web, and mobile&nbsp;&mdash; easy to deploy, scale, and reach anywhere.",
+    name: "Scalable and Accessible",
+  },
+  {
+    img: "who-3",
+    alt: "A researcher in a lab gesturing while wearing a VR headset",
+    index: "03",
+    title: "Practical, Not Experimental",
+    body: "Built for usability, efficiency, and measurable outcomes&nbsp;&mdash; real results, not novelty.",
+    name: "Practical, Not Experimental",
+  },
+];
+
+/**
+ * One carousel slide. `clone` slides are visual-only duplicates that pad the
+ * scroll-container ends ([3'][1][2][3][1']) so the native ::scroll-button() never
+ * hits a scroll boundary — carousel.js snap-resets to the real twin on scrollend
+ * for a seamless wrap. Clones are aria-hidden and carry no ::scroll-marker (CSS
+ * suppresses markers on [aria-hidden] slides), so the dot count stays 3, not 5.
+ * `data-name` becomes the marker's accessible name (real slides only).
+ */
+const renderWhoSlide = (
+  s: (typeof WHO_SLIDES)[number],
+  clone = false
+): string => {
+  const attrs = clone ? ` aria-hidden="true"` : ` data-name="${s.name}"`;
+  return html`<li class="card"${attrs}>
+          <figure class="card__media">
+            ${picture({
+    webp: `assets/${s.img}.webp`,
+    png: `assets/${s.img}.jpg`,
+    alt: clone ? "" : s.alt,
+    width: 800,
+    height: 450,
+    loading: "lazy",
+  })}
+          </figure>
+          <div class="card__body">
+            <span class="card__index" aria-hidden="true">${s.index}</span>
+            <h3>${s.title}</h3>
+            <p>${s.body}</p>
+          </div>
+        </li>`;
+};
+
+/**
  * Render the full homepage <main> + trailing hero-3d loader script.
  * @param posts validated, newest-first BlogPost[] (from loadPosts). The blog
  *   section uses the first up-to-5; fewer posts simply fill fewer slots.
@@ -155,69 +225,31 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
     </div>
 
     <div class="carousel" role="region" aria-label="Who we are highlights" aria-roledescription="carousel">
-      <!-- Radio nav (CSS-only): autoplay runs until a dot is chosen, then :checked
-           pins that slide and halts the keyframe. No JS. -->
-      <!-- none checked on load → autoplay runs; first dot-click pins via :checked -->
-      <input type="radio" name="who-slide" id="who-nav-1" class="carousel__radio">
-      <input type="radio" name="who-slide" id="who-nav-2" class="carousel__radio">
-      <input type="radio" name="who-slide" id="who-nav-3" class="carousel__radio">
+      <!-- Transform-track carousel: the track translateX-shifts inside a clip
+           viewport (NOT a scroll container — a scroll container can't center the
+           first AND last card without runway hacks that fight flexbox). Clone-
+           padded [3'][1][2][3][1']; the carousel code in main.js shifts one card per
+           step and, on transitionend at an edge clone, instant-jumps to its real
+           twin → seamless infinite loop. Own dots + corner buttons drive it (the
+           native ::scroll-marker/::scroll-button APIs can't do seamless-loop +
+           one-card-step + centered-peek together). data-carousel="3" = real count. -->
       <div class="carousel__viewport">
-      <ol class="carousel__track">
-        <li class="card" id="who-1">
-          <figure>
-            ${picture({
-      webp: "assets/who-headset-white.webp",
-      png: "assets/who-headset-white.png",
-      alt: "Meta Quest VR headset on a clean studio table",
-      width: 900,
-      height: 317,
-      loading: "lazy",
-    })}
-          </figure>
-          <div class="card__body">
-            <h3>We Create VR Apps For Real-World Challenges</h3>
-            <p>We build immersive VR experiences designed to solve real operational, training, and performance challenges.</p>
-          </div>
-        </li>
-        <li class="card" id="who-2">
-          <figure>
-            ${picture({
-      webp: "assets/who-headset-white.webp",
-      png: "assets/who-headset-white.png",
-      alt: "Meta Quest VR headset on a clean studio table",
-      width: 900,
-      height: 317,
-      loading: "lazy",
-    })}
-          </figure>
-          <div class="card__body">
-            <h3>Scalable &amp; Accessible</h3>
-            <p>Our XR platform works across VR, web, and mobile making it easy to deploy, scale, and access immersive experiences anywhere.</p>
-          </div>
-        </li>
-        <li class="card" id="who-3">
-          <figure>
-            ${picture({
-      webp: "assets/who-headset-white.webp",
-      png: "assets/who-headset-white.png",
-      alt: "Meta Quest VR headset on a clean studio table",
-      width: 900,
-      height: 317,
-      loading: "lazy",
-    })}
-          </figure>
-          <div class="card__body">
-            <h3>Practical, Not Experimental</h3>
-            <p>Every solution is designed for usability, efficiency, and measurable outcomes focused on real results, not just innovation.</p>
-          </div>
-        </li>
-      </ol>
+        <ol class="carousel__track" data-carousel="3">
+          ${renderWhoSlide(WHO_SLIDES[2], true)}
+          ${renderWhoSlide(WHO_SLIDES[0])}
+          ${renderWhoSlide(WHO_SLIDES[1])}
+          ${renderWhoSlide(WHO_SLIDES[2])}
+          ${renderWhoSlide(WHO_SLIDES[0], true)}
+        </ol>
       </div>
-      <div class="carousel__dots" role="group" aria-label="Choose slide">
-        <label class="carousel__dot" for="who-nav-1" aria-label="Go to slide 1"></label>
-        <label class="carousel__dot" for="who-nav-2" aria-label="Go to slide 2"></label>
-        <label class="carousel__dot" for="who-nav-3" aria-label="Go to slide 3"></label>
+      <!-- Control band: prev/next in the lower corners, own dots centered between. -->
+      <button type="button" class="carousel__btn carousel__btn--prev" data-carousel-prev aria-label="Previous slide">&lsaquo;</button>
+      <div class="carousel__dots" role="tablist" aria-label="Choose slide" data-carousel-dots>
+        <button type="button" class="carousel__dot" role="tab" aria-label="Slide 1: VR Apps for Real-World Challenges"></button>
+        <button type="button" class="carousel__dot" role="tab" aria-label="Slide 2: Scalable and Accessible"></button>
+        <button type="button" class="carousel__dot" role="tab" aria-label="Slide 3: Practical, Not Experimental"></button>
       </div>
+      <button type="button" class="carousel__btn carousel__btn--next" data-carousel-next aria-label="Next slide">&rsaquo;</button>
     </div>
   </section>
 
