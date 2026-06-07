@@ -11,7 +11,7 @@
  * large lead card, the rest fill the grid — mirroring the prior hand-written
  * blog.html layout, now sourced from data.
  */
-import { Effect, Schema, Option } from "effect";
+import { Effect, Schema, Option, type ParseResult } from "effect";
 import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 import { marked } from "marked";
@@ -61,8 +61,13 @@ function parseFrontMatter(raw: string): { data: Record<string, unknown>; body: s
   return { data, body };
 }
 
-/** Load + validate + render every post. Typed failure if any front-matter is bad. */
-export const loadPosts: Effect.Effect<ReadonlyArray<BlogPost>> = Effect.gen(
+/** Load + validate + render every post. Typed failure (ParseError) if any
+ *  front-matter is bad — the decode in the generator can fail, so the error
+ *  channel is ParseError, not never (tsc surfaced the too-narrow annotation). */
+export const loadPosts: Effect.Effect<
+  ReadonlyArray<BlogPost>,
+  ParseResult.ParseError
+> = Effect.gen(
   function* () {
     const files = (yield* Effect.promise(() => readdir(POSTS_DIR))).filter((f) =>
       f.endsWith(".md")

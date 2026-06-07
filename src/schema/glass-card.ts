@@ -1,0 +1,75 @@
+/**
+ * schema/glass-card.ts — Effect Schema for the glass-card component's params.
+ *
+ * Unlike schema/post.ts (which validates EXTERNAL markdown front-matter), a glass
+ * card's content comes from already-validated data. What this schema guards is the
+ * component's OWN parameter API: a typo'd variant ("v4") or an out-of-range tint
+ * ("150%") would otherwise render broken glass silently. Decoding the params at
+ * build time turns that misuse into a BUILD FAILURE, not a browser surprise — the
+ * reason the typed-param approach was chosen over a bare render fn.
+ *
+ * Matches the post.ts idiom: Schema.Struct, pattern-validated strings, optional →
+ * Option (never null). The five teal dials map 1:1 to the .glass-card CSS custom
+ * props (--gc-tint/--gc-alpha/--gc-rim/--gc-ring/--gc-halo) documented in SPEC.md.
+ */
+import { Schema } from "effect";
+
+/** A CSS percentage 0–100%, e.g. "50%". Pattern + bound; kept as a string so it
+ *  drops straight into a custom-prop value. Guards the teal-strength overrides. */
+const Percent = Schema.NonEmptyString.pipe(
+  Schema.pattern(/^(?:100|\d{1,2})%$/, {
+    message: () => "must be a percentage 0%–100% (e.g. \"50%\")",
+  })
+);
+
+/** ISO calendar date (YYYY-MM-DD) — same shape as schema/post.ts. The component
+ *  OWNS the meta line: it builds `<time datetime=…>…</time> · N min read` from
+ *  date + readMinutes, so the machine-readable <time> is never lost (a flat meta
+ *  string would regress it). */
+const IsoDate = Schema.NonEmptyString.pipe(
+  Schema.pattern(/^\d{4}-\d{2}-\d{2}$/, {
+    message: () => "date must be ISO YYYY-MM-DD",
+  })
+);
+
+/** The three tuned presets. Anything else fails the build (no silent fallback). */
+export const GlassVariant = Schema.Literal("v1", "v2", "v3");
+export type GlassVariant = typeof GlassVariant.Type;
+
+/**
+ * Glass-card render params. Content fields are required (a card with no title is a
+ * bug); the five teal dials are optional per-instance overrides — omit them and the
+ * variant preset (or the V3 default) drives the look.
+ */
+export const GlassCardParams = Schema.Struct({
+  /** Linked card title. */
+  title: Schema.NonEmptyString,
+  /** Destination href (internal link, e.g. "blog/<slug>.html"). */
+  href: Schema.NonEmptyString,
+  /** Eyebrow kicker above the title (e.g. category). */
+  eyebrow: Schema.NonEmptyString,
+  /** Body copy (one paragraph). */
+  body: Schema.NonEmptyString,
+  /** Publish date, ISO — drives the <time datetime> in the meta line. */
+  date: IsoDate,
+  /** Read time in minutes — the "· N min read" half of the meta line. */
+  readMinutes: Schema.Positive,
+
+  /** Which tuned preset: V3 ("Refined") is the chosen default. */
+  variant: Schema.optionalWith(GlassVariant, { default: () => "v3" as const }),
+
+  /** Extra class on the <li> (e.g. "blog-text" for the homepage editorial tweaks). */
+  extraClass: Schema.OptionFromUndefinedOr(Schema.NonEmptyString),
+
+  // ── per-instance teal-dial overrides (Option → never null) ──
+  /** Override --gc-tint: accent mixed INTO the surface. */
+  tint: Schema.OptionFromUndefinedOr(Percent),
+  /** Override --gc-alpha: surface opacity. */
+  alpha: Schema.OptionFromUndefinedOr(Percent),
+  /** Override --gc-rim: full CSS colour for the lit border (free-form, not %). */
+  rim: Schema.OptionFromUndefinedOr(Schema.NonEmptyString),
+});
+export type GlassCardParams = typeof GlassCardParams.Type;
+
+/** Decode unknown → validated params; throws (fails the build) on bad input. */
+export const decodeGlassCard = Schema.decodeUnknownSync(GlassCardParams);

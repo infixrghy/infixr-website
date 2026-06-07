@@ -19,6 +19,7 @@
  */
 import { html, esc } from "./templates/html.ts";
 import { picture } from "./templates/picture.ts";
+import { glassCard } from "./templates/glass-card.ts";
 import { displayDate } from "./blog.ts";
 import type { BlogPost } from "./schema/post.ts";
 
@@ -70,22 +71,23 @@ const renderHomeFeature = (p: BlogPost): string =>
       </li>`;
 
 /**
- * An editorial text card (the unified .u-card--text — same component the blog
- * index uses, see blog.ts renderCard). Category kicker + linked title + excerpt
- * + a meta line, no photo. Posts are our own validated data but esc()'d at the
- * boundary regardless (titles/excerpts may carry author punctuation).
+ * An editorial text card — now the typed glassCard() component (templates/
+ * glass-card.ts), which emits the unified frosted .glass-card surface + the
+ * machine-readable <time> meta. `extraClass: "blog-text"` carries the homepage
+ * editorial tweaks (eyebrow tint, linked-title hover) from components.css.
+ * Variant defaults to V3 (the chosen look). Params are Schema-validated → a bad
+ * field fails the build. Data is esc()'d inside the component at the boundary.
  */
 const renderHomeTextCard = (p: BlogPost): string =>
-  html`<li class="u-card u-card--text blog-text">
-        <div class="u-card__body">
-          <p class="eyebrow">${esc(p.category)}</p>
-          <h3><a href="blog/${esc(p.slug)}.html">${esc(p.title)}</a></h3>
-          <p>${esc(p.excerpt)}</p>
-          <p class="post__meta"><time datetime="${p.date}">${displayDate(
-    p.date
-  )}</time> &middot; ${String(p.readMinutes)} min read</p>
-        </div>
-      </li>`;
+  glassCard({
+    eyebrow: p.category,
+    title: p.title,
+    href: `blog/${p.slug}.html`,
+    body: p.excerpt,
+    date: p.date,
+    readMinutes: p.readMinutes,
+    extraClass: "blog-text",
+  });
 
 /**
  * "Who We Are" carousel slides — the 3 real cards, as data. Each maps a distinct
@@ -250,15 +252,19 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
       <a class="link-arrow link-arrow--bold solutions__more" href="#contact">View More &rarr;</a>
     </header>
     <ul class="solutions__grid">
-      <!-- 2 small dark-glass text cards (unified .u-card, glass via @supports) -->
-      <li class="u-card u-card--text">
+      <!-- 2 small text cards carrying the unified frosted .glass-card surface (V3).
+           Bespoke markup (CTA link, unlinked title, no eyebrow) — they take the
+           glass CLASS, not the glassCard() component (different card shape; the
+           shared thing is the surface). The .solutions::before glow is what the
+           frost refracts. -->
+      <li class="u-card u-card--text glass-card glass-card--v3">
         <div class="u-card__body">
           <h3>Corporate Training</h3>
           <p>Immersive scenarios that sharpen communication, decision-making, and leadership&mdash;so teams practice high-stakes moments before they happen for real.</p>
           <a class="link-arrow" href="#contact">View Case Study &rarr;</a>
         </div>
       </li>
-      <li class="u-card u-card--text">
+      <li class="u-card u-card--text glass-card glass-card--v3">
         <div class="u-card__body">
           <h3>Workforce Training</h3>
           <p>Hands-on skill-building at scale. Repeatable, measurable VR modules onboard and upskill your workforce faster than classroom or video ever could.</p>

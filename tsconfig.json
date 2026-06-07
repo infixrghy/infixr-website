@@ -1,0 +1,41 @@
+{
+  // Bun-native project: tsc is used ONLY as a type checker (`tsc --noEmit`) —
+  // Bun runs/transpiles the .ts directly (build.ts, server.ts, lint.ts, and the
+  // src/ render fns). So this config is tuned for checking, not emitting.
+  "compilerOptions": {
+    // Bun supports modern syntax + ESM natively.
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+
+    // The codebase imports siblings WITH the .ts extension (Bun style, e.g.
+    // `import { html } from "./templates/html.ts"`). Allowed only with noEmit.
+    "allowImportingTsExtensions": true,
+    "verbatimModuleSyntax": true,
+    "noEmit": true,
+
+    // `strict` is the real safety net (caught nothing in glass-card.ts → that code
+    // is sound; it's what guards the Effect Schema / Option usage). Left OFF:
+    // noUncheckedIndexedAccess — it'd flag dozens of provably-present literal index
+    // accesses across the EXISTING code (carousel WHO_SLIDES[n], regex groups in
+    // blog.ts, etc.) that aren't bugs. Adopting it is a separate codebase-wide
+    // policy change, not part of this work; keep the gate green on the tree as-is.
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+
+    // Runtime types: Bun globals + node: specifiers used by build.ts / blog.ts.
+    "types": ["bun", "node"],
+
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "moduleDetection": "force",
+    "allowJs": false
+  },
+  // Type-check the TypeScript sources + build tooling. Generated public/ and the
+  // 3D vendor subtree are excluded (not ours / not type-relevant).
+  "include": ["src/**/*.ts", "build.ts", "server.ts", "lint.ts"],
+  "exclude": ["node_modules", "public", "vendor", "src/js/hero-3d"]
+}

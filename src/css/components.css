@@ -909,10 +909,120 @@
     & h3 { font-size: var(--step-2); }
   }
 
+  /* ============ GLASS CARD (.glass-card) ============
+     The canonical frosted-glass recipe — ONE definition, applied to the homepage
+     blog teaser text cards AND the Solutions text cards (was duplicated in two
+     near-identical @supports blocks; unified here). Full spec in design/GLASS-CARD.md;
+     emitted by src/templates/glass-card.ts.
+
+     Parameterised by five custom props so the teal STRENGTH is tunable without
+     touching the recipe (the variants below just reset these). Defaults = V3
+     ("Refined": lighter tint, subtler rim, glassiest — the chosen look):
+       --gc-tint   how much accent is mixed INTO the surface (the card's own teal)
+       --gc-alpha  surface opacity (higher = more solid tint, lower = more glassy)
+       --gc-rim    border colour (the lit catch-edge)
+       --gc-ring   inner 1px accent ring strength (inside the border)
+       --gc-halo   outer 1px accent ring strength (just outside the border)
+
+     CONTRAST PRINCIPLE (learned the hard way): the card's teal must live ON THE
+     CARD (tinted surface + rim), NOT by dimming the section glow. The frost
+     refracts the .blog/.solutions ::before glow, so that glow is the card's light
+     source — muting it dims the card interior and DROPS contrast. Keep the glow;
+     push teal into the surface. Progressive-enhanced: the glassy fill is inside
+     @supports (backdrop-filter); the base opaque .u-card surface is the fallback. */
+  .glass-card {
+    /* V3 / Refined defaults */
+    --gc-tint: 10%;
+    --gc-alpha: 50%;
+    --gc-rim: color-mix(in oklab, var(--accent) 60%, var(--border-strong));
+    --gc-rim-hover: color-mix(in oklab, var(--accent) 70%, white 18%);
+    --gc-ring: 16%;
+    --gc-halo: 18%;
+
+    @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      & {
+        /* teal-tinted glass surface: tint% accent into c-bg, then to alpha translucency */
+        background: color-mix(in oklab,
+                     color-mix(in oklab, var(--accent) var(--gc-tint), var(--c-bg)) var(--gc-alpha),
+                     transparent);
+        -webkit-backdrop-filter: blur(22px) saturate(170%);
+                backdrop-filter: blur(22px) saturate(170%);
+        border: 1.5px solid var(--gc-rim);
+        box-shadow:
+          inset 0 1px 0 color-mix(in oklab, white 34%, transparent),
+          inset 0 0 0 1px color-mix(in oklab, var(--accent) var(--gc-ring), transparent),
+          0 0 0 1px color-mix(in oklab, var(--accent) var(--gc-halo), transparent),
+          0 14px 44px -16px rgba(0,0,0,.72);
+      }
+
+      /* Sheen sweep: a diagonal light streak parked off the left edge, wiped
+         across the pane on hover (1.05s glide). Masked by overflow:clip on .u-card.
+         z-index keeps it above the surface but the card body text sits in flow
+         above the ::after via stacking — text stays readable as the streak passes. */
+      & .u-card__body { position: relative; z-index: 2; }
+      &::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+        background: linear-gradient(105deg,
+          transparent 28%,
+          color-mix(in oklab, white 40%, transparent) 46%,
+          color-mix(in oklab, white 60%, transparent) 50%,
+          color-mix(in oklab, var(--accent) 30%, transparent) 54%,
+          transparent 72%);
+        transform: translateX(-120%);
+        transition: transform 1.05s cubic-bezier(.2,.7,.2,1);
+      }
+
+      /* Hover: surface brightens (alpha drops 8pts), frost deepens, rim brightens,
+         lift to -8px, sheen sweeps L→R. Glow stays restrained (no big bloom). */
+      &:hover {
+        transform: translateY(-8px);
+        background: color-mix(in oklab,
+                     color-mix(in oklab, var(--accent) var(--gc-tint), var(--c-bg)) calc(var(--gc-alpha) - 8%),
+                     transparent);
+        -webkit-backdrop-filter: blur(28px) saturate(185%);
+                backdrop-filter: blur(28px) saturate(185%);
+        border-color: var(--gc-rim-hover);
+        box-shadow:
+          inset 0 1px 0 color-mix(in oklab, white 38%, transparent),
+          inset 0 0 0 1px color-mix(in oklab, var(--accent) calc(var(--gc-ring) + 4%), transparent),
+          0 0 0 1px color-mix(in oklab, var(--accent) calc(var(--gc-halo) + 6%), transparent),
+          0 24px 58px -16px rgba(0,0,0,.8),
+          0 0 44px -18px color-mix(in oklab, var(--accent) 32%, transparent);
+      }
+      &:hover::after { transform: translateX(120%); }
+    }
+  }
+  /* Variant presets — reset the five dials. V3 is the .glass-card default (above),
+     so .glass-card--v3 is a no-op alias kept for explicitness/symmetry. */
+  .glass-card--v1 {
+    --gc-tint: 16%; --gc-alpha: 58%;
+    --gc-rim: color-mix(in oklab, var(--accent) 78%, white 14%);
+    --gc-rim-hover: color-mix(in oklab, var(--accent) 75%, white 22%);
+    --gc-ring: 24%; --gc-halo: 28%;
+  }
+  .glass-card--v2 {
+    --gc-tint: 26%; --gc-alpha: 66%;
+    --gc-rim: color-mix(in oklab, var(--accent) 92%, white 8%);
+    --gc-rim-hover: var(--accent);
+    --gc-ring: 34%; --gc-halo: 38%;
+  }
+  .glass-card--v3 { /* default; alias for clarity */ }
+
+  /* Reduced motion: sheen is non-essential → off; keep the static frost + rim,
+     drop the lift. */
+  @media (prefers-reduced-motion: reduce) {
+    .glass-card::after { display: none; }
+    .glass-card:hover { transform: none; }
+  }
+
   /* ---- Homepage blog teaser refinements (scoped to .blog) ----
      The 3-card hybrid: 1 photo feature (.blog-feature) + 2 editorial text cards
-     (.blog-text). These tune only the homepage section; the blog index + other
-     u-cards are untouched. */
+     (.blog-text, now .glass-card). These tune only the homepage section; the blog
+     index + other u-cards are untouched. */
   .blog {
     /* Feature title: cap the measure so a long headline wraps to ~2 lines
        (editorial) instead of one wide line skimming the card's right edge. */
@@ -920,8 +1030,8 @@
       max-width: 18ch;
       text-wrap: balance;
     }
-    /* Text cards: an accent kicker rule under the heading on hover, and a touch
-       more space before the muted meta line so it reads as a footer, not body. */
+    /* Text cards: editorial tweaks only — the glass itself comes from .glass-card.
+       Accent kicker + linked-title hover + meta spacing. */
     & .blog-text {
       & h3 a {
         color: inherit;
@@ -930,33 +1040,7 @@
       &:hover h3 a { color: var(--accent); }
       & .post__meta { margin-top: var(--space-2); }
       & p:not(.post__meta) { color: var(--fg-muted); text-wrap: pretty; }
-
-      /* Frosted glass — SAME material as the Solutions cards (cohesion is what
-         was chosen). The .blog::before glow behind the right column is what the
-         blur refracts into frost. Progressive-enhanced: the base opaque u-card
-         surface is the no-blur fallback, so non-supporting browsers stay legible.
-         The accent kicker keeps the section's teal thread through the glass. */
       & .eyebrow { color: color-mix(in oklab, var(--accent) 90%, white); }
-
-      @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-        & {
-          background: color-mix(in oklab, var(--c-bg) 52%, transparent);
-          -webkit-backdrop-filter: blur(22px) saturate(165%);
-                  backdrop-filter: blur(22px) saturate(165%);
-          border-color: color-mix(in oklab, var(--c-fg) 28%, transparent);
-          box-shadow:
-            inset 0 1px 0 color-mix(in oklab, white 20%, transparent),
-            inset 0 0 0 1px color-mix(in oklab, white 5%, transparent),
-            0 14px 44px -16px rgba(0,0,0,.72);
-        }
-        /* hover already lifts + glows via base .u-card; just thin the frost so
-           the card brightens as it rises (mirrors the solutions hover). */
-        &:hover {
-          background: color-mix(in oklab, var(--c-bg) 44%, transparent);
-          -webkit-backdrop-filter: blur(26px) saturate(175%);
-                  backdrop-filter: blur(26px) saturate(175%);
-        }
-      }
     }
   }
 
@@ -989,30 +1073,12 @@
     }
   }
 
-  /* Glass — V29 mandates glassmorphism on the SOLUTIONS dark cards specifically.
-     Scope it to that section so value tiles / blog-list stay flat opaque.
-     Progressive-enhanced: the base opaque surface is the no-blur fallback. */
-  .solutions .u-card--text {
-    @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-      & {
-        /* denser frost: stronger blur + saturation + a brighter light-catch
-           edge, while staying translucent (opacity only nudged 48->52). */
-        background: color-mix(in oklab, var(--c-bg) 52%, transparent);
-        -webkit-backdrop-filter: blur(22px) saturate(165%);
-                backdrop-filter: blur(22px) saturate(165%);
-        border-color: color-mix(in oklab, var(--c-fg) 28%, transparent);
-        box-shadow:
-          inset 0 1px 0 color-mix(in oklab, white 20%, transparent),
-          inset 0 0 0 1px color-mix(in oklab, white 5%, transparent),
-          0 14px 44px -16px rgba(0,0,0,.72);
-      }
-      &:hover {
-        background: color-mix(in oklab, var(--c-bg) 44%, transparent);
-        -webkit-backdrop-filter: blur(26px) saturate(175%);
-                backdrop-filter: blur(26px) saturate(175%);
-      }
-    }
-  }
+  /* Solutions text cards get the SAME frosted glass as the blog cards — both now
+     carry the unified .glass-card recipe (above), emitted by glass-card.ts. The
+     glassmorphism that V29 mandated for these dark cards lives there; this section
+     just needs the .glass-card class on its text cards (the .solutions::before
+     glow is the light the frost refracts). No per-section glass override here
+     anymore — that was the duplication .glass-card replaced. */
 
   /* ============ FORM ============ */
   .field { display: grid; gap: var(--space-2); }

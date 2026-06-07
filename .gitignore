@@ -16,5 +16,10 @@ Thumbs.db
 # scratch (local only)
 .satoshi-fontshare.css
 
-# design refs — Figma exports, mockups (local only; Figma is canonical)
-design/
+# design refs — Figma exports, mockups (local only; Figma is canonical).
+# Ignore the CONTENTS (design/*, not design/) so the negation below can
+# re-include a file — git can't re-include through an excluded *directory*.
+design/*
+# …except committed design DOCS (e.g. the glass-card component spec, which
+# SPEC.md V36 + code comments reference — must ship so those refs resolve).
+!design/GLASS-CARD.md
