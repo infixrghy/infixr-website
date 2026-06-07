@@ -84,8 +84,7 @@ const renderHomeTextCard = (p: BlogPost): string =>
     title: p.title,
     href: `blog/${p.slug}.html`,
     body: p.excerpt,
-    date: p.date,
-    readMinutes: p.readMinutes,
+    footer: { _tag: "meta", date: p.date, readMinutes: p.readMinutes },
     extraClass: "blog-text",
   });
 
@@ -252,25 +251,20 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
       <a class="link-arrow link-arrow--bold solutions__more" href="#contact">View More &rarr;</a>
     </header>
     <ul class="solutions__grid">
-      <!-- 2 small text cards carrying the unified frosted .glass-card surface (V3).
-           Bespoke markup (CTA link, unlinked title, no eyebrow) — they take the
-           glass CLASS, not the glassCard() component (different card shape; the
-           shared thing is the surface). The .solutions::before glow is what the
-           frost refracts. -->
-      <li class="u-card u-card--text glass-card glass-card--v3">
-        <div class="u-card__body">
-          <h3>Corporate Training</h3>
-          <p>Immersive scenarios that sharpen communication, decision-making, and leadership&mdash;so teams practice high-stakes moments before they happen for real.</p>
-          <a class="link-arrow" href="#contact">View Case Study &rarr;</a>
-        </div>
-      </li>
-      <li class="u-card u-card--text glass-card glass-card--v3">
-        <div class="u-card__body">
-          <h3>Workforce Training</h3>
-          <p>Hands-on skill-building at scale. Repeatable, measurable VR modules onboard and upskill your workforce faster than classroom or video ever could.</p>
-          <a class="link-arrow" href="#contact">View Case Study &rarr;</a>
-        </div>
-      </li>
+      <!-- 2 small frosted glass-card text cards (V3), via the same glassCard()
+           component as the blog cards. The Solutions shape = plain title (no href)
+           + a CTA footer (no eyebrow); the component's Option/footer-union handles
+           it. The .solutions::before glow is what the frost refracts. -->
+      ${glassCard({
+    title: "Corporate Training",
+    body: "Immersive scenarios that sharpen communication, decision-making, and leadership—so teams practice high-stakes moments before they happen for real.",
+    footer: { _tag: "cta", label: "View Case Study", href: "#contact" },
+  })}
+      ${glassCard({
+    title: "Workforce Training",
+    body: "Hands-on skill-building at scale. Repeatable, measurable VR modules onboard and upskill your workforce faster than classroom or video ever could.",
+    footer: { _tag: "cta", label: "View Case Study", href: "#contact" },
+  })}
       <!-- 1 large photo feature card (overlay, spans both rows) -->
       <li class="u-card u-card--overlay u-card--feature solution-feature">
         <div class="u-card__media">

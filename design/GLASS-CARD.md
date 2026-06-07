@@ -148,56 +148,64 @@ glow behind the card; do not weaken the glow.
 
 ## 6. How to apply
 
-There are two entry points. Use the component for the blog/article card shape; use
-the bare class for any other card.
-
-### 6a. Component (typed, validated) — for blog/article cards
+### 6a. Component (typed, validated) — the primary path, serves BOTH shapes
 
 `src/templates/glass-card.ts` → `glassCard(params)`. Params are validated by
 `src/schema/glass-card.ts` (Effect Schema) — a bad `variant`, an out-of-range
-`tint`, or a missing required field **fails the build**, not the browser.
+`tint`, a malformed footer, or a missing required field **fails the build**, not
+the browser.
 
+One signature covers both text-card shapes. The shape differences are modelled so
+invalid combinations can't be expressed:
+
+- `title`, `body` — always required.
+- `href` — **Option**. Present → linked title `<h3><a>`; absent → plain `<h3>`.
+- `eyebrow` — **Option**. Present → accent kicker; absent → none.
+- `footer` — **Option of a tagged Union** (a *choice*, not two flags):
+  - `{ _tag: "meta", date, readMinutes }` → the component builds
+    `<time datetime="…">Mon D, YYYY</time> · N min read` (owns the machine-readable
+    date; reuses `displayDate`).
+  - `{ _tag: "cta", label, href }` → a `.link-arrow` call to action.
+  - The Union makes "a meta **and** a cta on one card" and "half a pair" (a `date`
+    with no `readMinutes`, etc.) **unrepresentable** — the build-time guarantee the
+    Schema exists for. The template switches on `_tag` exhaustively; a new variant
+    without a case is a `tsc` error, not a silent empty footer.
+- `variant` — optional, default `"v3"`. `extraClass` / `tint` / `alpha` / `rim` —
+  optional (see §5). All content is `esc()`'d at the boundary.
+
+**Blog/article card** (eyebrow + linked title + time-meta):
 ```ts
-import { glassCard } from "./templates/glass-card.ts";
-
 glassCard({
-  eyebrow: "Engineering",                 // required — accent kicker
-  title: "Why Spatial Computing…",        // required — linked title
-  href: "blog/why-spatial.html",          // required — destination
-  body: "Spatial computing moves…",       // required — one paragraph
-  date: "2026-05-01",                     // required — ISO; drives <time datetime>
-  readMinutes: 4,                         // required — "· N min read"
-  variant: "v3",                          // optional — default "v3"
-  extraClass: "blog-text",                // optional — extra class on the <li>
-  // tint / alpha / rim — optional per-instance dial overrides
+  eyebrow: "Engineering",
+  title: "Why Spatial Computing…",
+  href: "blog/why-spatial.html",                       // → linked title
+  body: "Spatial computing moves…",
+  footer: { _tag: "meta", date: "2026-05-01", readMinutes: 4 },
+  extraClass: "blog-text",                             // homepage editorial tweaks
 });
 ```
 
-The component **owns the meta line**: it builds `<time datetime="…">Mon D, YYYY</time>
-· N min read` from `date` + `readMinutes` (reusing `displayDate`), so the
-machine-readable date is never lost. Content is `esc()`'d at the boundary.
+**Solutions card** (no eyebrow, plain title, CTA):
+```ts
+glassCard({
+  title: "Corporate Training",
+  body: "Immersive scenarios that sharpen…",           // no href → plain <h3>
+  footer: { _tag: "cta", label: "View Case Study", href: "#contact" },
+});
+```
 
 `extraClass: "blog-text"` carries the homepage editorial tweaks (eyebrow tint,
 linked-title hover) defined in `.blog .blog-text` (components.css).
 
-### 6b. Bare class — for any other card shape
+### 6b. Bare class — low-level escape hatch
 
-The Solutions cards have a different shape (CTA link, unlinked title, no eyebrow),
-so they carry the **class** on their own bespoke markup rather than routing through
-the component. The shared thing is the surface, not the markup:
-
-```html
-<li class="u-card u-card--text glass-card glass-card--v3">
-  <div class="u-card__body">
-    <h3>Corporate Training</h3>
-    <p>Immersive scenarios that sharpen…</p>
-    <a class="link-arrow" href="#contact">View Case Study →</a>
-  </div>
-</li>
-```
-
-Requirement: the card must be inside a `.u-card` (for `overflow:clip`, which masks
-the sheen) and over a section glow (§3c).
+If you need glass on a card the component doesn't model (a genuinely different
+shape, or non-`<li>` markup), put `glass-card glass-card--vN` directly on the
+element. The component is just the typed authoring path; the **class is the
+effect**. Requirement: the element must be a `.u-card` (for `overflow:clip`, which
+masks the sheen) and sit over a section glow (§3c). Both homepage text-card sets
+(blog + Solutions) go through the component (§6a); the photo/overlay cards
+(`.blog-feature`, `.solution-feature`) are a different shape and stay bespoke.
 
 ---
 
@@ -224,7 +232,7 @@ the sheen) and over a section glow (§3c).
 |------|------|
 | `src/css/components.css` → `.glass-card` | The recipe + the five dials + variant presets + reduced-motion. |
 | `src/schema/glass-card.ts` | Effect Schema validating the component's params (variant enum, percent bounds, required content). |
-| `src/templates/glass-card.ts` | `glassCard(params) → string` render fn (the typed authoring path for blog-shape cards). |
-| `src/home.ts` | Call sites: blog teaser text cards via `glassCard()`; Solutions cards via the bare class. |
+| `src/templates/glass-card.ts` | `glassCard(params) → string` render fn (the typed authoring path; serves both text-card shapes via Option slots + the footer Union). |
+| `src/home.ts` | Call sites: blog teaser cards AND Solutions cards both via `glassCard()` (§6a). |
 | `src/css/layout.css` → `.blog::before`, `.solutions::before` | The section glow backdrops the frost refracts. |
 | `SPEC.md` → V36 | The project invariant that points here. |
