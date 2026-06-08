@@ -14,7 +14,7 @@ import type { NavId } from "../schema/page.ts";
 export const brandLogo = (extraClass = ""): string => html`<svg class="brand__logo${
   extraClass ? " " + extraClass : ""
 }" viewBox="0 0 120 36" role="img" ${extraClass ? 'aria-label="InfiXR"' : 'aria-hidden="true"'}>
-      <text x="0" y="28" font-family="Inter, system-ui, sans-serif" font-weight="800" letter-spacing="-0.04em">
+      <text x="0" y="28" font-family="Satoshi, system-ui, sans-serif" font-weight="800" letter-spacing="-0.04em">
         <tspan font-size="24" fill="currentColor">infi</tspan><tspan font-size="32" fill="currentColor" dy="2">XR</tspan>
       </text>
     </svg>`;

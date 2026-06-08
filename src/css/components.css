@@ -201,21 +201,28 @@
      glow.) The rest-state glow is deliberately faint (…45% at -10px spread), not
      the strong --shadow-glow that made Send Message look permanently lit. */
   .btn--glass {
-    background: color-mix(in oklab, var(--c-bg) 40%, transparent);
-    border: 1.5px solid color-mix(in oklab, var(--accent) 55%, transparent);
-    color: var(--fg);
+    /* Rest = the OLD hover look, now always-on: solid teal fill + dark text +
+       the full --shadow-glow halo. This is the bright-teal state the brief wants
+       at rest, not a faint glass pill. (Was glass-at-rest / fill-on-hover; the
+       fill is now the resting identity.) */
+    background: var(--accent);
+    border: 1.5px solid var(--accent);
+    color: var(--c-bg);
     box-shadow:
-      inset 0 1px 0 color-mix(in oklab, white 18%, transparent),
-      0 0 0 1px color-mix(in oklab, var(--accent) 12%, transparent),
-      0 6px 22px -10px color-mix(in oklab, var(--accent) 45%, transparent);
+      var(--shadow-glow),
+      0 6px 22px -10px color-mix(in oklab, var(--accent) 55%, transparent);
     &:hover {
-      background: var(--accent);
-      border-color: var(--accent);
-      color: var(--c-bg);
-      transform: translateY(-1px);
+      /* Already solid teal at rest, so hover = the slight LIFT (kept, per brief)
+         + a touch brighter/larger halo as the clickable cue. The halo grow + the
+         lift both signal interactivity; the lift is RM-gated below, the halo
+         survives reduced-motion so there's still a cue with motion off. */
+      background: color-mix(in oklab, white 8%, var(--accent));
+      border-color: color-mix(in oklab, white 8%, var(--accent));
+      transform: translateY(-2px);
       box-shadow:
         var(--shadow-glow),
-        0 8px 26px -10px color-mix(in oklab, var(--accent) 60%, transparent);
+        0 0 48px -8px var(--accent-glow),
+        0 10px 28px -10px color-mix(in oklab, var(--accent) 65%, transparent);
     }
   }
   /* Uppercase modifier — the hero pill typography, now context-free so any

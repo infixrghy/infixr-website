@@ -66,7 +66,8 @@ export const renderAboutBody = (): string =>
     <p>Tell us what you're building. We'll send back a short read on whether it's the right fit and what shipping it would look like.</p>
     ${button({
     label: "Start a conversation",
-    variant: "primary",
+    variant: "glass",
+    uppercase: true,
     action: { _tag: "link", href: "index.html#contact" },
   })}
   </section>
