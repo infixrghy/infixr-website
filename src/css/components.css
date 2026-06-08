@@ -814,18 +814,42 @@
   }
 
   /* Contact card = .u-card modifier (components layer so it overrides the base
-     hover/animation — layout layer couldn't). Elevated surface + glow halo;
-     it's a form shell, so no scroll-rise + no hover lift. */
+     hover/animation — layout layer couldn't). It's a form shell → no scroll-rise,
+     no hover lift. Now a FROSTED PANE in the same vocabulary as .glass-card: the
+     new .contact::before glow (layout.css) is the light it refracts. Without that
+     glow a backdrop-filter would frost nothing — the two changes ship together.
+     The opaque --bg-elev surface stays as the no-backdrop-filter fallback. */
   .contact__card {
     background: var(--bg-elev);
     padding: clamp(var(--space-5), 4vw, var(--space-8));
     box-shadow: var(--shadow), var(--shadow-glow);
     animation: none;
+
+    @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      & {
+        /* a touch of accent tinted into the surface, then to translucency so the
+           glow reads THROUGH the pane — same recipe shape as .glass-card but a
+           larger, calmer shell (less tint, heavier blur, soft accent rim). */
+        background: color-mix(in oklab,
+                     color-mix(in oklab, var(--accent) 7%, var(--bg-elev)) 72%,
+                     transparent);
+        -webkit-backdrop-filter: blur(30px) saturate(150%);
+                backdrop-filter: blur(30px) saturate(150%);
+        border: 1.5px solid color-mix(in oklab, var(--accent) 30%, var(--border-strong));
+        box-shadow:
+          inset 0 1px 0 color-mix(in oklab, white 26%, transparent),
+          inset 0 0 0 1px color-mix(in oklab, var(--accent) 10%, transparent),
+          0 0 0 1px color-mix(in oklab, var(--accent) 12%, transparent),
+          0 26px 64px -22px rgba(0,0,0,.74),
+          var(--shadow-glow);
+      }
+    }
     &:hover {
       transform: none;
-      background: var(--bg-elev);
       border-color: var(--border);
-      box-shadow: var(--shadow), var(--shadow-glow);
+    }
+    @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      &:hover { border-color: color-mix(in oklab, var(--accent) 30%, var(--border-strong)); }
     }
   }
 
@@ -1080,29 +1104,72 @@
      glow is the light the frost refracts). No per-section glass override here
      anymore — that was the duplication .glass-card replaced. */
 
-  /* ============ FORM ============ */
-  .field { display: grid; gap: var(--space-2); }
-  .field label {
-    font-size: var(--step--1);
-    font-weight: 600;
-    color: var(--fg-muted);
-    letter-spacing: .02em;
-  }
+  /* ============ FORM ============
+     The contact form was the only homepage surface left in the "plain bordered
+     box" idiom while everything around it went glass/glow. Reworked into the same
+     engineered vocabulary: labels read as instrument kickers (uppercase micro-
+     caps, accent-tinted), fields are recessed "wells" (inset shadow → they sit
+     INTO the frosted card, not floating on it), and the accent focus ring already
+     in place now lands on a surface that earns it. The submit button is pulled
+     into the accent-rimmed glass-pill family (see .btn--primary). */
+
+  /* Label = engineered kicker. Same micro-cap treatment as the .eyebrow, scoped
+     to the form so it reads as a field instrument tag, not a heading. */
   .field {
+    display: grid;
+    gap: var(--space-2);
+
+    & label {
+      font-size: var(--step--1);
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: color-mix(in oklab, var(--accent) 64%, var(--c-fg));
+      /* tiny lead tick before the label — a console-row marker. */
+      display: flex;
+      align-items: center;
+      gap: .5em;
+    }
+    & label::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 1px;
+      background: color-mix(in oklab, var(--accent) 70%, transparent);
+      transform: rotate(45deg);
+      flex: none;
+    }
+
     & input,
     & textarea {
-      background: var(--bg-card);
+      /* recessed well: a hair darker than the card + an inset shadow so the
+         field reads as carved INTO the pane. Brightens + lifts out on focus. */
+      background: color-mix(in oklab, var(--c-bg) 90%, black);
       border: 1px solid var(--border-strong);
       border-radius: var(--radius);
-      padding: .8rem 1rem;
+      padding: .85rem 1rem;
       color: var(--fg);
-      transition: border-color .2s, background .2s, box-shadow .2s;
       width: 100%;
       font-family: inherit;
+      font-size: var(--step-0);
+      box-shadow: inset 0 1px 3px rgba(0,0,0,.34);
+      transition: border-color .2s, background .2s, box-shadow .2s, transform .2s;
+
+      &::placeholder { color: var(--fg-dim); }
+
+      &:hover {
+        border-color: color-mix(in oklab, var(--accent) 32%, var(--border-strong));
+      }
       &:focus {
         outline: none;
+        background: color-mix(in oklab, var(--c-bg) 82%, white);
         border-color: var(--accent);
-        box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 25%, transparent);
+        /* inset shadow flips off + an outer accent ring + faint bloom: the field
+           "lights up" and rises out of the recess on focus. */
+        box-shadow:
+          0 0 0 3px color-mix(in oklab, var(--accent) 24%, transparent),
+          0 8px 22px -12px var(--accent-glow);
+        transform: translateY(-1px);
       }
       &:user-invalid {
         border-color: #ff6464;
@@ -1112,14 +1179,51 @@
         border-color: color-mix(in oklab, var(--accent) 60%, transparent);
       }
     }
-    & textarea { resize: vertical; min-height: 120px; }
+    & textarea { resize: vertical; min-height: 140px; line-height: 1.5; }
   }
+
+  /* Reduced motion: drop the field focus lift (keep the colour/ring cues). */
+  @media (prefers-reduced-motion: reduce) {
+    .field input:focus,
+    .field textarea:focus { transform: none; }
+  }
+
   .contact-form__actions {
     display: flex;
     align-items: center;
     gap: var(--space-4);
     flex-wrap: wrap;
     margin-top: var(--space-3);
+  }
+  /* The send button is the conversion moment → the ONE decisive solid-teal
+     element on the frosted card (the hero pills are glass; a glass pill on a
+     glass card would read weak — the submit earns the solid accent fill). It
+     overrides the base light-fill .btn--primary that drives every other primary
+     button. Carries a teal glow at rest so it reads as the eye's destination. */
+  .contact-form__actions .btn--primary[type="submit"] {
+    padding-inline: var(--space-6);
+    background: var(--accent);
+    color: var(--c-bg);
+    border-color: transparent;
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, white 30%, transparent),
+      0 10px 30px -12px color-mix(in oklab, var(--accent) 70%, transparent);
+    &:hover {
+      background: color-mix(in oklab, var(--accent) 88%, white);
+      color: var(--c-bg);
+      box-shadow:
+        inset 0 1px 0 color-mix(in oklab, white 36%, transparent),
+        var(--shadow-glow),
+        0 14px 34px -12px color-mix(in oklab, var(--accent) 75%, transparent);
+      transform: translateY(-2px);
+    }
+  }
+  /* Reduced motion: kill the submit hover lift. Must sit AFTER the submit block —
+     this selector's specificity (0,4,0) outranks the global .btn:hover transform
+     reset (0,2,0), so source order is what neutralizes it. The media query adds
+     no specificity. */
+  @media (prefers-reduced-motion: reduce) {
+    .contact-form__actions .btn--primary[type="submit"]:hover { transform: none; }
   }
   .contact-form__status:not(:empty) {
     font-size: var(--step--1);

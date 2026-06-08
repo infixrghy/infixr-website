@@ -345,19 +345,19 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
       <form class="contact-form" id="contact-form" novalidate>
         <div class="field">
           <label for="cf-name">Name</label>
-          <input id="cf-name" name="name" type="text" required autocomplete="name" minlength="2" maxlength="80">
+          <input id="cf-name" name="name" type="text" required autocomplete="name" minlength="2" maxlength="80" placeholder="Jane Doe">
         </div>
         <div class="field">
           <label for="cf-email">Email</label>
-          <input id="cf-email" name="email" type="email" required autocomplete="email" maxlength="120">
+          <input id="cf-email" name="email" type="email" required autocomplete="email" maxlength="120" placeholder="jane@company.com">
         </div>
         <div class="field">
           <label for="cf-phone">Phone Number</label>
-          <input id="cf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\\-]{6,20}" maxlength="20">
+          <input id="cf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\\-]{6,20}" maxlength="20" placeholder="+91 98765 43210">
         </div>
         <div class="field field--full">
           <label for="cf-message">Message</label>
-          <textarea id="cf-message" name="message" required minlength="10" maxlength="2000" rows="5"></textarea>
+          <textarea id="cf-message" name="message" required minlength="10" maxlength="2000" rows="5" placeholder="Tell us what you're building&mdash;goals, audience, timeline."></textarea>
         </div>
         <div class="field field--full contact-form__actions">
           <button type="submit" class="btn btn--primary">Send Message</button>

@@ -309,7 +309,44 @@
   /* Contact layout — the card shell is now a .u-card; the layout-level bits
      (width, centered) live here. Surface/glow + interactive-state suppression
      live in components.css with .u-card (same @layer, so the override wins). */
-  .contact { display: grid; place-items: center; }
+  .contact {
+    display: grid;
+    place-items: center;
+    position: relative;
+    isolation: isolate;
+  }
+  /* Center-bloom glow signature — the THIRD composition in the glass family
+     (Solutions=left-weighted, Blog=right-weighted, Contact=centred behind the
+     card so the frosted form pane has light to refract). A faint grid adds the
+     "engineered console" texture; it fades out toward the edges via the mask so
+     it never hits a hard rectangle border. z-index:-1 keeps it behind the card
+     but inside the section's own stacking context. */
+  .contact::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(46% 46% at 50% 42%, var(--accent-glow), transparent 70%),
+      radial-gradient(38% 40% at 50% 96%, color-mix(in oklab, var(--accent) 14%, transparent), transparent 72%);
+    pointer-events: none;
+  }
+  /* Faint engineered grid behind the card (own element so it can carry its own
+     radial mask without fighting the glow's). Pure decoration → aria-hidden via
+     ::after, masked to a soft centred pool. */
+  .contact::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(color-mix(in oklab, var(--c-fg) 4%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklab, var(--c-fg) 4%, transparent) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(56% 56% at 50% 46%, #000 30%, transparent 75%);
+            mask-image: radial-gradient(56% 56% at 50% 46%, #000 30%, transparent 75%);
+    pointer-events: none;
+  }
   .contact__card {
     width: min(720px, 100%);
     text-align: center;
