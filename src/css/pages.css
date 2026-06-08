@@ -96,7 +96,9 @@
     display: grid;
     gap: var(--space-4);
     justify-items: center;
-    border-top: 1px solid var(--border);
+    /* No border-top: the global `main > section` divider (border-bottom on the
+       preceding .prose) already draws this line. Keeping one here would double it
+       (and in a different colour — grey --border vs teal --divider). */
     margin-top: var(--space-7);
     background:
       radial-gradient(ellipse at 50% 100%, var(--accent-glow), transparent 60%);

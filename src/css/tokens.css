@@ -14,6 +14,12 @@
     --bg-card-hover: color-mix(in oklab, var(--c-bg) 74%, white);
     --border: color-mix(in oklab, var(--c-fg) 12%, transparent);
     --border-strong: color-mix(in oklab, var(--c-fg) 20%, transparent);
+    /* Section divider hairline. The about-page line (.cta-band) is plain --border
+       but reads teal because an --accent-glow bloom sits behind it; home sections
+       have their own atmospheres, so to match that LOOK we tint the border itself.
+       One dial — bump the accent % for a stronger tint, drop it toward --border
+       for greyer. */
+    --divider: color-mix(in oklab, var(--accent) 35%, var(--border));
 
     --fg: var(--c-fg);
     --fg-muted: color-mix(in oklab, var(--c-fg) 78%, transparent);

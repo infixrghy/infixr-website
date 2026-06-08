@@ -185,6 +185,18 @@
      shrink-wrap it to content (collapsing the track). */
   .who .carousel { justify-self: stretch; width: 100%; }
 
+  /* Section dividers — a teal hairline under EVERY <main> section on EVERY page,
+     so dividers are uniform site-wide (home: hero…contact; about: page-hero,
+     prose, cta-band; blog: page-hero, blog-list; posts: page-hero, prose).
+     border-BOTTOM so the line belongs to each section and the LAST section of any
+     page is also divided — which is why the footer's own border-top is removed
+     (see .site-footer): the last section's bottom line is the content|footer
+     divider now, no double. Section grid pseudos are z-index:-1, so the border
+     paints above them. Colour = --divider (matches the about line's look). */
+  main > section {
+    border-bottom: 1px solid var(--divider);
+  }
+
   /* Solutions layout */
   .solutions {
     position: relative;
@@ -406,7 +418,9 @@
 
   /* Footer layout */
   .site-footer {
-    border-top: 1px solid var(--border);
+    /* No border-top: every page's last <main> section now carries a border-bottom
+       (see `main > section`), which IS the content|footer divider. A footer
+       border-top would double it. */
     padding: var(--space-8) max(var(--space-5), calc((100% - var(--container-w)) / 2)) var(--space-5);
     background: color-mix(in oklab, var(--bg) 80%, black);
   }
