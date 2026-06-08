@@ -20,6 +20,7 @@
 import { html, esc } from "./templates/html.ts";
 import { picture } from "./templates/picture.ts";
 import { glassCard } from "./templates/glass-card.ts";
+import { button } from "./templates/button.ts";
 import { displayDate } from "./blog.ts";
 import type { BlogPost } from "./schema/post.ts";
 
@@ -203,8 +204,18 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
       </h1>
       <p class="hero__sub">End-to-end VR training solutions for safer &amp; faster learning.</p>
       <div class="hero__cta">
-        <a class="btn btn--primary" href="#contact">Request a Demo</a>
-        <a class="btn btn--ghost" href="#solutions">Explore Our Work</a>
+        ${button({
+    label: "Request a Demo",
+    variant: "glass",
+    uppercase: true,
+    action: { _tag: "link", href: "#contact" },
+  })}
+        ${button({
+    label: "Explore Our Work",
+    variant: "ghost",
+    uppercase: true,
+    action: { _tag: "link", href: "#solutions" },
+  })}
       </div>
     </div>
 
@@ -360,7 +371,12 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
           <textarea id="cf-message" name="message" required minlength="10" maxlength="2000" rows="5" placeholder="Tell us what you're building&mdash;goals, audience, timeline."></textarea>
         </div>
         <div class="field field--full contact-form__actions">
-          <button type="submit" class="btn btn--primary">Send Message</button>
+          ${button({
+    label: "Send Message",
+    variant: "glass",
+    uppercase: true,
+    action: { _tag: "button", kind: "submit" },
+  })}
           <p class="contact-form__status" role="status" aria-live="polite"></p>
         </div>
       </form>

@@ -136,12 +136,25 @@
   }
 
   /* ============ BUTTONS ============
-     3 variants (V22):
-       .btn.btn--primary  → filled, accent on hover
-       .btn.btn--ghost    → outline (secondary), Figma dashed treatment optional
-       .link-arrow        → tertiary text+arrow
-     All ≥ 44×44 px tap target. Hover = non-color (transform / border).
-  */
+     Surface variants (the LOOK) are now context-free classes the button()
+     component (templates/button.ts) applies via a `variant` param — the look no
+     longer depends on WHERE the button sits. Modifiers stack on top.
+       Variants (surface):
+         .btn--primary  → light fill (--fg), accent on hover  [about CTA]
+         .btn--ghost    → accent-rimmed outline + soft glow ring  [hero secondary]
+         .btn--glass    → teal-rimmed dark glass pill, solid-accent on hover
+                          [hero "Request a Demo" + contact "Send Message"]
+       Modifiers:
+         .btn--upper    → uppercase + tighter tracking + smaller (the hero type
+                          treatment, lifted out of .hero__cta so it's param-driven)
+       Tertiary text+arrow link is .link-arrow (separate).
+     All ≥ 44×44 px tap target. Hover = non-color motion (transform), RM-gated.
+
+     History: the glass + uppercase looks used to be fused into the .hero__cta
+     descendant selector, so a "primary" button meant 3 different surfaces by
+     ancestor. Decoupled into variants/modifiers so the component controls the
+     look and "Send Message == Request a Demo" is one shared variant, not a
+     contact-scoped copy (that copy was the always-on-glow bug — now gone). */
   .btn {
     display: inline-flex;
     align-items: center;
@@ -167,64 +180,54 @@
       transform: translateY(-1px);
     }
   }
+  /* Ghost: accent-tinted resting border + a soft teal glow ring so it reads as a
+     button, not a faint grey ghost (was scoped to .hero__cta; now the variant). */
   .btn--ghost {
     background: transparent;
     color: var(--fg);
-    border-color: var(--border-strong);
+    border: 1.5px solid color-mix(in oklab, var(--accent) 50%, var(--border-strong));
+    box-shadow: 0 0 18px -8px color-mix(in oklab, var(--accent) 50%, transparent);
     &:hover {
       border-color: var(--accent);
       color: var(--accent);
+      box-shadow: 0 0 24px -6px color-mix(in oklab, var(--accent) 60%, transparent);
       transform: translateY(-1px);
     }
   }
+  /* Glass pill: teal-rimmed dark glass with an inner light-catch hairline + a
+     FAINT outer glow at rest; hover resolves to the solid accent fill. (Lifted
+     verbatim from .hero__cta .btn--primary — the approved "Request a Demo" look.
+     Contact "Send Message" now uses THIS, replacing its bespoke always-on solid
+     glow.) The rest-state glow is deliberately faint (…45% at -10px spread), not
+     the strong --shadow-glow that made Send Message look permanently lit. */
+  .btn--glass {
+    background: color-mix(in oklab, var(--c-bg) 40%, transparent);
+    border: 1.5px solid color-mix(in oklab, var(--accent) 55%, transparent);
+    color: var(--fg);
+    box-shadow:
+      inset 0 1px 0 color-mix(in oklab, white 18%, transparent),
+      0 0 0 1px color-mix(in oklab, var(--accent) 12%, transparent),
+      0 6px 22px -10px color-mix(in oklab, var(--accent) 45%, transparent);
+    &:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--c-bg);
+      transform: translateY(-1px);
+      box-shadow:
+        var(--shadow-glow),
+        0 8px 26px -10px color-mix(in oklab, var(--accent) 60%, transparent);
+    }
+  }
+  /* Uppercase modifier — the hero pill typography, now context-free so any
+     button() can opt in (e.g. contact "Send Message" matching the hero pills). */
+  .btn--upper {
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: var(--step--1);
+    padding: .8rem 1.4rem;
+  }
   @media (prefers-reduced-motion: reduce) {
     .btn:hover { transform: none; }
-  }
-
-  /* Hero CTAs: uppercase dark pills per the mock. Primary here = dark glass pill
-     (not the global light-fill primary, which still drives the contact form).
-     DISTINCT borders (Ari): both pills rest on an accent-tinted edge + a soft teal
-     glow halo instead of the near-invisible grey --border-strong, so they read as
-     branded glass on the dark hero before any hover. The two share the accent rim
-     as a matched pair; hover still resolves to the solid accent fill. */
-  .hero__cta {
-    & .btn {
-      text-transform: uppercase;
-      letter-spacing: .08em;
-      font-size: var(--step--1);
-      font-weight: 600;
-      padding: .8rem 1.4rem;
-    }
-    /* Glass-fill primary ("Request a Demo"): brighter accent rim + an inner
-       light-catch hairline (top) so it reads as a teal-rimmed glass pill, plus a
-       faint outer glow. Border thickened to 1.5px to carry the accent. */
-    & .btn--primary {
-      background: color-mix(in oklab, var(--c-bg) 40%, transparent);
-      border: 1.5px solid color-mix(in oklab, var(--accent) 55%, transparent);
-      color: var(--fg);
-      box-shadow:
-        inset 0 1px 0 color-mix(in oklab, white 18%, transparent),
-        0 0 0 1px color-mix(in oklab, var(--accent) 12%, transparent),
-        0 6px 22px -10px color-mix(in oklab, var(--accent) 45%, transparent);
-      &:hover {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: var(--c-bg);
-        box-shadow:
-          var(--shadow-glow),
-          0 8px 26px -10px color-mix(in oklab, var(--accent) 60%, transparent);
-      }
-    }
-    /* Ghost secondary ("Explore Our Work"): accent-tinted resting border + a soft
-       teal glow ring, so it's clearly a button — not a faint grey ghost. */
-    & .btn--ghost {
-      border: 1.5px solid color-mix(in oklab, var(--accent) 50%, var(--border-strong));
-      box-shadow: 0 0 18px -8px color-mix(in oklab, var(--accent) 50%, transparent);
-      &:hover {
-        border-color: var(--accent);
-        box-shadow: 0 0 24px -6px color-mix(in oklab, var(--accent) 60%, transparent);
-      }
-    }
   }
 
   .link-arrow {
@@ -1209,36 +1212,12 @@
     flex-wrap: wrap;
     margin-top: var(--space-3);
   }
-  /* The send button is the conversion moment → the ONE decisive solid-teal
-     element on the frosted card (the hero pills are glass; a glass pill on a
-     glass card would read weak — the submit earns the solid accent fill). It
-     overrides the base light-fill .btn--primary that drives every other primary
-     button. Carries a teal glow at rest so it reads as the eye's destination. */
-  .contact-form__actions .btn--primary[type="submit"] {
-    padding-inline: var(--space-6);
-    background: var(--accent);
-    color: var(--c-bg);
-    border-color: transparent;
-    box-shadow:
-      inset 0 1px 0 color-mix(in oklab, white 30%, transparent),
-      0 10px 30px -12px color-mix(in oklab, var(--accent) 70%, transparent);
-    &:hover {
-      background: color-mix(in oklab, var(--accent) 88%, white);
-      color: var(--c-bg);
-      box-shadow:
-        inset 0 1px 0 color-mix(in oklab, white 36%, transparent),
-        var(--shadow-glow),
-        0 14px 34px -12px color-mix(in oklab, var(--accent) 75%, transparent);
-      transform: translateY(-2px);
-    }
-  }
-  /* Reduced motion: kill the submit hover lift. Must sit AFTER the submit block —
-     this selector's specificity (0,4,0) outranks the global .btn:hover transform
-     reset (0,2,0), so source order is what neutralizes it. The media query adds
-     no specificity. */
-  @media (prefers-reduced-motion: reduce) {
-    .contact-form__actions .btn--primary[type="submit"]:hover { transform: none; }
-  }
+  /* Send button = the glass-pill variant (.btn--glass .btn--upper), same as the
+     hero "Request a Demo" — applied via button() in home.ts. No bespoke surface
+     rule here anymore: the old contact-scoped solid-teal copy is what made the
+     button look permanently lit, and its hover-lift needed a special RM override
+     (its (0,4,0) specificity outranked the global .btn:hover reset). Both are gone
+     — the shared .btn--glass hover lift is covered by the global RM reset. */
   .contact-form__status:not(:empty) {
     font-size: var(--step--1);
     color: var(--fg-muted);

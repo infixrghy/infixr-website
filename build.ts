@@ -38,6 +38,7 @@ import { aboutMeta } from "./src/pages/about.ts";
 import { blogMeta } from "./src/pages/blog.ts";
 import { renderBlogBody, renderPost, postPageMeta, loadPosts } from "./src/blog.ts";
 import { renderHomeBody } from "./src/home.ts";
+import { renderAboutBody } from "./src/about.ts";
 
 const SRC = "src";
 const OUT = "public";
@@ -188,11 +189,11 @@ const program = Effect.gen(function* () {
   const coreCss = yield* Effect.promise(() => readCss(CSS_ORDER));
   const pagesCss = yield* Effect.promise(() => readCss([PAGES_CSS]));
 
-  // Page bodies: about is a static partial; index + blog are rendered from posts
-  // (home pulls the latest posts into its blog mosaic — see src/home.ts).
-  const aboutBody = yield* Effect.promise(() =>
-    readFile(join(SRC, "pages/about.body.html"), "utf8")
-  );
+  // Page bodies: all three are now render fns (about was a static partial until its
+  // CTA moved to the typed button() component — a .html file can't call a TS fn, so
+  // it became renderAboutBody, mirroring the index→home.ts promotion). index + blog
+  // also pull the latest posts (home into its blog mosaic — see src/home.ts).
+  const aboutBody = renderAboutBody();
   const posts = yield* loadPosts;
   const indexBody = renderHomeBody(posts);
   const blogBody = renderBlogBody(posts);

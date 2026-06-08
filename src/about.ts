@@ -1,4 +1,21 @@
-<main>
+/**
+ * about.ts — the About page <main>, as a typed render fn `renderAboutBody() → string`.
+ *
+ * Was src/pages/about.body.html (a hand-authored static partial read raw in build.ts).
+ * Promoted to a render fn for ONE reason: its CTA button now goes through the typed
+ * button() component (templates/button.ts) like every other button on the site — a
+ * static .html file can't call a TS function, so the page had to become a render fn
+ * (mirrors the index→home.ts promotion). The prose is otherwise byte-for-byte the
+ * old partial; only the trailing CTA <a> is now button({variant:"glass", …}).
+ *
+ * Takes no data (unlike home/blog which take posts) — the About body is static copy.
+ * Page meta still lives in src/pages/about.ts (aboutMeta); this is body only.
+ */
+import { html } from "./templates/html.ts";
+import { button } from "./templates/button.ts";
+
+export const renderAboutBody = (): string =>
+  html`<main>
 
   <section class="page-hero" aria-labelledby="page-title">
     <p class="eyebrow">About InfiXR</p>
@@ -47,7 +64,11 @@
   <section class="cta-band" aria-labelledby="cta-title">
     <h2 id="cta-title">Have a problem worth solving in VR?</h2>
     <p>Tell us what you're building. We'll send back a short read on whether it's the right fit and what shipping it would look like.</p>
-    <a class="btn btn--primary" href="index.html#contact">Start a conversation</a>
+    ${button({
+    label: "Start a conversation",
+    variant: "primary",
+    action: { _tag: "link", href: "index.html#contact" },
+  })}
   </section>
 
-</main>
+</main>`;
