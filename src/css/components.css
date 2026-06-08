@@ -1054,6 +1054,13 @@
       max-width: 18ch;
       text-wrap: balance;
     }
+    /* Accent rim on the photo feature card matching the two glass text cards
+       beside it (resting --gc-rim = accent 60% + --border-strong, 1.5px) — the
+       base .u-card grey hairline made it the odd one out in the trio. */
+    & .blog-feature {
+      border: 1.5px solid color-mix(in oklab, var(--accent) 60%, var(--border-strong));
+      &:hover { border-color: color-mix(in oklab, var(--accent) 70%, white 18%); }
+    }
     /* Text cards: editorial tweaks only — the glass itself comes from .glass-card.
        Accent kicker + linked-title hover + meta spacing. */
     & .blog-text {
@@ -1079,6 +1086,13 @@
     aspect-ratio: auto;
   }
   .solution-feature {
+    /* Accent rim matching the two glass text cards beside it (their resting
+       --gc-rim = accent 60% + --border-strong, 1.5px). The base .u-card border is
+       a faint grey hairline; this brings the photo feature into the same framed-
+       glass family so the trio reads as one set. */
+    border: 1.5px solid color-mix(in oklab, var(--accent) 60%, var(--border-strong));
+    &:hover { border-color: color-mix(in oklab, var(--accent) 70%, white 18%); }
+
     & .u-card__body {
       /* fill the card + push content to the bottom over the scrim (mirrors the
          overlay __link mechanism so it matches the blog feature cards; a normal

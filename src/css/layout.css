@@ -46,9 +46,12 @@
     /* start (not center): content hugs the top padding so the gap above the
        headline shrinks and the CTAs clear the bottom edge (B4). */
     align-items: start;
-    /* top padding trimmed --space-8(64)→--space-6(32): pulls the headline + headset
-       up closer under the sticky header so the hero "starts earlier" (Ari). */
-    padding: var(--space-6) max(var(--space-5), calc((100% - var(--container-w)) / 2)) var(--space-7);
+    /* top padding: was trimmed 64→32 to pull the hero up, then walked back in two
+       "just a little lower" nudges (Ari) — 32→48→64. The svh trim + align-start
+       void fix are separate, so this 64 no longer reads "too high" like the old
+       pre-trim 64 did; it just gives the headline more breathing room under the
+       sticky header. */
+    padding: var(--space-8) max(var(--space-5), calc((100% - var(--container-w)) / 2)) var(--space-7);
     overflow: clip;
     @media (min-width: 900px) {
       & {
