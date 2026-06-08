@@ -199,6 +199,23 @@
       radial-gradient(45% 55% at 85% 80%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 70%);
     pointer-events: none;
   }
+  /* Engineered-console grid (same recipe as .contact::after — 44px cells, 4% fg
+     lines). The mask is LEFT-WEIGHTED to follow this section's glow signature
+     (the 15%/20% primary glow + the left text-card column), so the grid pools
+     where the cards are, not as a centred rectangle. */
+  .solutions::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(color-mix(in oklab, var(--c-fg) 4%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklab, var(--c-fg) 4%, transparent) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(52% 60% at 22% 32%, #000 28%, transparent 74%);
+            mask-image: radial-gradient(52% 60% at 22% 32%, #000 28%, transparent 74%);
+    pointer-events: none;
+  }
   /* Head: headline left, lead + "View More" right (mock). Tight margin to the
      grid (var(--head-gap)) — was var(--space-7)/96px which floated the heading
      in a void above the cards. */
@@ -256,6 +273,23 @@
     background:
       radial-gradient(42% 48% at 82% 32%, var(--accent-glow), transparent 70%),
       radial-gradient(38% 50% at 90% 82%, color-mix(in oklab, var(--accent) 16%, transparent), transparent 72%);
+    pointer-events: none;
+  }
+  /* Engineered-console grid (same recipe as .contact::after — 44px cells, 4% fg
+     lines). Mask RIGHT-WEIGHTED to mirror this section's glow + right-column glass
+     cards, so the grid pools behind the cards (Solutions=left, Blog=right — the
+     grid follows the same composition split as the glows). */
+  .blog::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(color-mix(in oklab, var(--c-fg) 4%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklab, var(--c-fg) 4%, transparent) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(50% 58% at 80% 36%, #000 28%, transparent 74%);
+            mask-image: radial-gradient(50% 58% at 80% 36%, #000 28%, transparent 74%);
     pointer-events: none;
   }
 
