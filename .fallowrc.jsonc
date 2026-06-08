@@ -1,0 +1,48 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+
+  // ── Entry points ──────────────────────────────────────────────────────────
+  // This is a Bun static-site generator, NOT a browser bundle, so the default
+  // src/index.* / src/main.* roots don't exist here. The real reachability roots
+  // are the build orchestrator (build.ts imports every template / schema / page
+  // render fn — the whole src/**/*.ts graph hangs off it), the dev server, the
+  // lint tool, and the ONE script actually shipped to the browser (src/js/main.js).
+  // Without these, fallow finds 0 entry points and every export looks unused.
+  "entry": [
+    "build.ts",
+    "server.ts",
+    "lint.ts",
+    "src/js/main.js"
+  ],
+
+  // ── Ignore patterns ───────────────────────────────────────────────────────
+  // The CSS files are NOT imported by any JS module — build.ts reads them at
+  // build time via Bun.file() and inlines them into each page. That runtime
+  // file-read is invisible to fallow's static module graph, so it reports them
+  // as "unused files". They are not dead; exclude them from analysis. (The 3D
+  // vendor loader isn't shipped — hero 3D is deferred — so it's excluded too.)
+  "ignorePatterns": [
+    "src/css/**",
+    "src/js/hero-3d/**"
+  ],
+
+  // ── Exports used only within their own file ───────────────────────────────
+  // The Effect-Schema idiom exports a `Schema.Struct` value AND its derived type
+  // from the same module (e.g. PageMeta, BlogPostFrontMatter, GlassCardParams):
+  // the Struct value is consumed internally by that file's own decode* call, the
+  // type is imported elsewhere. fallow correctly sees the type's consumers but
+  // flags the Struct *value* export as unused — likewise renderGlassCard, called
+  // only by glassCard() in its own file. These are intentional API surface, kept
+  // exported on purpose. This switch accepts "exported but used only in-file" as
+  // legitimate, so the pattern doesn't trip the gate as new schemas are added.
+  "ignoreExportsUsedInFile": true,
+
+  // ── Duplication ───────────────────────────────────────────────────────────
+  "duplicates": {
+    // Hide pair-only clones; focus on widespread copy-paste worth refactoring.
+    // Lower to 2 to report every duplicate pair.
+    "minOccurrences": 3
+  },
+
+  "rules": {}
+}
