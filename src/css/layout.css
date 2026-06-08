@@ -1,3 +1,34 @@
+/* ============================================================================
+   Cross-document View Transitions — a calm crossfade between same-site pages.
+
+   Pure CSS, zero JS, progressive enhancement: browsers without the API (Firefox
+   as of 2026) just navigate instantly — no transition, no breakage.
+
+   Deliberately NAMES NOTHING. The default `root` transition snapshots each page
+   clipped to the VIEWPORT (a fixed-size box), so the old→new tween is opacity
+   only — no transform anywhere. Consequences we WANT, for free:
+     - the sticky header + footer can't move (nothing translates) → read "frozen"
+     - header pixels are identical across pages → the frozen look is real, not faked
+     - only <main> content differs → that's the part that visibly crossfades
+   Naming `main` would BREAK this: a named element snapshots its full border-box,
+   and home's tall <main> vs about's short <main> would make the browser tween the
+   HEIGHT delta — a vertical squash, the opposite of a clean crossfade. So: no
+   names. The whole feature is the four lines below.
+
+   Sits OUTSIDE @layer (top-level): `@view-transition` is an at-rule whose
+   registration inside a cascade layer is unreliable; the build inlines this file
+   wholesale, so top-of-file = top-level in the output <style>.
+
+   Wrapped in prefers-reduced-motion: opted-out users get instant navigation,
+   matching the site's existing motion-gating idiom. ============================ */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+  ::view-transition-group(root) {
+    animation-duration: .35s;
+    animation-timing-function: ease;
+  }
+}
+
 @layer layout {
 
   /* Site header */
