@@ -23,14 +23,18 @@
  * AND a cta on one card" and "half a pair" (date without readMinutes, etc.)
  * UNREPRESENTABLE — exactly the build-time guarantee Schema exists to give.
  */
-import { Schema } from "effect";
+import { Effect, Schema } from "effect";
 
 /** A CSS percentage 0–100%, e.g. "50%". Pattern + bound; kept as a string so it
- *  drops straight into a custom-prop value. Guards the teal-strength overrides. */
+ *  drops straight into a custom-prop value. Guards the teal-strength overrides.
+ *  v4: `pattern(re, {message})` → `check(isPattern(re, {title, description}))`. */
 const Percent = Schema.NonEmptyString.pipe(
-  Schema.pattern(/^(?:100|\d{1,2})%$/, {
-    message: () => "must be a percentage 0%–100% (e.g. \"50%\")",
-  })
+  Schema.check(
+    Schema.isPattern(/^(?:100|\d{1,2})%$/, {
+      title: "percentage",
+      description: "must be a percentage 0%–100% (e.g. \"50%\")",
+    })
+  )
 );
 
 /** ISO calendar date (YYYY-MM-DD) — same shape as schema/post.ts. The component
@@ -38,13 +42,17 @@ const Percent = Schema.NonEmptyString.pipe(
  *  date + readMinutes, so the machine-readable <time> is never lost (a flat meta
  *  string would regress it). */
 const IsoDate = Schema.NonEmptyString.pipe(
-  Schema.pattern(/^\d{4}-\d{2}-\d{2}$/, {
-    message: () => "date must be ISO YYYY-MM-DD",
-  })
+  Schema.check(
+    Schema.isPattern(/^\d{4}-\d{2}-\d{2}$/, {
+      title: "ISO date",
+      description: "date must be ISO YYYY-MM-DD",
+    })
+  )
 );
 
-/** The three tuned presets. Anything else fails the build (no silent fallback). */
-export const GlassVariant = Schema.Literal("v1", "v2", "v3");
+/** The three tuned presets. Anything else fails the build (no silent fallback).
+ *  v4: multi-arg `Literal(...)` → `Literals([...])`. */
+export const GlassVariant = Schema.Literals(["v1", "v2", "v3"]);
 export type GlassVariant = typeof GlassVariant.Type;
 
 /**
@@ -55,13 +63,14 @@ export type GlassVariant = typeof GlassVariant.Type;
  *   • cta  — a label + href → a `.link-arrow` call to action (Solutions cards).
  * Both fields of each variant are required, so a malformed footer fails the build.
  */
-export const GlassFooter = Schema.Union(
+// v4: `Union(A, B)` → `Union([A, B])`; `Positive` → `Number.check(isGreaterThan(0))`.
+export const GlassFooter = Schema.Union([
   Schema.Struct({
     _tag: Schema.Literal("meta"),
     /** Publish date, ISO — drives the <time datetime>. */
     date: IsoDate,
     /** Read time in minutes — the "· N min read" half. */
-    readMinutes: Schema.Positive,
+    readMinutes: Schema.Number.pipe(Schema.check(Schema.isGreaterThan(0))),
   }),
   Schema.Struct({
     _tag: Schema.Literal("cta"),
@@ -69,8 +78,8 @@ export const GlassFooter = Schema.Union(
     label: Schema.NonEmptyString,
     /** CTA destination, e.g. "#contact". */
     href: Schema.NonEmptyString,
-  })
-);
+  }),
+]);
 export type GlassFooter = typeof GlassFooter.Type;
 
 /**
@@ -87,25 +96,26 @@ export const GlassCardParams = Schema.Struct({
   body: Schema.NonEmptyString,
 
   /** Some → title is a link (<h3><a href>); None → plain <h3>. */
-  href: Schema.OptionFromUndefinedOr(Schema.NonEmptyString),
+  href: Schema.OptionFromOptional(Schema.NonEmptyString),
   /** Some → eyebrow kicker above the title (e.g. category); None → no kicker. */
-  eyebrow: Schema.OptionFromUndefinedOr(Schema.NonEmptyString),
+  eyebrow: Schema.OptionFromOptional(Schema.NonEmptyString),
   /** The footer: a time-meta line OR a CTA link OR nothing (see GlassFooter). */
-  footer: Schema.OptionFromUndefinedOr(GlassFooter),
+  footer: Schema.OptionFromOptional(GlassFooter),
 
-  /** Which tuned preset: V3 ("Refined") is the chosen default. */
-  variant: Schema.optionalWith(GlassVariant, { default: () => "v3" as const }),
+  /** Which tuned preset: V3 ("Refined") is the chosen default.
+   *  v4: `optionalWith(s, {default})` → `s.pipe(withDecodingDefaultType(Effect.succeed(x)))`. */
+  variant: GlassVariant.pipe(Schema.withDecodingDefaultType(Effect.succeed("v3" as const))),
 
   /** Extra class on the <li> (e.g. "blog-text" for the homepage editorial tweaks). */
-  extraClass: Schema.OptionFromUndefinedOr(Schema.NonEmptyString),
+  extraClass: Schema.OptionFromOptional(Schema.NonEmptyString),
 
   // ── per-instance teal-dial overrides (Option → never null) ──
   /** Override --gc-tint: accent mixed INTO the surface. */
-  tint: Schema.OptionFromUndefinedOr(Percent),
+  tint: Schema.OptionFromOptional(Percent),
   /** Override --gc-alpha: surface opacity. */
-  alpha: Schema.OptionFromUndefinedOr(Percent),
+  alpha: Schema.OptionFromOptional(Percent),
   /** Override --gc-rim: full CSS colour for the lit border (free-form, not %). */
-  rim: Schema.OptionFromUndefinedOr(Schema.NonEmptyString),
+  rim: Schema.OptionFromOptional(Schema.NonEmptyString),
 });
 export type GlassCardParams = typeof GlassCardParams.Type;
 

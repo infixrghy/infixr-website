@@ -246,9 +246,10 @@ const program = Effect.gen(function* () {
 });
 
 // Run. Schema/IO failures print a typed error and exit non-zero (fails CI/hook).
+// v4: `Effect.tapErrorCause` → `Effect.tapCause`.
 Effect.runPromise(
   program.pipe(
-    Effect.tapErrorCause((cause) =>
+    Effect.tapCause((cause) =>
       Effect.sync(() => console.error(String(cause)))
     )
   )

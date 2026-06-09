@@ -9,13 +9,17 @@
  * `date` is kept as an ISO string (YYYY-MM-DD) rather than a Date: the build is
  * deterministic and string dates avoid timezone drift in the rendered <time>.
  */
-import { Schema } from "effect";
+import { Effect, Schema } from "effect";
 
-/** ISO calendar date, e.g. "2026-05-01". Validated by pattern, kept as string. */
+/** ISO calendar date, e.g. "2026-05-01". Validated by pattern, kept as string.
+ *  v4: `pattern(re, {message})` → `check(isPattern(re, {title, description}))`. */
 const IsoDate = Schema.NonEmptyString.pipe(
-  Schema.pattern(/^\d{4}-\d{2}-\d{2}$/, {
-    message: () => "date must be ISO YYYY-MM-DD",
-  })
+  Schema.check(
+    Schema.isPattern(/^\d{4}-\d{2}-\d{2}$/, {
+      title: "ISO date",
+      description: "date must be ISO YYYY-MM-DD",
+    })
+  )
 );
 
 /** Front-matter of a single blog post (the fields above the `---` fence). */
@@ -24,26 +28,37 @@ export const BlogPostFrontMatter = Schema.Struct({
   title: Schema.NonEmptyString,
   /** Publish date, ISO. Drives <time datetime> + the human display string. */
   date: IsoDate,
-  /** Estimated read time in minutes, e.g. 4. */
-  readMinutes: Schema.Positive,
+  /** Estimated read time in minutes, e.g. 4.
+   *  v4: `Positive` removed → `Number.check(isGreaterThan(0))`. */
+  readMinutes: Schema.Number.pipe(Schema.check(Schema.isGreaterThan(0))),
   /** Section label, e.g. "Engineering" / "Field notes". */
   category: Schema.NonEmptyString,
   /** URL slug — the output filename stem (blog/<slug>.html). */
   slug: Schema.NonEmptyString.pipe(
-    Schema.pattern(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
-      message: () => "slug must be kebab-case",
-    })
+    Schema.check(
+      Schema.isPattern(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
+        title: "kebab-case slug",
+        description: "slug must be kebab-case",
+      })
+    )
   ),
   /** One-paragraph excerpt for cards + meta description. */
   excerpt: Schema.NonEmptyString,
-  /** Feature the post at the top of the index? Exactly one should be true. */
-  featured: Schema.optionalWith(Schema.Boolean, { default: () => false }),
+  /** Feature the post at the top of the index? Exactly one should be true.
+   *  v4: `optionalWith(s, {default})` → `s.pipe(withDecodingDefaultType(Effect.succeed(x)))`. */
+  featured: Schema.Boolean.pipe(Schema.withDecodingDefaultType(Effect.succeed(false))),
 
   // ── optional → Option, never null ──
+  // v4 semantic change: v3's `OptionFromUndefinedOr` treated a MISSING key as
+  // None; v4's requires the key to be PRESENT (value may be undefined) and a
+  // missing key now fails decode. `OptionFromOptional` is the v4 combinator that
+  // maps a missing key OR a present `undefined` → None — i.e. v3's old behavior.
+  // (Caught at runtime, not by tsc: the symbol existed with a valid type but a
+  // tightened runtime contract. The front-matter omits these keys entirely.)
   /** Hero/cover image path; absent posts render text-only cards. */
-  coverImage: Schema.OptionFromUndefinedOr(Schema.NonEmptyString),
+  coverImage: Schema.OptionFromOptional(Schema.NonEmptyString),
   /** Last-updated date if revised after publish. */
-  updated: Schema.OptionFromUndefinedOr(IsoDate),
+  updated: Schema.OptionFromOptional(IsoDate),
 });
 export type BlogPostFrontMatter = typeof BlogPostFrontMatter.Type;
 
@@ -53,4 +68,4 @@ export interface BlogPost extends BlogPostFrontMatter {
   readonly bodyHtml: string;
 }
 
-export const decodeFrontMatter = Schema.decodeUnknown(BlogPostFrontMatter);
+export const decodeFrontMatter = Schema.decodeUnknownEffect(BlogPostFrontMatter);

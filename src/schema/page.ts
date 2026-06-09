@@ -7,12 +7,13 @@
  * This is the "no null, use Option, ultra type safety" rule: a template that
  * forgets to handle a missing og:locale will not compile.
  *
- * Schema ships in `effect` core as of v3 (the old @effect/schema is merged in).
+ * Schema ships in `effect` core (the old @effect/schema is merged in). Effect v4.
  */
 import { Schema } from "effect";
 
-/** Which top-nav item is the current page. Drives `aria-current` + `is-active`. */
-export const NavId = Schema.Literal("home", "about", "solutions", "products", "blog");
+/** Which top-nav item is the current page. Drives `aria-current` + `is-active`.
+ *  v4: multi-arg `Literal(...)` → `Literals([...])` (variadic→array). */
+export const NavId = Schema.Literals(["home", "about", "solutions", "products", "blog"]);
 export type NavId = typeof NavId.Type;
 
 /**
@@ -42,11 +43,12 @@ export const PageMeta = Schema.Struct({
 
   // ── index-only fields: absent on about/blog → Option, not null ──
   /** og:image:alt — present only on index.html today. */
-  ogImageAlt: Schema.OptionFromUndefinedOr(Schema.NonEmptyString),
+  ogImageAlt: Schema.OptionFromOptional(Schema.NonEmptyString),
   /** og:locale — present only on index.html today. */
-  ogLocale: Schema.OptionFromUndefinedOr(Schema.NonEmptyString),
+  ogLocale: Schema.OptionFromOptional(Schema.NonEmptyString),
 });
 export type PageMeta = typeof PageMeta.Type;
 
-/** Decoder: unknown (e.g. a plain page-config object) → validated PageMeta Effect. */
-export const decodePageMeta = Schema.decodeUnknown(PageMeta);
+/** Decoder: unknown (e.g. a plain page-config object) → validated PageMeta Effect.
+ *  v4: `decodeUnknown` → `decodeUnknownEffect`. */
+export const decodePageMeta = Schema.decodeUnknownEffect(PageMeta);

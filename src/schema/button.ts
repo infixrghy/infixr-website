@@ -14,11 +14,12 @@
  *     "neither" are both impossible — the component can never turn the contact form's
  *     submit into an anchor (which would break the form) or emit a hrefless <a>.
  */
-import { Schema } from "effect";
+import { Effect, Schema } from "effect";
 
 /** The surface variants — each maps to a .btn--* class (see components.css BUTTONS).
- *  Anything else fails the build (no silent fallback to a default look). */
-export const ButtonVariant = Schema.Literal("primary", "ghost", "glass");
+ *  Anything else fails the build (no silent fallback to a default look).
+ *  v4: multi-arg `Literal(...)` → `Literals([...])`. */
+export const ButtonVariant = Schema.Literals(["primary", "ghost", "glass"]);
 export type ButtonVariant = typeof ButtonVariant.Type;
 
 /**
@@ -28,7 +29,10 @@ export type ButtonVariant = typeof ButtonVariant.Type;
  *              (the contact form's send). "button" is for JS-driven actions; this
  *              project ships almost none, but the type stays honest.
  */
-export const ButtonAction = Schema.Union(
+// v4: `Union(A, B)` → `Union([A, B])`; multi-arg `Literal` → `Literals`;
+// `optionalWith(s, {default})` → `s.pipe(withDecodingDefaultType(Effect.succeed(x)))`.
+// Single-arg `_tag` Literals stay `Literal`.
+export const ButtonAction = Schema.Union([
   Schema.Struct({
     _tag: Schema.Literal("link"),
     /** Destination, e.g. "#contact" or "index.html#contact". */
@@ -37,11 +41,11 @@ export const ButtonAction = Schema.Union(
   Schema.Struct({
     _tag: Schema.Literal("button"),
     /** Native button type. submit = form send (default); button = JS hook. */
-    kind: Schema.optionalWith(Schema.Literal("submit", "button"), {
-      default: () => "submit" as const,
-    }),
-  })
-);
+    kind: Schema.Literals(["submit", "button"]).pipe(
+      Schema.withDecodingDefaultType(Effect.succeed("submit" as const))
+    ),
+  }),
+]);
 export type ButtonAction = typeof ButtonAction.Type;
 
 /**
@@ -54,15 +58,15 @@ export const ButtonParams = Schema.Struct({
   /** Visible button text. */
   label: Schema.NonEmptyString,
   /** Surface variant → .btn--primary | .btn--ghost | .btn--glass. */
-  variant: Schema.optionalWith(ButtonVariant, {
-    default: () => "primary" as const,
-  }),
+  variant: ButtonVariant.pipe(
+    Schema.withDecodingDefaultType(Effect.succeed("primary" as const))
+  ),
   /** Link (<a href>) or button (<button type>) — the functional split. */
   action: ButtonAction,
   /** Add .btn--upper (uppercase + tighter tracking) when true. Default false. */
-  uppercase: Schema.optionalWith(Schema.Boolean, { default: () => false }),
+  uppercase: Schema.Boolean.pipe(Schema.withDecodingDefaultType(Effect.succeed(false))),
   /** Extra class(es) on the element, e.g. a scoping hook. */
-  extraClass: Schema.OptionFromUndefinedOr(Schema.NonEmptyString),
+  extraClass: Schema.OptionFromOptional(Schema.NonEmptyString),
 });
 export type ButtonParams = typeof ButtonParams.Type;
 
