@@ -26,6 +26,14 @@ jobs:
         with:
           bun-version: latest
 
+      # Explicit, locked install. `bun run` auto-installs on the fly, but that
+      # path does NOT enforce bun.lock's pinned versions/integrity — for an
+      # exact-pinned prerelease (effect@4.0.0-beta.x) it can resolve a different
+      # artifact than the lock records, which breaks the build in clean CI.
+      # --frozen-lockfile installs exactly what bun.lock says, reproducibly.
+      - name: Install dependencies (locked)
+        run: bun install --frozen-lockfile
+
       - name: Build site (src → public)
         run: bun run build.ts
 
