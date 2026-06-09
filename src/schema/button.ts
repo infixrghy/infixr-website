@@ -21,6 +21,16 @@ import { Effect, Schema } from "effect";
 export const ButtonVariant = Schema.Literals(["primary", "ghost", "glass"]);
 export type ButtonVariant = typeof ButtonVariant.Type;
 
+/** Optional shared width FLOOR, as a NAMED token (not a raw length) → a .btn--w-*
+ *  class whose value lives in button.css. A closed set so a magic px can't leak in
+ *  at the call site (keeps the no-hardcoded-px rule type-enforced, like variant).
+ *    • "cta" → 15em, the hero "Request a Demo" / "Explore Our Work" pair floor so
+ *              they match regardless of label length. em (not px) tracks the font
+ *              clamp() across viewports. Omit → button sizes to its text.
+ *  Add a new name here + a .btn--w-<name> rule when another shared width appears. */
+export const ButtonWidth = Schema.Literals(["cta"]);
+export type ButtonWidth = typeof ButtonWidth.Type;
+
 /**
  * What the button DOES — a tagged Union so exactly one form is possible:
  *   • link   — an <a href> (navigation). href required.
@@ -61,6 +71,8 @@ export const ButtonParams = Schema.Struct({
   action: ButtonAction,
   /** Add .btn--upper (uppercase + tighter tracking) when true. Default false. */
   uppercase: Schema.Boolean.pipe(Schema.withDecodingDefaultType(Effect.succeed(false))),
+  /** Optional shared width-floor token → .btn--w-<token>. Omit = text-sized. */
+  minWidth: Schema.OptionFromOptional(ButtonWidth),
   /** Extra class(es) on the element, e.g. a scoping hook. */
   extraClass: Schema.OptionFromOptional(Schema.NonEmptyString),
 });

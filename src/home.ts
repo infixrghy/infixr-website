@@ -208,12 +208,14 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
     label: "Request a Demo",
     variant: "glass",
     uppercase: true,
+    minWidth: "cta",
     action: { _tag: "link", href: "#contact" },
   })}
         ${button({
     label: "Explore Our Work",
     variant: "ghost",
     uppercase: true,
+    minWidth: "cta",
     action: { _tag: "link", href: "#solutions" },
   })}
       </div>

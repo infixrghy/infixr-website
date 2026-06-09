@@ -103,18 +103,6 @@
     gap: var(--space-4);
     margin-top: var(--space-6);
   }
-  /* Equal-width hero CTAs: a shared width FLOOR so the two pills match no matter
-     the label ("Request a Demo" vs the longer "Explore Our Work"). em, NOT px:
-     button text scales with the --step--1 font clamp(), and em scales with it
-     too — so the longest label stays ≈14.5em at EVERY viewport and the floor
-     never falls behind it (a fixed px is right at one width, wrong above/below).
-     Both pills share .btn--upper → identical em→px → identical width. Scoped to
-     the pair, not base .btn: solo buttons (contact Send, about CTA) have no
-     sibling to match and shouldn't inherit a floor. flex-wrap above lets them
-     stack at 360px instead of overflowing. */
-  .hero__cta .btn {
-    min-width: 15em;
-  }
 
   /* Hero visual: headset still floating over flattened orbital rings.
      Decorative — hidden below 900px (mobile = text only, AA-safe). */

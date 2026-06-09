@@ -23,6 +23,7 @@ import {
 const classList = (p: ButtonParams): string => {
   const classes = ["btn", `btn--${p.variant}`];
   if (p.uppercase) classes.push("btn--upper");
+  Option.map(p.minWidth, (w) => classes.push(`btn--w-${w}`));
   Option.map(p.extraClass, (c) => classes.push(esc(c)));
   return classes.join(" ");
 };

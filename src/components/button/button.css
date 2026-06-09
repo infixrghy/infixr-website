@@ -103,6 +103,19 @@
     font-size: var(--step--1);
     padding: .8rem 1.4rem;
   }
+  /* Width-floor modifier — opt-in via button()'s `minWidth` param (.btn--w-<token>).
+     A shared floor so sibling CTAs MATCH regardless of label length ("Request a
+     Demo" vs the longer "Explore Our Work"); the shorter pads up to it, a longer
+     label can still exceed it (white-space:nowrap holds). em, NOT px: button text
+     scales with the --step--1 font clamp() and em scales with it too, so the floor
+     stays ~14.5em-clearing at EVERY viewport (a fixed px is right at one width,
+     wrong above/below — verified at desktop, the clamp ceiling, and true 360px).
+     Both hero pills share .btn--upper → identical em→px → identical width. Was a
+     .hero__cta .btn descendant rule in layout.css; now it's a component modifier
+     so the floor travels with button(), not the hero's layout. */
+  .btn--w-cta {
+    min-width: 15em;
+  }
   @media (prefers-reduced-motion: reduce) {
     .btn:hover { transform: none; }
   }
