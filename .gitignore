@@ -27,3 +27,6 @@ design/*
 # fallow's local cache (incremental analysis). The config (.fallowrc.jsonc) and
 # the agent gate (.claude/) ARE committed; only this cache dir is local.
 .fallow/
+
+# session handoff notes (local only — scratch for cross-session continuity)
+.handoff/
