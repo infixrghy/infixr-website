@@ -29,6 +29,75 @@ import { Effect, Schema } from "effect";
 import { readFile, writeFile, mkdir, rm, cp, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
+/**
+ * Typed IO errors (Effect v4 `Schema.TaggedErrorClass`). Every filesystem op
+ * below is wrapped in `Effect.tryPromise` whose `catch` maps the raw rejection
+ * into one of these — so a failure rides the Effect error channel as a tagged,
+ * LOCATED value (which path, what kind), not an untyped defect. `Effect.gen`
+ * short-circuits on the first one, aborting the build with a precise message
+ * instead of a bare ENOENT stack. `cause` carries the underlying error.
+ *
+ * Why this over the old `Effect.promise`: `Effect.promise` assumes the promise
+ * never rejects → `Effect<A, never>`, so a deleted CSS file or an unwritable
+ * out dir surfaced as an opaque defect. These make the failure modes explicit.
+ */
+class FileReadError extends Schema.TaggedErrorClass<FileReadError>()("FileReadError", {
+  path: Schema.String,
+  cause: Schema.Defect(),
+}) {}
+class FileWriteError extends Schema.TaggedErrorClass<FileWriteError>()("FileWriteError", {
+  path: Schema.String,
+  cause: Schema.Defect(),
+}) {}
+class DirError extends Schema.TaggedErrorClass<DirError>()("DirError", {
+  path: Schema.String,
+  op: Schema.Literals(["rm", "mkdir"]),
+  cause: Schema.Defect(),
+}) {}
+class CopyError extends Schema.TaggedErrorClass<CopyError>()("CopyError", {
+  from: Schema.String,
+  to: Schema.String,
+  cause: Schema.Defect(),
+}) {}
+class ReadDirError extends Schema.TaggedErrorClass<ReadDirError>()("ReadDirError", {
+  path: Schema.String,
+  cause: Schema.Defect(),
+}) {}
+
+// ── tagged-IO helpers: each wraps a node:fs/promises op in Effect.tryPromise,
+//    tagging the failure with its path. These are the only IO entry points used
+//    below, so every filesystem touch is typed at the error channel. ──
+const readFileT = (path: string) =>
+  Effect.tryPromise({
+    try: () => readFile(path, "utf8"),
+    catch: (cause) => new FileReadError({ path, cause }),
+  });
+const writeFileT = (path: string, data: string) =>
+  Effect.tryPromise({
+    try: () => writeFile(path, data),
+    catch: (cause) => new FileWriteError({ path, cause }),
+  });
+const mkdirT = (path: string) =>
+  Effect.tryPromise({
+    try: () => mkdir(path, { recursive: true }),
+    catch: (cause) => new DirError({ path, op: "mkdir", cause }),
+  });
+const rmT = (path: string) =>
+  Effect.tryPromise({
+    try: () => rm(path, { recursive: true, force: true }),
+    catch: (cause) => new DirError({ path, op: "rm", cause }),
+  });
+const cpT = (from: string, to: string) =>
+  Effect.tryPromise({
+    try: () => cp(from, to, { recursive: true }),
+    catch: (cause) => new CopyError({ from, to, cause }),
+  });
+const readdirT = (path: string) =>
+  Effect.tryPromise({
+    try: () => readdir(path),
+    catch: (cause) => new ReadDirError({ path, cause }),
+  });
+
 import { decodePageMeta, type PageMeta } from "./src/schema/page.ts";
 import { renderHead } from "./src/templates/head.ts";
 import { renderNav } from "./src/templates/nav.ts";
@@ -77,12 +146,14 @@ const FONT_FACE = `
 const START = "<!--CSS_INLINE_START-->";
 const END = "<!--CSS_INLINE_END-->";
 
-/** Read + concatenate CSS files in cascade order. */
-async function readCss(paths: string[]): Promise<string> {
-  const parts: string[] = [];
-  for (const p of paths) parts.push(await readFile(p, "utf8"));
-  return parts.join("\n");
-}
+/** Read + concatenate CSS files in cascade order. Each read is tagged
+ *  (FileReadError) so a missing CSS file fails the build with its path. */
+const readCss = (paths: string[]): Effect.Effect<string, FileReadError> =>
+  Effect.gen(function* () {
+    const parts: string[] = [];
+    for (const p of paths) parts.push(yield* readFileT(p));
+    return parts.join("\n");
+  });
 
 /**
  * Assemble a full HTML document from the shared templates + a body string.
@@ -176,18 +247,18 @@ const buildPage = (
     const shell = assembleShell(meta, body, isHome, base);
     const html = inlineAndPreload(shell, css, isHome, base);
     const outPath = join(OUT, page);
-    yield* Effect.promise(() => writeFile(outPath, html));
+    yield* writeFileT(outPath, html);
     return outPath;
   });
 
 const program = Effect.gen(function* () {
   // 1. clean public/
-  yield* Effect.promise(() => rm(OUT, { recursive: true, force: true }));
-  yield* Effect.promise(() => mkdir(OUT, { recursive: true }));
+  yield* rmT(OUT);
+  yield* mkdirT(OUT);
 
   // CSS bundles: index gets core only; about/blog get core + pages.css.
-  const coreCss = yield* Effect.promise(() => readCss(CSS_ORDER));
-  const pagesCss = yield* Effect.promise(() => readCss([PAGES_CSS]));
+  const coreCss = yield* readCss(CSS_ORDER);
+  const pagesCss = yield* readCss([PAGES_CSS]);
 
   // Page bodies: all three are now render fns (about was a static partial until its
   // CTA moved to the typed button() component — a .html file can't call a TS fn, so
@@ -211,7 +282,7 @@ const program = Effect.gen(function* () {
   // 2b. build one page per post at blog/<slug>.html. base="../" so the shared
   // head/nav/footer + font preload + main.js resolve from one directory deep.
   // Post pages get core + pages.css (the .prose long-form rules live in pages.css).
-  yield* Effect.promise(() => mkdir(join(OUT, "blog"), { recursive: true }));
+  yield* mkdirT(join(OUT, "blog"));
   const postCss = coreCss + "\n" + pagesCss;
   for (const post of posts) {
     pages.push(
@@ -228,15 +299,15 @@ const program = Effect.gen(function* () {
 
   // 3. copy static assets
   for (const d of COPY_DIRS) {
-    yield* Effect.promise(() => cp(join(SRC, d), join(OUT, d), { recursive: true }));
+    yield* cpT(join(SRC, d), join(OUT, d));
   }
   for (const f of COPY_FILES) {
-    yield* Effect.promise(() => cp(join(SRC, f), join(OUT, f)));
+    yield* cpT(join(SRC, f), join(OUT, f));
   }
   // .nojekyll: belt-and-suspenders (Actions artifact path doesn't run Jekyll anyway)
-  yield* Effect.promise(() => writeFile(join(OUT, ".nojekyll"), ""));
+  yield* writeFileT(join(OUT, ".nojekyll"), "");
 
-  const assetCount = (yield* Effect.promise(() => readdir(join(OUT, "assets")))).length;
+  const assetCount = (yield* readdirT(join(OUT, "assets"))).length;
   console.log("built pages:", pages.join(", "));
   console.log(
     `copied: assets/ (${assetCount} files), js/, manifest.webmanifest, .nojekyll`

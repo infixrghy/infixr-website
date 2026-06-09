@@ -24,6 +24,18 @@ import { html, esc } from "./templates/html.ts";
 
 const POSTS_DIR = "content/posts";
 
+/** Typed IO errors for the post loader (Effect v4). A missing posts dir or an
+ *  unreadable .md file now fails decode with a LOCATED tagged error on the Effect
+ *  error channel, not an untyped defect (was `Effect.promise` → `Effect<A,never>`). */
+class PostsDirError extends Schema.TaggedErrorClass<PostsDirError>()("PostsDirError", {
+  path: Schema.String,
+  cause: Schema.Defect(),
+}) {}
+class PostReadError extends Schema.TaggedErrorClass<PostReadError>()("PostReadError", {
+  path: Schema.String,
+  cause: Schema.Defect(),
+}) {}
+
 /** Format an ISO date (YYYY-MM-DD) as e.g. "May 1, 2026" — deterministic, UTC. */
 const MONTHS = [
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -61,24 +73,29 @@ function parseFrontMatter(raw: string): { data: Record<string, unknown>; body: s
   return { data, body };
 }
 
-/** Load + validate + render every post. Typed failure if any front-matter is
- *  bad — the decode in the generator can fail, so the error channel is the
- *  decode error, not never (tsc surfaced the too-narrow annotation).
- *  v4: decode fails with `Schema.SchemaError` (was `ParseResult.ParseError`). */
+/** Load + validate + render every post. Typed failure channel: a bad/missing
+ *  front-matter field fails with `Schema.SchemaError` (the decode); a missing
+ *  posts dir or unreadable file fails with `PostsDirError`/`PostReadError` (the
+ *  tagged IO wraps). `Effect.gen` short-circuits on the first, so one bad post
+ *  aborts the build with a located message — not never, not an opaque defect.
+ *  v4: decode error is `Schema.SchemaError` (was `ParseResult.ParseError`). */
 export const loadPosts: Effect.Effect<
   ReadonlyArray<BlogPost>,
-  Schema.SchemaError
+  Schema.SchemaError | PostsDirError | PostReadError
 > = Effect.gen(
   function* () {
-    const files = (yield* Effect.promise(() => readdir(POSTS_DIR))).filter((f) =>
-      f.endsWith(".md")
-    );
+    const files = (yield* Effect.tryPromise({
+      try: () => readdir(POSTS_DIR),
+      catch: (cause) => new PostsDirError({ path: POSTS_DIR, cause }),
+    })).filter((f) => f.endsWith(".md"));
 
     const posts: BlogPost[] = [];
     for (const file of files) {
-      const raw = yield* Effect.promise(() =>
-        readFile(join(POSTS_DIR, file), "utf8")
-      );
+      const path = join(POSTS_DIR, file);
+      const raw = yield* Effect.tryPromise({
+        try: () => readFile(path, "utf8"),
+        catch: (cause) => new PostReadError({ path, cause }),
+      });
       const { data, body } = parseFrontMatter(raw);
       const fm = yield* decodeFrontMatter(data);
       // marked.parse is synchronous (returns string) when no async extensions are
