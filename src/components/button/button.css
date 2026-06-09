@@ -50,6 +50,10 @@
      button, not a faint grey ghost (was scoped to .hero__cta; now the variant). */
   .btn--ghost {
     background: transparent;
+    /* Lighter weight than the shared .btn 600: ghost is light text on the dark
+       page, which optically blooms heavier than the dark-on-bright .btn--glass
+       at the SAME numeric weight. 500 evens the two CTAs' perceived weight. */
+    font-weight: 500;
     color: var(--fg);
     border: 1.5px solid color-mix(in oklab, var(--accent) 50%, var(--border-strong));
     box-shadow: 0 0 18px -8px color-mix(in oklab, var(--accent) 50%, transparent);
