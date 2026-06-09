@@ -35,7 +35,9 @@
     "allowJs": false
   },
   // Type-check the TypeScript sources + build tooling. Generated public/ and the
-  // 3D vendor subtree are excluded (not ours / not type-relevant).
+  // vendored subtrees (vendor/ 3D viewer, repos/ Effect source-for-agents) are
+  // excluded — not ours / not type-relevant. repos/ is read-only reference the
+  // agent reads; it never enters the build or the type-check surface.
   "include": ["src/**/*.ts", "build.ts", "server.ts", "lint.ts"],
-  "exclude": ["node_modules", "public", "vendor", "src/js/hero-3d"]
+  "exclude": ["node_modules", "public", "vendor", "repos", "src/js/hero-3d"]
 }
