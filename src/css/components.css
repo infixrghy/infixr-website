@@ -11,6 +11,51 @@
   h2 { font-size: var(--step-4); font-weight: 700; letter-spacing: -.02em; }
   h3 { font-size: var(--step-2); font-weight: 600; letter-spacing: -.01em; }
 
+  /* ============ NEON TEXT GLOW (reusable) ============
+     The teal neon effect, extracted from the one-off "Get In Touch" eyebrow into
+     a reusable utility (V39/T33). TWO halves, deliberately split:
+
+       .u-neon       — the AT-REST hook: declares the tunable dials + the
+                       transition. Carries NO visible effect on its own (rest =
+                       no shadow). Put it on any text you might want to light.
+       .u-neon--lit  — the ON state: brightened fill + the 4-layer bloom. A CALL
+                       SITE flips it via whatever trigger fits — `.u-neon--lit`
+                       hardcoded (always-on), `.parent:hover .u-neon` (ancestor
+                       hover, what the cards use), `.u-neon:hover` (self), or
+                       `:focus-visible`. The class does NOT bake in a trigger, so
+                       it travels anywhere.
+
+     WHY a class, not a glassCard()-style component: this paints text that already
+     exists — it emits zero markup, so a render fn would just wrap a <span>. Pure
+     presentation → a class in @layer components, the .glass-card idiom (V36).
+
+     The recipe (why it reads as light, not a drop-shadow): stacked text-shadows
+     at one hue, 0 offset, blur 4→46px (tight core → wide ambient) = overlapping
+     halos the eye reads as EMITTED light. The fill is brightened PAST the accent
+     (mix +white) so the glyph is brighter than its own halo — the letters are the
+     light source, not grey glyphs under a lamp. Retune per call site by setting
+     --neon-fill / --neon-1..4 (e.g. photo cards keep their white fill).
+
+     PERF: text-shadow is paint-bound (repaints each frame, unlike GPU-composited
+     transform/opacity). Fine on a handful of accent moments; do NOT spray it
+     site-wide. Scope every use. (V39.) */
+  .u-neon {
+    --neon-fill: color-mix(in oklab, var(--accent) 88%, white);
+    --neon-1: color-mix(in oklab, var(--accent) 80%, transparent);
+    --neon-2: color-mix(in oklab, var(--accent) 65%, transparent);
+    --neon-3: color-mix(in oklab, var(--accent) 50%, transparent);
+    --neon-4: color-mix(in oklab, var(--accent) 35%, transparent);
+    transition: color .25s ease, text-shadow .25s ease;
+  }
+  .u-neon--lit {
+    color: var(--neon-fill);
+    text-shadow:
+      0 0 4px var(--neon-1),
+      0 0 12px var(--neon-2),
+      0 0 26px var(--neon-3),
+      0 0 46px var(--neon-4);
+  }
+
   /* ============ CUSTOM CURSOR ============ */
   /* Pure-CSS accent dot. No JS — `cursor:` swaps the pointer IMAGE only, so all
      hover/click handling stays native. Inline SVG data-URI = zero extra file.
@@ -796,6 +841,47 @@
       &:hover { transform: none; }
     }
 
+    /* CARD HEADER NEON (V39/T33) — the new standard: every card header lights
+       teal when its card is hovered (the "this card is active" affordance). One
+       rule for the whole .u-card family (What We Build, Solutions, blog teaser,
+       blog index, about values). Reuses the .u-neon dials (declared on .u-neon
+       above) so the effect + the contact eyebrow share one set of tunables.
+
+       Two targets, one trigger:
+         - the heading carries the bloom (text-shadow inherits down to a nested
+           <a>, so linked + plain titles both glow);
+         - the FILL colour is set on the <a> where the title is linked
+           (blog/blog-index <h2><a>/<h3><a> — the <a>'s own colour would shadow an
+           inherited one) AND on the heading itself for plain titles (Solutions/
+           about <h3>).
+       Photo-feature cards keep their white fill (--neon-fill overridden below);
+       only the halo is added there.
+
+       REPLACES the old colour-swap title hovers (was `.blog-text &:hover h3 a`
+       here + `.blog-list … h3 a:hover` in pages.css) — those are deleted, NOT
+       layered: two live rules at one element is the specificity trap this spec
+       keeps logging. At rest = no shadow, so only the hovered card repaints. */
+    --neon-fill: color-mix(in oklab, var(--accent) 88%, white);
+    --neon-1: color-mix(in oklab, var(--accent) 80%, transparent);
+    --neon-2: color-mix(in oklab, var(--accent) 65%, transparent);
+    --neon-3: color-mix(in oklab, var(--accent) 50%, transparent);
+    --neon-4: color-mix(in oklab, var(--accent) 35%, transparent);
+    & :is(h2, h3) {
+      transition: color .25s ease, text-shadow .25s ease;
+    }
+    & :is(h2, h3) a {
+      transition: color .25s ease, text-shadow .25s ease;
+    }
+    &:hover :is(h2, h3) {
+      color: var(--neon-fill);
+      text-shadow:
+        0 0 4px var(--neon-1),
+        0 0 12px var(--neon-2),
+        0 0 26px var(--neon-3),
+        0 0 46px var(--neon-4);
+    }
+    &:hover :is(h2, h3) a { color: var(--neon-fill); }
+
     /* Body: tight token-driven rhythm (24px internal gap = V21 heading→para). */
     & .u-card__body {
       padding: clamp(var(--space-5), 3cqi, var(--space-7));
@@ -876,24 +962,34 @@
       }
     }
 
-    /* "Get In Touch" kicker lights up like neon on hover — no lift, the glyphs
-       just go from dim-grey to lit teal with a stacked text-shadow bloom. Scoped
-       to .contact so the shared .eyebrow elsewhere (Solutions/Blog) stays calm.
-       Layered shadows = real neon: tight core → mid halo → wide ambient glow,
-       all one hue. The fill brightens too so the letters ARE the light source,
-       not grey glyphs sitting under a lamp. Hovering anywhere on the card lights
-       it (so the relationship reads), but it also responds to its own hover. */
+    /* "Get In Touch" kicker = the neon glow's FIRST call site, now driven by the
+       shared --neon-* dials (declared on .u-card above; .contact__card is a
+       .u-card so it inherits them) — one source of truth, no duplicated colour-
+       mixes. Scoped to .contact so the shared .eyebrow elsewhere stays calm.
+       Lights on card hover (the relationship reads) AND on its own hover. The
+       fill brightens past accent so the glyphs are the light source; the 4-layer
+       shadow is the bloom. (V39/T33.) */
     & .eyebrow {
       transition: color .25s ease, text-shadow .25s ease;
     }
     &:hover .eyebrow,
     & .eyebrow:hover {
-      color: color-mix(in oklab, var(--accent) 88%, white);
+      color: var(--neon-fill);
       text-shadow:
-        0 0 4px color-mix(in oklab, var(--accent) 80%, transparent),
-        0 0 12px color-mix(in oklab, var(--accent) 65%, transparent),
-        0 0 26px color-mix(in oklab, var(--accent) 50%, transparent),
-        0 0 46px color-mix(in oklab, var(--accent) 35%, transparent);
+        0 0 4px var(--neon-1),
+        0 0 12px var(--neon-2),
+        0 0 26px var(--neon-3),
+        0 0 46px var(--neon-4);
+    }
+    /* OPT OUT the big section heading from the card header-neon (V39/T33): this
+       card is a .u-card, so the global `&:hover :is(h2,h3)` would light "Let's
+       build something together." too — at 3em+ that's an overwhelming wall of
+       teal. The card-header glow is meant for card-TITLE-sized h3s; the contact
+       <h2> is a section heading wearing the card shell. The eyebrow (above) is
+       the contact card's intended glow. Reset to the heading's normal look. */
+    &:hover h2 {
+      color: var(--fg);
+      text-shadow: none;
     }
   }
 
@@ -1106,18 +1202,23 @@
       &:hover { border-color: color-mix(in oklab, var(--accent) 70%, white 18%); }
     }
     /* Text cards: editorial tweaks only — the glass itself comes from .glass-card.
-       Accent kicker + linked-title hover + meta spacing. */
+       Accent kicker + meta spacing. The linked-title hover is GONE from here: the
+       global .u-card header-neon (above) now lights every card title teal on card
+       hover (V39/T33), superseding the old plain colour-swap that lived here. */
     & .blog-text {
-      & h3 a {
-        color: inherit;
-        transition: color .2s;
-      }
-      &:hover h3 a { color: var(--accent); }
+      & h3 a { color: inherit; }
       & .post__meta { margin-top: var(--space-2); }
       & p:not(.post__meta) { color: var(--fg-muted); text-wrap: pretty; }
       & .eyebrow { color: color-mix(in oklab, var(--accent) 90%, white); }
     }
   }
+
+  /* Photo-feature cards (blog-feature, solution-feature) carry a WHITE title on a
+     photo+scrim. The global card header-neon (V39/T33) would recolour it teal-
+     white; here we keep the fill white so only the teal HALO is added — the title
+     stays its designed white-on-photo (AA-by-scrim untouched), it just gains the
+     glow. This is the call-site that proves --neon-fill must be a dial. */
+  .u-card--overlay { --neon-fill: #f4f5f6; }
 
   /* When an overlay card carries a real <img> media region (not a bg-image),
      the media must FILL the card behind the scrim, and the body floats over it

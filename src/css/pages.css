@@ -140,10 +140,10 @@
        stacking context; z-index:-1 puts it behind the cards. */
     position: relative;
     isolation: isolate;
-
-    /* link hover inside text cards on this page */
-    & .u-card h2 a:hover,
-    & .u-card h3 a:hover { color: var(--accent); }
+    /* The old plain colour-swap title hover that lived here is GONE — the global
+       .u-card header-neon (components.css, V39/T33) now lights blog-index titles
+       teal with the full glow on card hover, same as every other card. Two live
+       hover rules at one element was the specificity trap; one rule wins now. */
   }
   .blog-list::before {
     content: "";
