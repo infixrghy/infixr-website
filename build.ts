@@ -30,16 +30,12 @@ import { readFile, writeFile, mkdir, rm, cp, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
 /**
- * Typed IO errors (Effect v4 `Schema.TaggedErrorClass`). Every filesystem op
- * below is wrapped in `Effect.tryPromise` whose `catch` maps the raw rejection
- * into one of these — so a failure rides the Effect error channel as a tagged,
- * LOCATED value (which path, what kind), not an untyped defect. `Effect.gen`
- * short-circuits on the first one, aborting the build with a precise message
- * instead of a bare ENOENT stack. `cause` carries the underlying error.
- *
- * Why this over the old `Effect.promise`: `Effect.promise` assumes the promise
- * never rejects → `Effect<A, never>`, so a deleted CSS file or an unwritable
- * out dir surfaced as an opaque defect. These make the failure modes explicit.
+ * Typed IO errors. Every filesystem op below is wrapped in `Effect.tryPromise`
+ * whose `catch` maps the raw rejection into one of these — so a failure rides
+ * the Effect error channel as a tagged, LOCATED value (which path, what kind),
+ * not an untyped defect. `Effect.gen` short-circuits on the first one, aborting
+ * the build with a precise message instead of a bare ENOENT stack. `cause`
+ * carries the underlying error.
  */
 class FileReadError extends Schema.TaggedErrorClass<FileReadError>()("FileReadError", {
   path: Schema.String,
@@ -317,7 +313,6 @@ const program = Effect.gen(function* () {
 });
 
 // Run. Schema/IO failures print a typed error and exit non-zero (fails CI/hook).
-// v4: `Effect.tapErrorCause` → `Effect.tapCause`.
 Effect.runPromise(
   program.pipe(
     Effect.tapCause((cause) =>

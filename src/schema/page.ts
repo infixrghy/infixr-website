@@ -7,12 +7,11 @@
  * This is the "no null, use Option, ultra type safety" rule: a template that
  * forgets to handle a missing og:locale will not compile.
  *
- * Schema ships in `effect` core (the old @effect/schema is merged in). Effect v4.
+ * Schema ships in the `effect` core package.
  */
 import { Schema } from "effect";
 
-/** Which top-nav item is the current page. Drives `aria-current` + `is-active`.
- *  v4: multi-arg `Literal(...)` → `Literals([...])` (variadic→array). */
+/** Which top-nav item is the current page. Drives `aria-current` + `is-active`. */
 export const NavId = Schema.Literals(["home", "about", "solutions", "products", "blog"]);
 export type NavId = typeof NavId.Type;
 
@@ -49,6 +48,5 @@ export const PageMeta = Schema.Struct({
 });
 export type PageMeta = typeof PageMeta.Type;
 
-/** Decoder: unknown (e.g. a plain page-config object) → validated PageMeta Effect.
- *  v4: `decodeUnknown` → `decodeUnknownEffect`. */
+/** Decoder: unknown (e.g. a plain page-config object) → validated PageMeta Effect. */
 export const decodePageMeta = Schema.decodeUnknownEffect(PageMeta);

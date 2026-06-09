@@ -17,8 +17,7 @@
 import { Effect, Schema } from "effect";
 
 /** The surface variants — each maps to a .btn--* class (see components.css BUTTONS).
- *  Anything else fails the build (no silent fallback to a default look).
- *  v4: multi-arg `Literal(...)` → `Literals([...])`. */
+ *  Anything else fails the build (no silent fallback to a default look). */
 export const ButtonVariant = Schema.Literals(["primary", "ghost", "glass"]);
 export type ButtonVariant = typeof ButtonVariant.Type;
 
@@ -29,9 +28,6 @@ export type ButtonVariant = typeof ButtonVariant.Type;
  *              (the contact form's send). "button" is for JS-driven actions; this
  *              project ships almost none, but the type stays honest.
  */
-// v4: `Union(A, B)` → `Union([A, B])`; multi-arg `Literal` → `Literals`;
-// `optionalWith(s, {default})` → `s.pipe(withDecodingDefaultType(Effect.succeed(x)))`.
-// Single-arg `_tag` Literals stay `Literal`.
 export const ButtonAction = Schema.Union([
   Schema.Struct({
     _tag: Schema.Literal("link"),

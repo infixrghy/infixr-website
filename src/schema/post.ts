@@ -11,8 +11,7 @@
  */
 import { Effect, Schema } from "effect";
 
-/** ISO calendar date, e.g. "2026-05-01". Validated by pattern, kept as string.
- *  v4: `pattern(re, {message})` → `check(isPattern(re, {title, description}))`. */
+/** ISO calendar date, e.g. "2026-05-01". Validated by pattern, kept as string. */
 const IsoDate = Schema.NonEmptyString.pipe(
   Schema.check(
     Schema.isPattern(/^\d{4}-\d{2}-\d{2}$/, {
@@ -28,8 +27,7 @@ export const BlogPostFrontMatter = Schema.Struct({
   title: Schema.NonEmptyString,
   /** Publish date, ISO. Drives <time datetime> + the human display string. */
   date: IsoDate,
-  /** Estimated read time in minutes, e.g. 4.
-   *  v4: `Positive` removed → `Number.check(isGreaterThan(0))`. */
+  /** Estimated read time in minutes, e.g. 4. */
   readMinutes: Schema.Number.pipe(Schema.check(Schema.isGreaterThan(0))),
   /** Section label, e.g. "Engineering" / "Field notes". */
   category: Schema.NonEmptyString,
@@ -45,16 +43,12 @@ export const BlogPostFrontMatter = Schema.Struct({
   /** One-paragraph excerpt for cards + meta description. */
   excerpt: Schema.NonEmptyString,
   /** Feature the post at the top of the index? Exactly one should be true.
-   *  v4: `optionalWith(s, {default})` → `s.pipe(withDecodingDefaultType(Effect.succeed(x)))`. */
+   *  Absent in front-matter → defaults to false. */
   featured: Schema.Boolean.pipe(Schema.withDecodingDefaultType(Effect.succeed(false))),
 
   // ── optional → Option, never null ──
-  // v4 semantic change: v3's `OptionFromUndefinedOr` treated a MISSING key as
-  // None; v4's requires the key to be PRESENT (value may be undefined) and a
-  // missing key now fails decode. `OptionFromOptional` is the v4 combinator that
-  // maps a missing key OR a present `undefined` → None — i.e. v3's old behavior.
-  // (Caught at runtime, not by tsc: the symbol existed with a valid type but a
-  // tightened runtime contract. The front-matter omits these keys entirely.)
+  // OptionFromOptional: a missing key OR a present `undefined` decodes to None.
+  // The front-matter omits these keys entirely when the post has no cover/update.
   /** Hero/cover image path; absent posts render text-only cards. */
   coverImage: Schema.OptionFromOptional(Schema.NonEmptyString),
   /** Last-updated date if revised after publish. */

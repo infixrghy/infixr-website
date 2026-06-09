@@ -24,9 +24,9 @@ import { html, esc } from "./templates/html.ts";
 
 const POSTS_DIR = "content/posts";
 
-/** Typed IO errors for the post loader (Effect v4). A missing posts dir or an
- *  unreadable .md file now fails decode with a LOCATED tagged error on the Effect
- *  error channel, not an untyped defect (was `Effect.promise` → `Effect<A,never>`). */
+/** Typed IO errors for the post loader. A missing posts dir or an unreadable
+ *  .md file fails with a LOCATED tagged error on the Effect error channel,
+ *  not an untyped defect. */
 class PostsDirError extends Schema.TaggedErrorClass<PostsDirError>()("PostsDirError", {
   path: Schema.String,
   cause: Schema.Defect(),
@@ -77,8 +77,7 @@ function parseFrontMatter(raw: string): { data: Record<string, unknown>; body: s
  *  front-matter field fails with `Schema.SchemaError` (the decode); a missing
  *  posts dir or unreadable file fails with `PostsDirError`/`PostReadError` (the
  *  tagged IO wraps). `Effect.gen` short-circuits on the first, so one bad post
- *  aborts the build with a located message — not never, not an opaque defect.
- *  v4: decode error is `Schema.SchemaError` (was `ParseResult.ParseError`). */
+ *  aborts the build with a located message — not never, not an opaque defect. */
 export const loadPosts: Effect.Effect<
   ReadonlyArray<BlogPost>,
   Schema.SchemaError | PostsDirError | PostReadError

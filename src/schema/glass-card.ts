@@ -26,8 +26,7 @@
 import { Effect, Schema } from "effect";
 
 /** A CSS percentage 0–100%, e.g. "50%". Pattern + bound; kept as a string so it
- *  drops straight into a custom-prop value. Guards the teal-strength overrides.
- *  v4: `pattern(re, {message})` → `check(isPattern(re, {title, description}))`. */
+ *  drops straight into a custom-prop value. Guards the teal-strength overrides. */
 const Percent = Schema.NonEmptyString.pipe(
   Schema.check(
     Schema.isPattern(/^(?:100|\d{1,2})%$/, {
@@ -50,8 +49,7 @@ const IsoDate = Schema.NonEmptyString.pipe(
   )
 );
 
-/** The three tuned presets. Anything else fails the build (no silent fallback).
- *  v4: multi-arg `Literal(...)` → `Literals([...])`. */
+/** The three tuned presets. Anything else fails the build (no silent fallback). */
 export const GlassVariant = Schema.Literals(["v1", "v2", "v3"]);
 export type GlassVariant = typeof GlassVariant.Type;
 
@@ -63,7 +61,6 @@ export type GlassVariant = typeof GlassVariant.Type;
  *   • cta  — a label + href → a `.link-arrow` call to action (Solutions cards).
  * Both fields of each variant are required, so a malformed footer fails the build.
  */
-// v4: `Union(A, B)` → `Union([A, B])`; `Positive` → `Number.check(isGreaterThan(0))`.
 export const GlassFooter = Schema.Union([
   Schema.Struct({
     _tag: Schema.Literal("meta"),
@@ -102,8 +99,7 @@ export const GlassCardParams = Schema.Struct({
   /** The footer: a time-meta line OR a CTA link OR nothing (see GlassFooter). */
   footer: Schema.OptionFromOptional(GlassFooter),
 
-  /** Which tuned preset: V3 ("Refined") is the chosen default.
-   *  v4: `optionalWith(s, {default})` → `s.pipe(withDecodingDefaultType(Effect.succeed(x)))`. */
+  /** Which tuned preset: V3 ("Refined") is the chosen default. */
   variant: GlassVariant.pipe(Schema.withDecodingDefaultType(Effect.succeed("v3" as const))),
 
   /** Extra class on the <li> (e.g. "blog-text" for the homepage editorial tweaks). */
