@@ -356,11 +356,11 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
       <form class="contact-form" id="contact-form" novalidate>
         <div class="field">
           <label for="cf-name">Name</label>
-          <input id="cf-name" name="name" type="text" required autocomplete="name" minlength="2" maxlength="80" placeholder="Jane Doe">
+          <input id="cf-name" name="name" type="text" required autocomplete="name" minlength="2" maxlength="80" placeholder="Ram Das">
         </div>
         <div class="field">
           <label for="cf-email">Email</label>
-          <input id="cf-email" name="email" type="email" required autocomplete="email" maxlength="120" placeholder="jane@company.com">
+          <input id="cf-email" name="email" type="email" required autocomplete="email" maxlength="120" placeholder="das@company.com">
         </div>
         <div class="field">
           <label for="cf-phone">Phone Number</label>
@@ -368,7 +368,7 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
         </div>
         <div class="field field--full">
           <label for="cf-message">Message</label>
-          <textarea id="cf-message" name="message" required minlength="10" maxlength="2000" rows="5" placeholder="Tell us what you're building&mdash;goals, audience, timeline."></textarea>
+          <textarea id="cf-message" name="message" required minlength="10" maxlength="2000" rows="5" placeholder="The skill to train, the risk to cut, the moment to nail."></textarea>
         </div>
         <div class="field field--full contact-form__actions">
           ${button({
