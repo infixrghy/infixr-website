@@ -11,8 +11,10 @@
          .btn--glass    → teal-rimmed dark glass pill, solid-accent on hover
                           [hero "Request a Demo" + contact "Send Message"]
        Modifiers:
-         .btn--upper    → uppercase + tighter tracking + smaller (the hero type
-                          treatment, lifted out of .hero__cta so it's param-driven)
+         .btn--w-cta    → shared width floor (15em) so sibling CTAs match; opt-in
+                          via button()'s `minWidth` param. (Uppercase used to be a
+                          .btn--upper modifier here but every button was uppercase,
+                          so it's folded into base .btn now — see below.)
        Tertiary text+arrow link is .link-arrow (separate).
      All ≥ 44×44 px tap target. Hover = non-color motion (transform), RM-gated.
 
@@ -27,11 +29,16 @@
     justify-content: center;
     gap: .5rem;
     min-height: 44px;
-    padding: .85rem 1.5rem;
+    /* Uppercase is the ONE button type treatment site-wide — every button() was
+       uppercase:true, so the old opt-in .btn--upper modifier (+ its param) was a
+       redundant knob. Folded into the base: transform + tracking + the -1 step +
+       its padding are now just what a .btn IS. */
+    padding: .8rem 1.4rem;
     border-radius: var(--radius-pill);
     font-weight: 600;
-    font-size: var(--step-0);
-    letter-spacing: .01em;
+    font-size: var(--step--1);
+    text-transform: uppercase;
+    letter-spacing: .08em;
     transition: transform .15s, background .2s, color .2s, box-shadow .2s, border-color .2s;
     border: 1px solid transparent;
     white-space: nowrap;
@@ -95,14 +102,6 @@
         0 10px 28px -10px color-mix(in oklab, var(--accent) 65%, transparent);
     }
   }
-  /* Uppercase modifier — the hero pill typography, now context-free so any
-     button() can opt in (e.g. contact "Send Message" matching the hero pills). */
-  .btn--upper {
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    font-size: var(--step--1);
-    padding: .8rem 1.4rem;
-  }
   /* Width-floor modifier — opt-in via button()'s `minWidth` param (.btn--w-<token>).
      A shared floor so sibling CTAs MATCH regardless of label length ("Request a
      Demo" vs the longer "Explore Our Work"); the shorter pads up to it, a longer
@@ -110,9 +109,9 @@
      scales with the --step--1 font clamp() and em scales with it too, so the floor
      stays ~14.5em-clearing at EVERY viewport (a fixed px is right at one width,
      wrong above/below — verified at desktop, the clamp ceiling, and true 360px).
-     Both hero pills share .btn--upper → identical em→px → identical width. Was a
-     .hero__cta .btn descendant rule in layout.css; now it's a component modifier
-     so the floor travels with button(), not the hero's layout. */
+     Both hero pills are .btn (same font/tracking) → identical em→px → identical
+     width. Was a .hero__cta .btn descendant rule in layout.css; now it's a
+     component modifier so the floor travels with button(), not the hero's layout. */
   .btn--w-cta {
     min-width: 15em;
   }

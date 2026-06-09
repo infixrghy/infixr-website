@@ -84,8 +84,8 @@
     flex-wrap: wrap;
     margin-top: var(--space-3);
   }
-  /* Send button = the glass-pill variant (.btn--glass .btn--upper), same as the
-     hero "Request a Demo" — applied via button() in home.ts. No bespoke surface
+  /* Send button = the glass-pill variant (.btn--glass), same as the hero
+     "Request a Demo" — applied via button() in home.ts. No bespoke surface
      rule here anymore: the old contact-scoped solid-teal copy is what made the
      button look permanently lit, and its hover-lift needed a special RM override
      (its (0,4,0) specificity outranked the global .btn:hover reset). Both are gone

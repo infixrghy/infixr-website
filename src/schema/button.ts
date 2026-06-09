@@ -55,10 +55,11 @@ export const ButtonAction = Schema.Union([
 export type ButtonAction = typeof ButtonAction.Type;
 
 /**
- * Button render params. `label` + `variant` + `action` are the core ask; `uppercase`
- * and `extraClass` are optional modifiers. No per-instance colour dials (the glass
- * pill's look is fixed across its two uses — speculative knobs omitted, unlike the
- * glass card whose tint genuinely varies).
+ * Button render params. `label` + `variant` + `action` are the core ask; `minWidth`
+ * and `extraClass` are optional modifiers. (Uppercase used to be a param but every
+ * button was uppercase — it's now baked into .btn, not a knob.) No per-instance
+ * colour dials (the glass pill's look is fixed across its uses — speculative knobs
+ * omitted, unlike the glass card whose tint genuinely varies).
  */
 export const ButtonParams = Schema.Struct({
   /** Visible button text. */
@@ -69,8 +70,6 @@ export const ButtonParams = Schema.Struct({
   ),
   /** Link (<a href>) or button (<button type>) — the functional split. */
   action: ButtonAction,
-  /** Add .btn--upper (uppercase + tighter tracking) when true. Default false. */
-  uppercase: Schema.Boolean.pipe(Schema.withDecodingDefaultType(Effect.succeed(false))),
   /** Optional shared width-floor token → .btn--w-<token>. Omit = text-sized. */
   minWidth: Schema.OptionFromOptional(ButtonWidth),
   /** Extra class(es) on the element, e.g. a scoping hook. */

@@ -207,14 +207,12 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
         ${button({
     label: "Request a Demo",
     variant: "glass",
-    uppercase: true,
     minWidth: "cta",
     action: { _tag: "link", href: "#contact" },
   })}
         ${button({
     label: "Explore Our Work",
     variant: "ghost",
-    uppercase: true,
     minWidth: "cta",
     action: { _tag: "link", href: "#solutions" },
   })}
@@ -376,7 +374,6 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
           ${button({
     label: "Send Message",
     variant: "glass",
-    uppercase: true,
     action: { _tag: "button", kind: "submit" },
   })}
           <p class="contact-form__status" role="status" aria-live="polite"></p>

@@ -67,7 +67,6 @@ export const renderAboutBody = (): string =>
     ${button({
     label: "Start a conversation",
     variant: "glass",
-    uppercase: true,
     action: { _tag: "link", href: "index.html#contact" },
   })}
   </section>
