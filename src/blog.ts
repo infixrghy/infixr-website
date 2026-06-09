@@ -99,7 +99,7 @@ const postMeta = (p: BlogPost): string =>
   )}</time> &middot; ${String(p.readMinutes)} min read &middot; ${esc(p.category)}</p>`;
 
 /** The large lead card for the featured post. */
-const renderFeatured = (p: BlogPost): string => html`<article class="u-card u-card--text blog-featured">
+const renderFeatured = (p: BlogPost): string => html`<article class="u-card u-card--text glass-card glass-card--v3 blog-featured">
       <div class="u-card__body">
         ${postMeta(p)}
         <h2><a href="blog/${esc(p.slug)}.html">${esc(p.title)}</a></h2>
@@ -109,7 +109,7 @@ const renderFeatured = (p: BlogPost): string => html`<article class="u-card u-ca
     </article>`;
 
 /** A small grid card. */
-const renderCard = (p: BlogPost): string => html`<article class="u-card u-card--text">
+const renderCard = (p: BlogPost): string => html`<article class="u-card u-card--text glass-card glass-card--v3">
         <div class="u-card__body">
           ${postMeta(p)}
           <h3><a href="blog/${esc(p.slug)}.html">${esc(p.title)}</a></h3>

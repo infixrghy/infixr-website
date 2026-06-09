@@ -854,12 +854,26 @@
           var(--shadow-glow);
       }
     }
+    /* It's a form shell, so NO lift on hover (transform stays none). But the base
+       .u-card:hover sets a box-shadow at equal specificity (0,2,0) that this rule
+       must override too — otherwise the rich at-rest frosted shadow (0,1,0) loses
+       and the card visibly DIMS on hover (the two accent rims vanish, the glow
+       tightens). Restate the resting shadow here with the glow nudged UP a little:
+       the card now warms slightly toward you on hover instead of dulling. */
     &:hover {
       transform: none;
       border-color: var(--border);
     }
     @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-      &:hover { border-color: color-mix(in oklab, var(--accent) 30%, var(--border-strong)); }
+      &:hover {
+        border-color: color-mix(in oklab, var(--accent) 38%, var(--border-strong));
+        box-shadow:
+          inset 0 1px 0 color-mix(in oklab, white 26%, transparent),
+          inset 0 0 0 1px color-mix(in oklab, var(--accent) 16%, transparent),
+          0 0 0 1px color-mix(in oklab, var(--accent) 18%, transparent),
+          0 26px 64px -22px rgba(0,0,0,.74),
+          0 0 70px -8px var(--accent-glow);
+      }
     }
   }
 
@@ -1173,6 +1187,7 @@
       border-radius: var(--radius);
       padding: .85rem 1rem;
       color: var(--fg);
+      caret-color: var(--accent);
       width: 100%;
       font-family: inherit;
       font-size: var(--step-0);
@@ -1186,7 +1201,11 @@
       }
       &:focus {
         outline: none;
-        background: color-mix(in oklab, var(--c-bg) 82%, white);
+        /* Active field lifts toward the ACCENT directly (not the white-based --lift):
+           the focused well should read teal, matching the ring + border + caret —
+           the grey-toward-white lift was the colour that looked "off". ~16% accent
+           keeps it a dark, recessed field, just unmistakably teal-tinted now. */
+        background: color-mix(in oklab, var(--c-bg) 84%, var(--accent));
         border-color: var(--accent);
         /* inset shadow flips off + an outer accent ring + faint bloom: the field
            "lights up" and rises out of the recess on focus. */
@@ -1259,11 +1278,17 @@
       place-items: center;
       width: 40px; height: 40px;
       border-radius: 50%;
-      background: var(--bg-card);
-      color: var(--fg-muted);
-      transition: background .2s, color .2s, transform .2s;
+      /* Resting disc = faint teal tint + accent hairline (was the flat grey
+         --bg-card, the same dead grey Ari flagged). The icon itself picks up a
+         little accent so the link reads as part of the teal vocabulary at rest;
+         hover fills solid teal. */
+      background: color-mix(in oklab, var(--accent) 12%, transparent);
+      border: 1px solid color-mix(in oklab, var(--accent) 28%, transparent);
+      color: color-mix(in oklab, var(--accent) 55%, var(--fg-muted));
+      transition: background .2s, color .2s, border-color .2s, transform .2s;
       &:hover {
         background: var(--accent);
+        border-color: var(--accent);
         color: #001a14;
         transform: translateY(-2px);
       }

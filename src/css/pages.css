@@ -85,8 +85,24 @@
     gap: var(--space-5);
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     margin: var(--space-5) 0;
+    /* Cards are now frosted .glass-card (V36); frost needs light behind it to
+       refract (see .blog-list). This grid sits mid-.prose on a flat dark section,
+       so give it its own accent bloom behind the cards, masked to a soft centred
+       pool. isolation:isolate scopes the stacking context; ::before z-index:-1
+       sits behind the cards but inside the grid. */
+    position: relative;
+    isolation: isolate;
     & h3 { font-size: var(--step-1); }
     & p { font-size: var(--step-0); color: var(--fg-muted); margin: 0; }
+  }
+  .value-grid::before {
+    content: "";
+    position: absolute;
+    inset: calc(-1 * var(--space-5));
+    z-index: -1;
+    background: radial-gradient(60% 55% at 50% 50%, var(--accent-glow), transparent 72%);
+    opacity: .8;
+    pointer-events: none;
   }
 
   /* ============ CTA BAND ============ */
@@ -114,10 +130,30 @@
     padding: var(--space-7) max(var(--space-5), calc((100% - 1100px) / 2)) var(--space-9);
     display: grid;
     gap: var(--space-7);
+    /* The cards here are now frosted .glass-card (V36) — and backdrop-filter
+       frosts NOTHING without light behind it. The homepage glass works because
+       `.blog::before`/`.solutions::before` pool an accent glow the frost refracts;
+       this page was flat dark, so the cards would read as flat translucent panes.
+       Add the same light source: a soft accent bloom behind the card column (top-
+       weighted to sit behind the featured card + the grid head), masked so it never
+       hits a hard rectangle edge. isolation:isolate keeps it in this section's
+       stacking context; z-index:-1 puts it behind the cards. */
+    position: relative;
+    isolation: isolate;
 
     /* link hover inside text cards on this page */
     & .u-card h2 a:hover,
     & .u-card h3 a:hover { color: var(--accent); }
+  }
+  .blog-list::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(50% 38% at 50% 12%, var(--accent-glow), transparent 70%),
+      radial-gradient(45% 40% at 50% 70%, color-mix(in oklab, var(--accent) 14%, transparent), transparent 72%);
+    pointer-events: none;
   }
   .blog-featured {
     & h2 {

@@ -30,25 +30,25 @@ export const renderAboutBody = (): string =>
 
     <h2>What we believe</h2>
     <ul class="value-grid">
-      <li class="u-card u-card--text">
+      <li class="u-card u-card--text glass-card glass-card--v3">
         <div class="u-card__body">
           <h3>Practical over flashy</h3>
           <p>Every project is judged on outcomes&mdash;not visual fidelity, not headset count, not feature lists.</p>
         </div>
       </li>
-      <li class="u-card u-card--text">
+      <li class="u-card u-card--text glass-card glass-card--v3">
         <div class="u-card__body">
           <h3>Accessibility first</h3>
           <p>Our experiences run across VR, web, and mobile so teams can deploy without re-buying hardware.</p>
         </div>
       </li>
-      <li class="u-card u-card--text">
+      <li class="u-card u-card--text glass-card glass-card--v3">
         <div class="u-card__body">
           <h3>Built to last</h3>
           <p>Production-grade tooling, version-controlled content, and clear handoff so your team owns what we ship.</p>
         </div>
       </li>
-      <li class="u-card u-card--text">
+      <li class="u-card u-card--text glass-card glass-card--v3">
         <div class="u-card__body">
           <h3>Measure what matters</h3>
           <p>Telemetry baked into every experience. You get the data you need to defend the investment.</p>
