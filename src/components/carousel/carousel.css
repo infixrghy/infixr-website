@@ -1,0 +1,245 @@
+/* carousel/carousel.css — .who__title + .carousel* + .card* (V35 transform-track slides).
+   Sliced verbatim from css/components.css (lines 551-791); order is load-bearing — see CSS_ORDER in build.ts. */
+@layer components {
+  /* ============ WHO INTRO ============ */
+  .who__title { margin-top: var(--space-3); }
+
+  /* ============ CAROUSEL (V35 — transform track) ============
+     The track translateX-shifts inside a clip viewport; the carousel code in main.js
+     centers one of the clone-padded [3'][1][2][3][1'] slides per step and, on
+     transitionend at an edge clone, instant-jumps to its real twin → seamless
+     infinite loop. Own DOM dots + corner buttons drive it (Ari-approved JS).
+
+     Why not the CSS Overflow 5 scroll-container API (::scroll-button/marker)?
+     It couldn't do seamless-loop + one-card-step + centered-peek together: native
+     ::scroll-button scrolls a browser-fixed ~85% (not one card), and centering the
+     first AND last card needs scroll runway that fights flexbox's handling of
+     end-padding/margins. A transform track has no scroll bounds → translateX
+     centers any card, edges included, and the whole runway bug class is gone. */
+  .carousel {
+    position: relative;
+    container-type: inline-size;
+    /* Reserve a control band under the cards for the dots + flanking buttons. */
+    padding-bottom: clamp(3.5rem, 7cqi, 4.5rem);
+  }
+  /* Clip viewport: shows the centered card + neighbor peek slivers; hides the rest
+     of the translated track. Not a scroll container (overflow:clip, not auto). */
+  .carousel__viewport {
+    overflow: clip;
+    overflow-clip-margin: 1rem;   /* let card shadows breathe past the clip edge */
+  }
+  /* Cards 66cqi wide (cqi = 1% of .carousel) → generous peek both sides. The track
+     is wider than the viewport; JS translateX centers slide i. */
+  .carousel__track {
+    --cw: 66cqi;
+    display: flex;
+    gap: 3%;
+    padding-block: 28px 8px;
+    list-style: none;
+    will-change: transform;
+    transition: transform .55s cubic-bezier(.4, 0, .2, 1);
+  }
+  .card { flex: 0 0 var(--cw); }
+  @media (prefers-reduced-motion: reduce) {
+    .carousel__track { transition: none; }
+  }
+
+  /* ---- Prev / Next controls (own buttons, lower corners of the section) ---- */
+  .carousel__btn {
+    position: absolute;
+    z-index: 4;
+    bottom: .5rem;            /* centers the ~54px button in the control band */
+    display: grid;
+    place-items: center;
+    width: clamp(44px, 7cqi, 54px);
+    aspect-ratio: 1;
+    padding: 0;
+    border: 1px solid var(--border-strong);
+    border-radius: 50%;
+    background: color-mix(in oklab, var(--bg) 60%, transparent);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    color: var(--fg);
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background .25s, border-color .25s, color .25s, transform .15s;
+  }
+  .carousel__btn--prev { left: 0; }
+  .carousel__btn--next { right: 0; }
+  .carousel__btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0b1f18;
+    transform: scale(1.08);
+  }
+  .carousel__btn:active { transform: scale(.96); }
+  .carousel__btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
+  /* ---- Dots (own DOM, redesigned — hairline ring, no pill) ----
+     Centered in the control band between the prev/next buttons. JS sets
+     aria-selected on the active dot. */
+  .carousel__dots {
+    position: absolute;
+    left: 50%;
+    bottom: 1.9rem;           /* dot centers line up with the 54px button centers */
+    transform: translateX(-50%);
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    padding: 0;
+    margin: 0;
+  }
+  .carousel__dot {
+    width: 11px;
+    aspect-ratio: 1;
+    padding: 0;
+    border: 1.5px solid var(--border-strong);
+    border-radius: 50%;
+    background: transparent;
+    cursor: pointer;
+    transition: background .3s, border-color .3s, transform .3s, box-shadow .3s;
+  }
+  .carousel__dot:hover { border-color: var(--accent); }
+  .carousel__dot:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  /* Active dot: accent fill + glow + slight lift. */
+  .carousel__dot[aria-selected="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-2px) scale(1.15);
+    box-shadow: 0 0 12px -1px var(--accent-glow);
+  }
+
+  /* ============ CAROUSEL CARDS ============
+     V33 overlay card: the slide photo fills the card; the headline + copy sit at
+     the bottom over a dark gradient scrim. One stacking grid cell — media and
+     body overlap (both grid-area:1/1) so text floats on the image. The scrim
+     guarantees AA contrast over any photo region, so no per-image tuning. Dark,
+     theme-cohesive (supersedes the light Figma split-card; V28/B3 → V33). */
+  .card {
+    position: relative;
+    display: grid;
+    grid-template: 1fr / 1fr;       /* single cell; media + body stack into it */
+    aspect-ratio: 16 / 11;
+    border-radius: var(--radius-lg);
+    overflow: clip;
+    isolation: isolate;
+    background: var(--bg-elev);
+    border: 1px solid var(--border);
+    box-shadow:
+      0 1px 0 0 color-mix(in oklab, white 8%, transparent) inset,
+      0 28px 70px -28px rgba(0,0,0,.85);
+    transition: box-shadow .3s, border-color .3s, transform .3s;
+  }
+  .card__media {
+    grid-area: 1 / 1;
+    overflow: clip;
+    display: grid;                  /* stretch img to the full cell so cover crops */
+  }
+  .card__media img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    /* slow drift + a touch of zoom keeps the static photo feeling alive on the
+       centered card; reduced-motion turns it off below. */
+    transform: scale(1.06);
+    transition: transform 1.2s cubic-bezier(.2,.7,.2,1), filter 1.2s;
+    filter: saturate(1.05);
+  }
+  /* Scrim: own grid cell, painted over the photo, under the text. Bottom-weighted
+     so the upper photo stays clear and the lower copy stays legible. */
+  .card::before {
+    content: "";
+    grid-area: 1 / 1;
+    z-index: 1;
+    background:
+      linear-gradient(to top,
+        rgba(8,10,11,.92) 0%,
+        rgba(8,10,11,.78) 22%,
+        rgba(8,10,11,.32) 48%,
+        transparent 72%);
+  }
+  .card__body {
+    grid-area: 1 / 1;
+    z-index: 2;
+    align-self: end;
+    display: grid;
+    gap: var(--space-3);
+    padding: clamp(var(--space-5), 4cqi, var(--space-7));
+    text-align: left;
+  }
+  /* Editorial slide numeral — accent, mono-ish, sits above the headline. */
+  .card__index {
+    font-size: var(--step--1);
+    font-weight: 700;
+    letter-spacing: .18em;
+    color: var(--accent);
+    opacity: .9;
+  }
+  .card__body h3 {
+    color: #fff;
+    /* Scales with the (now narrower 60%) card via cqi; smaller than the old
+       --step-2 so the headline stays balanced in the smaller card. */
+    font-size: clamp(1.25rem, .9rem + 1.6cqi, 1.6rem);
+    line-height: 1.12;
+    text-wrap: balance;
+  }
+  .card__body p {
+    color: color-mix(in oklab, #fff 82%, transparent);
+    max-width: 46ch;
+    text-wrap: pretty;
+  }
+  /* Accent rule that grows under the numeral on hover/center — subtle life. */
+  .card__body h3::after {
+    content: "";
+    display: block;
+    width: clamp(40px, 8cqi, 64px);
+    height: 3px;
+    margin-top: var(--space-3);
+    border-radius: var(--radius-pill);
+    background: var(--accent);
+    box-shadow: 0 0 16px -2px var(--accent-glow);
+    transform-origin: left;
+    transform: scaleX(.55);
+    transition: transform .4s cubic-bezier(.2,.7,.2,1);
+  }
+  .card:hover {
+    border-color: color-mix(in oklab, var(--accent) 40%, var(--border));
+    box-shadow:
+      0 1px 0 0 color-mix(in oklab, white 12%, transparent) inset,
+      0 0 0 1px color-mix(in oklab, var(--accent) 22%, transparent),
+      0 34px 80px -28px rgba(0,0,0,.9);
+  }
+  .card:hover .card__media img {
+    transform: scale(1.12);
+    filter: saturate(1.12);
+  }
+  .card:hover .card__body h3::after { transform: scaleX(1); }
+
+  @supports (animation-timeline: view()) {
+    @media (prefers-reduced-motion: no-preference) {
+      .card {
+        animation: card-rise linear both;
+        animation-timeline: view();
+        animation-range: entry 0% cover 35%;
+      }
+    }
+  }
+  @keyframes card-rise {
+    from { opacity: 0; transform: translateY(36px) scale(.985); }
+    to   { opacity: 1; transform: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .card__media img { transform: scale(1.04); transition: none; }
+    .card__body h3::after { transition: none; }
+  }
+  /* Mobile: shorter, more upright card so the photo + copy both read at 360px. */
+  @media (max-width: 700px) {
+    .card { aspect-ratio: 4 / 5; }
+  }
+}

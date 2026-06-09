@@ -1,0 +1,59 @@
+/* typography/typography.css — h-primitives, .eyebrow + the reusable .u-neon / .u-neon--lit text-glow utility.
+   Sliced verbatim from css/components.css (lines 3-57); order is load-bearing — see CSS_ORDER in build.ts. */
+@layer components {
+  /* ============ TYPOGRAPHY ============ */
+  .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: .18em;
+    font-size: var(--step--1);
+    color: var(--fg-dim);
+    font-weight: 600;
+  }
+  h2 { font-size: var(--step-4); font-weight: 700; letter-spacing: -.02em; }
+  h3 { font-size: var(--step-2); font-weight: 600; letter-spacing: -.01em; }
+
+  /* ============ NEON TEXT GLOW (reusable) ============
+     The teal neon effect, extracted from the one-off "Get In Touch" eyebrow into
+     a reusable utility (V39/T33). TWO halves, deliberately split:
+
+       .u-neon       — the AT-REST hook: declares the tunable dials + the
+                       transition. Carries NO visible effect on its own (rest =
+                       no shadow). Put it on any text you might want to light.
+       .u-neon--lit  — the ON state: brightened fill + the 4-layer bloom. A CALL
+                       SITE flips it via whatever trigger fits — `.u-neon--lit`
+                       hardcoded (always-on), `.parent:hover .u-neon` (ancestor
+                       hover, what the cards use), `.u-neon:hover` (self), or
+                       `:focus-visible`. The class does NOT bake in a trigger, so
+                       it travels anywhere.
+
+     WHY a class, not a glassCard()-style component: this paints text that already
+     exists — it emits zero markup, so a render fn would just wrap a <span>. Pure
+     presentation → a class in @layer components, the .glass-card idiom (V36).
+
+     The recipe (why it reads as light, not a drop-shadow): stacked text-shadows
+     at one hue, 0 offset, blur 4→46px (tight core → wide ambient) = overlapping
+     halos the eye reads as EMITTED light. The fill is brightened PAST the accent
+     (mix +white) so the glyph is brighter than its own halo — the letters are the
+     light source, not grey glyphs under a lamp. Retune per call site by setting
+     --neon-fill / --neon-1..4 (e.g. photo cards keep their white fill).
+
+     PERF: text-shadow is paint-bound (repaints each frame, unlike GPU-composited
+     transform/opacity). Fine on a handful of accent moments; do NOT spray it
+     site-wide. Scope every use. (V39.) */
+  .u-neon {
+    --neon-fill: color-mix(in oklab, var(--accent) 88%, white);
+    --neon-1: color-mix(in oklab, var(--accent) 80%, transparent);
+    --neon-2: color-mix(in oklab, var(--accent) 65%, transparent);
+    --neon-3: color-mix(in oklab, var(--accent) 50%, transparent);
+    --neon-4: color-mix(in oklab, var(--accent) 35%, transparent);
+    transition: color .25s ease, text-shadow .25s ease;
+  }
+  .u-neon--lit {
+    color: var(--neon-fill);
+    text-shadow:
+      0 0 4px var(--neon-1),
+      0 0 12px var(--neon-2),
+      0 0 26px var(--neon-3),
+      0 0 46px var(--neon-4);
+  }
+}

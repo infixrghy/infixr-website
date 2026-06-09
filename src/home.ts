@@ -19,8 +19,8 @@
  */
 import { html, esc } from "./templates/html.ts";
 import { picture } from "./templates/picture.ts";
-import { glassCard } from "./templates/glass-card.ts";
-import { button } from "./templates/button.ts";
+import { glassCard } from "./components/glass-card/glass-card.ts";
+import { button } from "./components/button/button.ts";
 import { displayDate } from "./blog.ts";
 import type { BlogPost } from "./schema/post.ts";
 

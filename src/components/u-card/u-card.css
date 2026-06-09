@@ -1,0 +1,286 @@
+/* u-card/u-card.css — base .u-card system + variants + .contact__card (a u-card modifier).
+   Sliced verbatim from css/components.css (lines 793-1074); order is load-bearing — see CSS_ORDER in build.ts. */
+@layer components {
+  /* ============ UNIFIED CARD (.u-card) ============
+     ONE card system across the whole site — solutions, blog, about value tiles,
+     blog-list, contact shell. (Carousel `.card` is exempt — keeps its own split
+     slide-card.) Variants:
+       .u-card--text     plain surface card: heading + body + optional CTA/meta
+       .u-card--media    card with an image region (.u-card__media) above the body
+       .u-card--overlay  image fills the card, text overlaid bottom-left over a
+                         scrim (white text → AA by construction)
+       .u-card--feature  larger overlay: taller + bigger title (hero/photo cards)
+     Authored with native CSS nesting (V32). card-rise defined once here; the old
+     per-component duplicates are gone. */
+  .u-card {
+    position: relative;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: clip;
+    isolation: isolate;
+    transition: background .25s, border-color .25s, transform .25s, box-shadow .25s;
+
+    /* Scroll-in fade-up — progressive, reduced-motion-gated (V5). One definition
+       for every card on the site. */
+    @supports (animation-timeline: view()) {
+      @media (prefers-reduced-motion: no-preference) {
+        & {
+          animation: card-rise linear both;
+          animation-timeline: view();
+          animation-range: entry 0% cover 30%;
+        }
+      }
+    }
+
+    /* Hover = accent hairline + lift + depth (non-color motion is reduced-motion
+       gated; the border/shadow change stays). Unifies the 3 different hovers that
+       existed before into one. */
+    /* base hover = border + lift + glow ONLY. NOT background — overlay cards
+       carry their image as `background-image` on a .surf-* class, and setting
+       `background:<color>` here would reset it to none (drop the photo). The
+       surface tint lives on .u-card--text:hover instead. */
+    &:hover {
+      border-color: color-mix(in oklab, var(--accent) 75%, var(--border-strong));
+      transform: translateY(-6px);
+      box-shadow:
+        inset 0 1px 0 color-mix(in oklab, white 16%, transparent),
+        0 22px 56px -18px rgba(0,0,0,.74),
+        0 0 56px -14px var(--accent-glow);
+    }
+    @media (prefers-reduced-motion: reduce) {
+      &:hover { transform: none; }
+    }
+
+    /* CARD HEADER NEON (V39/T33) — the new standard: every card header lights
+       teal when its card is hovered (the "this card is active" affordance). One
+       rule for the whole .u-card family (What We Build, Solutions, blog teaser,
+       blog index, about values). Reuses the .u-neon dials (declared on .u-neon
+       above) so the effect + the contact eyebrow share one set of tunables.
+
+       Two targets, one trigger:
+         - the heading carries the bloom (text-shadow inherits down to a nested
+           <a>, so linked + plain titles both glow);
+         - the FILL colour is set on the <a> where the title is linked
+           (blog/blog-index <h2><a>/<h3><a> — the <a>'s own colour would shadow an
+           inherited one) AND on the heading itself for plain titles (Solutions/
+           about <h3>).
+       Photo-feature cards keep their white fill (--neon-fill overridden below);
+       only the halo is added there.
+
+       REPLACES the old colour-swap title hovers (was `.blog-text &:hover h3 a`
+       here + `.blog-list … h3 a:hover` in pages.css) — those are deleted, NOT
+       layered: two live rules at one element is the specificity trap this spec
+       keeps logging. At rest = no shadow, so only the hovered card repaints. */
+    --neon-fill: color-mix(in oklab, var(--accent) 88%, white);
+    --neon-1: color-mix(in oklab, var(--accent) 80%, transparent);
+    --neon-2: color-mix(in oklab, var(--accent) 65%, transparent);
+    --neon-3: color-mix(in oklab, var(--accent) 50%, transparent);
+    --neon-4: color-mix(in oklab, var(--accent) 35%, transparent);
+    & :is(h2, h3) {
+      transition: color .25s ease, text-shadow .25s ease;
+    }
+    & :is(h2, h3) a {
+      transition: color .25s ease, text-shadow .25s ease;
+    }
+    &:hover :is(h2, h3) {
+      color: var(--neon-fill);
+      text-shadow:
+        0 0 4px var(--neon-1),
+        0 0 12px var(--neon-2),
+        0 0 26px var(--neon-3),
+        0 0 46px var(--neon-4);
+    }
+    &:hover :is(h2, h3) a { color: var(--neon-fill); }
+
+    /* Body: tight token-driven rhythm (24px internal gap = V21 heading→para). */
+    & .u-card__body {
+      padding: clamp(var(--space-5), 3cqi, var(--space-7));
+      display: grid;
+      gap: var(--space-3);
+      align-content: start;
+    }
+
+    /* Media region — definite-height grid container so object-fit:cover crops
+       (the B4 fix, now shared by every media card). */
+    & .u-card__media {
+      display: grid;
+      overflow: clip;
+      background: var(--bg-elev);
+
+      & img {
+        width: 100%; height: 100%;
+        object-fit: cover;
+        transition: transform .6s ease;
+      }
+    }
+    &:hover .u-card__media img { transform: scale(1.04); }
+    @media (prefers-reduced-motion: reduce) {
+      &:hover .u-card__media img { transform: none; }
+    }
+  }
+
+  /* Contact card = .u-card modifier (components layer so it overrides the base
+     hover/animation — layout layer couldn't). It's a form shell → no scroll-rise,
+     no hover lift. Now a FROSTED PANE in the same vocabulary as .glass-card: the
+     new .contact::before glow (layout.css) is the light it refracts. Without that
+     glow a backdrop-filter would frost nothing — the two changes ship together.
+     The opaque --bg-elev surface stays as the no-backdrop-filter fallback. */
+  .contact__card {
+    background: var(--bg-elev);
+    padding: clamp(var(--space-5), 4vw, var(--space-8));
+    box-shadow: var(--shadow), var(--shadow-glow);
+    animation: none;
+
+    @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      & {
+        /* a touch of accent tinted into the surface, then to translucency so the
+           glow reads THROUGH the pane — same recipe shape as .glass-card but a
+           larger, calmer shell (less tint, heavier blur, soft accent rim). */
+        background: color-mix(in oklab,
+                     color-mix(in oklab, var(--accent) 7%, var(--bg-elev)) 72%,
+                     transparent);
+        -webkit-backdrop-filter: blur(30px) saturate(150%);
+                backdrop-filter: blur(30px) saturate(150%);
+        border: 1.5px solid color-mix(in oklab, var(--accent) 30%, var(--border-strong));
+        box-shadow:
+          inset 0 1px 0 color-mix(in oklab, white 26%, transparent),
+          inset 0 0 0 1px color-mix(in oklab, var(--accent) 10%, transparent),
+          0 0 0 1px color-mix(in oklab, var(--accent) 12%, transparent),
+          0 26px 64px -22px rgba(0,0,0,.74),
+          var(--shadow-glow);
+      }
+    }
+    /* It's a form shell, so NO lift on hover (transform stays none). But the base
+       .u-card:hover sets a box-shadow at equal specificity (0,2,0) that this rule
+       must override too — otherwise the rich at-rest frosted shadow (0,1,0) loses
+       and the card visibly DIMS on hover (the two accent rims vanish, the glow
+       tightens). Restate the resting shadow here with the glow nudged UP a little:
+       the card now warms slightly toward you on hover instead of dulling. */
+    &:hover {
+      transform: none;
+      border-color: var(--border);
+    }
+    @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      &:hover {
+        border-color: color-mix(in oklab, var(--accent) 38%, var(--border-strong));
+        box-shadow:
+          inset 0 1px 0 color-mix(in oklab, white 26%, transparent),
+          inset 0 0 0 1px color-mix(in oklab, var(--accent) 16%, transparent),
+          0 0 0 1px color-mix(in oklab, var(--accent) 18%, transparent),
+          0 26px 64px -22px rgba(0,0,0,.74),
+          0 0 70px -8px var(--accent-glow);
+      }
+    }
+
+    /* "Get In Touch" kicker = the neon glow's FIRST call site, now driven by the
+       shared --neon-* dials (declared on .u-card above; .contact__card is a
+       .u-card so it inherits them) — one source of truth, no duplicated colour-
+       mixes. Scoped to .contact so the shared .eyebrow elsewhere stays calm.
+       Lights on card hover (the relationship reads) AND on its own hover. The
+       fill brightens past accent so the glyphs are the light source; the 4-layer
+       shadow is the bloom. (V39/T33.) */
+    & .eyebrow {
+      transition: color .25s ease, text-shadow .25s ease;
+    }
+    &:hover .eyebrow,
+    & .eyebrow:hover {
+      color: var(--neon-fill);
+      text-shadow:
+        0 0 4px var(--neon-1),
+        0 0 12px var(--neon-2),
+        0 0 26px var(--neon-3),
+        0 0 46px var(--neon-4);
+    }
+    /* OPT OUT the big section heading from the card header-neon (V39/T33): this
+       card is a .u-card, so the global `&:hover :is(h2,h3)` would light "Let's
+       build something together." too — at 3em+ that's an overwhelming wall of
+       teal. The card-header glow is meant for card-TITLE-sized h3s; the contact
+       <h2> is a section heading wearing the card shell. The eyebrow (above) is
+       the contact card's intended glow. Reset to the heading's normal look. */
+    &:hover h2 {
+      color: var(--fg);
+      text-shadow: none;
+    }
+  }
+
+  /* Text card — content vertically centered, no media. */
+  .u-card--text {
+    container-type: inline-size;
+    & .u-card__body { align-content: center; }
+    /* meta line on text cards (blog-list, about) — muted on the card surface. */
+    & .post__meta {
+      color: var(--fg-dim);
+      font-size: var(--step--1);
+      letter-spacing: .01em;
+    }
+    /* surface tint on hover lives HERE (not base .u-card) so overlay cards keep
+       their background-image photo. glass cards override this with their own. */
+    &:hover { background: var(--bg-card-hover); }
+  }
+
+  /* Overlay card — image fills, text overlaid bottom-left over a scrim.
+     The whole card is one link (.u-card__link). White text → AA by construction
+     (scrim guarantees contrast regardless of the photo behind). */
+  .u-card--overlay {
+    min-height: 240px;
+    container-type: inline-size;
+
+    /* Bottom-up scrim under the text. */
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(0deg,
+        rgba(8,10,12,.86) 0%, rgba(8,10,12,.45) 36%, transparent 68%);
+      pointer-events: none;
+    }
+    & .u-card__link {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: clamp(var(--space-4), 3cqi, var(--space-6));
+      color: #f4f5f6;
+    }
+    & .u-card__overlay { display: grid; gap: var(--space-2); }
+    & .u-card__meta { color: color-mix(in oklab, #f4f5f6 78%, transparent); font-size: var(--step--1); }
+    & h3 { color: #f4f5f6; font-size: var(--step-1); line-height: 1.18; letter-spacing: -.01em; }
+
+    /* Arrow badge — blurred pill, bottom-right. */
+    & .u-card__badge {
+      position: absolute;
+      z-index: 1;
+      right: var(--space-4);
+      bottom: var(--space-4);
+      display: grid;
+      place-items: center;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: color-mix(in oklab, var(--bg) 55%, transparent);
+      border: 1px solid color-mix(in oklab, #fff 30%, transparent);
+      color: #f4f5f6;
+      -webkit-backdrop-filter: blur(6px);
+              backdrop-filter: blur(6px);
+    }
+  }
+
+  /* Feature overlay — larger, with a top-left diagonal scrim leg so a bigger
+     title stays legible. */
+  .u-card--feature {
+    min-height: clamp(300px, 38vw, 520px);
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background:
+        linear-gradient(160deg, rgba(8,10,12,.78) 0%, rgba(8,10,12,.32) 42%, transparent 72%);
+      pointer-events: none;
+    }
+    & h3 { font-size: var(--step-2); }
+  }
+}

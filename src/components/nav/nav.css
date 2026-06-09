@@ -1,0 +1,85 @@
+/* nav/nav.css — primary nav + mobile burger menu — pairs with nav.ts.
+   Sliced verbatim from css/components.css (lines 101-181); order is load-bearing — see CSS_ORDER in build.ts. */
+@layer components {
+  /* ============ NAV ============ */
+  .primary-nav {
+    & ul {
+      display: flex;
+      gap: var(--space-5);
+      align-items: center;
+    }
+    & a {
+      font-weight: 500;
+      font-size: var(--step--1);
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      color: var(--fg-muted);
+      transition: color .2s;
+      &:hover { color: var(--fg); }
+      /* Active page (HOME on the home route) — brighter, matches the mock */
+      &.is-active { color: var(--fg); font-weight: 600; }
+    }
+    & .cta-pill {
+      padding: .55rem 1.15rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-strong);
+      background: color-mix(in oklab, var(--c-bg) 55%, transparent);
+      color: var(--fg);
+      font-weight: 600;
+      transition: background .2s, color .2s, border-color .2s;
+      &:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #001a14;
+      }
+    }
+  }
+
+  .nav-burger { display: none; }
+  @media (max-width: 800px) {
+    .nav-burger {
+      display: grid;
+      gap: 5px;
+      padding: 10px;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      & span {
+        display: block;
+        width: 22px;
+        height: 2px;
+        background: var(--fg);
+        transition: transform .25s, opacity .2s;
+      }
+    }
+    .primary-nav ul {
+      position: absolute;
+      top: 100%;
+      right: var(--space-4);
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-2);
+      background: var(--bg-elev);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: var(--space-3);
+      min-width: 200px;
+      box-shadow: var(--shadow);
+      transform-origin: top right;
+      transform: scale(.95);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform .2s, opacity .2s;
+    }
+    .nav-toggle:checked {
+      & ~ ul {
+        transform: scale(1);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      & ~ .nav-burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+      & ~ .nav-burger span:nth-child(2) { opacity: 0; }
+      & ~ .nav-burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    }
+  }
+}

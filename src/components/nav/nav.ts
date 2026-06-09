@@ -1,5 +1,5 @@
 /**
- * templates/nav.ts — the shared site header + primary nav.
+ * components/nav/nav.ts — the shared site header + primary nav.
  *
  * Replaces three hand-copied <header> blocks that had drifted: index had a Home
  * link + is-active; about/blog had dropped Home entirely. Now ONE template sets
@@ -7,8 +7,8 @@
  * Home always exists. `isHome` switches section links between bare "#solutions"
  * (on the home page) and "index.html#solutions" (cross-page from about/blog).
  */
-import { html } from "./html.ts";
-import type { NavId } from "../schema/page.ts";
+import { html } from "../../templates/html.ts";
+import type { NavId } from "../../schema/page.ts";
 
 /** Brand SVG logo — identical in header + footer, so defined once. */
 export const brandLogo = (extraClass = ""): string => html`<svg class="brand__logo${

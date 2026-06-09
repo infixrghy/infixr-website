@@ -17,12 +17,18 @@
 
   // ── Ignore patterns ───────────────────────────────────────────────────────
   // The CSS files are NOT imported by any JS module — build.ts reads them at
-  // build time via Bun.file() and inlines them into each page. That runtime
-  // file-read is invisible to fallow's static module graph, so it reports them
-  // as "unused files". They are not dead; exclude them from analysis. (The 3D
-  // vendor loader isn't shipped — hero 3D is deferred — so it's excluded too.)
+  // build time via Bun.file()/readFile (the CSS_ORDER + COMPONENT_CSS path
+  // lists) and inlines them into each page. That runtime file-read is invisible
+  // to fallow's static module graph, so it reports them as "unused files". They
+  // are not dead; exclude them from analysis. This covers BOTH the shared CSS in
+  // src/css/ AND the co-located component CSS under src/components/<name>/*.css
+  // (the reshape that split components.css into component folders) — but ONLY the
+  // .css there; the component .ts render fns ARE real modules reachable from
+  // build.ts, so they stay in the graph. (The 3D vendor loader isn't shipped —
+  // hero 3D is deferred — so it's excluded too.)
   "ignorePatterns": [
     "src/css/**",
+    "src/components/**/*.css",
     "src/js/hero-3d/**"
   ],
 

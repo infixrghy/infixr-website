@@ -12,7 +12,7 @@
  * Page meta still lives in src/pages/about.ts (aboutMeta); this is body only.
  */
 import { html } from "./templates/html.ts";
-import { button } from "./templates/button.ts";
+import { button } from "./components/button/button.ts";
 
 export const renderAboutBody = (): string =>
   html`<main>

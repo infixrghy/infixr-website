@@ -1,0 +1,83 @@
+/* u-card/u-card.overrides.css — POST-glass u-card overrides: .blog teaser tuning, the --neon-fill white-title override (MUST stay after glass-card), overlay __media, .solution-feature.
+   Sliced verbatim from css/components.css (lines 1186-1264); order is load-bearing — see CSS_ORDER in build.ts. */
+@layer components {
+  /* ---- Homepage blog teaser refinements (scoped to .blog) ----
+     The 3-card hybrid: 1 photo feature (.blog-feature) + 2 editorial text cards
+     (.blog-text, now .glass-card). These tune only the homepage section; the blog
+     index + other u-cards are untouched. */
+  .blog {
+    /* Feature title: cap the measure so a long headline wraps to ~2 lines
+       (editorial) instead of one wide line skimming the card's right edge. */
+    & .blog-feature h3 {
+      max-width: 18ch;
+      text-wrap: balance;
+    }
+    /* Accent rim on the photo feature card matching the two glass text cards
+       beside it (resting --gc-rim = accent 60% + --border-strong, 1.5px) — the
+       base .u-card grey hairline made it the odd one out in the trio. */
+    & .blog-feature {
+      border: 1.5px solid color-mix(in oklab, var(--accent) 60%, var(--border-strong));
+      &:hover { border-color: color-mix(in oklab, var(--accent) 70%, white 18%); }
+    }
+    /* Text cards: editorial tweaks only — the glass itself comes from .glass-card.
+       Accent kicker + meta spacing. The linked-title hover is GONE from here: the
+       global .u-card header-neon (above) now lights every card title teal on card
+       hover (V39/T33), superseding the old plain colour-swap that lived here. */
+    & .blog-text {
+      & h3 a { color: inherit; }
+      & .post__meta { margin-top: var(--space-2); }
+      & p:not(.post__meta) { color: var(--fg-muted); text-wrap: pretty; }
+      & .eyebrow { color: color-mix(in oklab, var(--accent) 90%, white); }
+    }
+  }
+
+  /* Photo-feature cards (blog-feature, solution-feature) carry a WHITE title on a
+     photo+scrim. The global card header-neon (V39/T33) would recolour it teal-
+     white; here we keep the fill white so only the teal HALO is added — the title
+     stays its designed white-on-photo (AA-by-scrim untouched), it just gains the
+     glow. This is the call-site that proves --neon-fill must be a dial. */
+  .u-card--overlay { --neon-fill: #f4f5f6; }
+
+  /* When an overlay card carries a real <img> media region (not a bg-image),
+     the media must FILL the card behind the scrim, and the body floats over it
+     at the bottom (white text → AA via the two stacked scrims above). Used by
+     the solutions feature card. */
+  .u-card--overlay .u-card__media {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    aspect-ratio: auto;
+  }
+  .solution-feature {
+    /* Accent rim matching the two glass text cards beside it (their resting
+       --gc-rim = accent 60% + --border-strong, 1.5px). The base .u-card border is
+       a faint grey hairline; this brings the photo feature into the same framed-
+       glass family so the trio reads as one set. */
+    border: 1.5px solid color-mix(in oklab, var(--accent) 60%, var(--border-strong));
+    &:hover { border-color: color-mix(in oklab, var(--accent) 70%, white 18%); }
+
+    & .u-card__body {
+      /* fill the card + push content to the bottom over the scrim (mirrors the
+         overlay __link mechanism so it matches the blog feature cards; a normal
+         -flow block left the title mid-card with empty photo below). */
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      align-content: end;
+      color: #f3f4f5;
+      & h3 { color: #f3f4f5; }
+      & p { color: color-mix(in oklab, #f3f4f5 86%, transparent); }
+      & .link-arrow {
+        color: #f3f4f5;
+        &:hover { color: var(--accent); }
+      }
+    }
+  }
+
+  /* Solutions text cards get the SAME frosted glass as the blog cards — both now
+     carry the unified .glass-card recipe (above), emitted by glass-card.ts. The
+     glassmorphism that V29 mandated for these dark cards lives there; this section
+     just needs the .glass-card class on its text cards (the .solutions::before
+     glow is the light the frost refracts). No per-section glass override here
+     anymore — that was the duplication .glass-card replaced. */
+}

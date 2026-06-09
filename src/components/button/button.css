@@ -1,0 +1,120 @@
+/* button/button.css — .btn + .btn--* variants/modifiers + .link-arrow — pairs with button.ts.
+   Sliced verbatim from css/components.css (lines 183-298); order is load-bearing — see CSS_ORDER in build.ts. */
+@layer components {
+  /* ============ BUTTONS ============
+     Surface variants (the LOOK) are now context-free classes the button()
+     component (templates/button.ts) applies via a `variant` param — the look no
+     longer depends on WHERE the button sits. Modifiers stack on top.
+       Variants (surface):
+         .btn--primary  → light fill (--fg), accent on hover  [about CTA]
+         .btn--ghost    → accent-rimmed outline + soft glow ring  [hero secondary]
+         .btn--glass    → teal-rimmed dark glass pill, solid-accent on hover
+                          [hero "Request a Demo" + contact "Send Message"]
+       Modifiers:
+         .btn--upper    → uppercase + tighter tracking + smaller (the hero type
+                          treatment, lifted out of .hero__cta so it's param-driven)
+       Tertiary text+arrow link is .link-arrow (separate).
+     All ≥ 44×44 px tap target. Hover = non-color motion (transform), RM-gated.
+
+     History: the glass + uppercase looks used to be fused into the .hero__cta
+     descendant selector, so a "primary" button meant 3 different surfaces by
+     ancestor. Decoupled into variants/modifiers so the component controls the
+     look and "Send Message == Request a Demo" is one shared variant, not a
+     contact-scoped copy (that copy was the always-on-glow bug — now gone). */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .5rem;
+    min-height: 44px;
+    padding: .85rem 1.5rem;
+    border-radius: var(--radius-pill);
+    font-weight: 600;
+    font-size: var(--step-0);
+    letter-spacing: .01em;
+    transition: transform .15s, background .2s, color .2s, box-shadow .2s, border-color .2s;
+    border: 1px solid transparent;
+    white-space: nowrap;
+  }
+  .btn--primary {
+    background: var(--fg);
+    color: var(--bg);
+    &:hover {
+      background: var(--accent);
+      color: var(--c-bg);
+      box-shadow: var(--shadow-glow);
+      transform: translateY(-1px);
+    }
+  }
+  /* Ghost: accent-tinted resting border + a soft teal glow ring so it reads as a
+     button, not a faint grey ghost (was scoped to .hero__cta; now the variant). */
+  .btn--ghost {
+    background: transparent;
+    color: var(--fg);
+    border: 1.5px solid color-mix(in oklab, var(--accent) 50%, var(--border-strong));
+    box-shadow: 0 0 18px -8px color-mix(in oklab, var(--accent) 50%, transparent);
+    &:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 24px -6px color-mix(in oklab, var(--accent) 60%, transparent);
+      transform: translateY(-1px);
+    }
+  }
+  /* Glass pill: teal-rimmed dark glass with an inner light-catch hairline + a
+     FAINT outer glow at rest; hover resolves to the solid accent fill. (Lifted
+     verbatim from .hero__cta .btn--primary — the approved "Request a Demo" look.
+     Contact "Send Message" now uses THIS, replacing its bespoke always-on solid
+     glow.) The rest-state glow is deliberately faint (…45% at -10px spread), not
+     the strong --shadow-glow that made Send Message look permanently lit. */
+  .btn--glass {
+    /* Rest = the OLD hover look, now always-on: solid teal fill + dark text +
+       the full --shadow-glow halo. This is the bright-teal state the brief wants
+       at rest, not a faint glass pill. (Was glass-at-rest / fill-on-hover; the
+       fill is now the resting identity.) */
+    background: var(--accent);
+    border: 1.5px solid var(--accent);
+    color: var(--c-bg);
+    box-shadow:
+      var(--shadow-glow),
+      0 6px 22px -10px color-mix(in oklab, var(--accent) 55%, transparent);
+    &:hover {
+      /* Already solid teal at rest, so hover = the slight LIFT (kept, per brief)
+         + a touch brighter/larger halo as the clickable cue. The halo grow + the
+         lift both signal interactivity; the lift is RM-gated below, the halo
+         survives reduced-motion so there's still a cue with motion off. */
+      background: color-mix(in oklab, white 8%, var(--accent));
+      border-color: color-mix(in oklab, white 8%, var(--accent));
+      transform: translateY(-2px);
+      box-shadow:
+        var(--shadow-glow),
+        0 0 48px -8px var(--accent-glow),
+        0 10px 28px -10px color-mix(in oklab, var(--accent) 65%, transparent);
+    }
+  }
+  /* Uppercase modifier — the hero pill typography, now context-free so any
+     button() can opt in (e.g. contact "Send Message" matching the hero pills). */
+  .btn--upper {
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-size: var(--step--1);
+    padding: .8rem 1.4rem;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn:hover { transform: none; }
+  }
+
+  .link-arrow {
+    color: var(--fg);
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    min-height: 44px;
+    transition: color .2s, gap .2s;
+    &:hover { color: var(--accent); gap: .65rem; }
+    &.link-arrow--bold { font-weight: 600; font-size: var(--step-1); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .link-arrow:hover { gap: .35rem; }
+  }
+}

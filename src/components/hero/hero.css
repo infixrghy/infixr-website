@@ -1,0 +1,254 @@
+/* hero/hero.css — hero title, word-slot + xr-slot cyclers, orbital ring.
+   Sliced verbatim from css/components.css (lines 300-549); order is load-bearing — see CSS_ORDER in build.ts. */
+@layer components {
+  /* ============ HERO TITLE ============ */
+  .hero__title {
+    /* Scoped down from the shared --step-5 token (still used by .page-title on the
+       About/Blog heroes — don't shrink those). "A little bit" smaller per Ari:
+       ~12% off at every width (floor+mid+cap all cut, not just the cap), so the
+       headline reads big without dominating the fold. cqi keeps it container-fluid. */
+    font-size: clamp(4rem, 2.75rem + 5cqi, 5.25rem);
+    font-weight: 700;
+    letter-spacing: -.03em;
+    line-height: 1.05;
+    display: flex;
+    flex-direction: column;
+    gap: .15em;
+  }
+  .hero__line { display: block; }
+  .hero__sub {
+    margin-top: var(--space-5);
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+    max-width: 42ch;
+  }
+
+  /* Word slot — words FALL in from above, hold, then drop out the bottom.
+     Per-word animation (grid-stacked, not a scrolling stack): every <li> shares
+     one grid cell and runs the SAME `word-fall` keyframe, staggered by
+     animation-delay so one shows at a time. This decouples the fall DISTANCE
+     (a fixed translate) from the slot SIZE (descender room) — a scrolling stack
+     would tie them together and the word would fall through an empty gap. */
+  .word-slot {
+    display: inline-block;
+    vertical-align: bottom;
+    /* Tall enough to fully contain the line box (incl. g/y/p/j descenders). The
+       clip hides each word until it falls into place + after it drops away. */
+    height: 1.5em;
+    overflow: hidden;
+  }
+  /* Screen reader fallback (and pre-JS-disabled-safe label) */
+  .word-slot__sr {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  /* inline-grid with every li in the SAME cell: stacks the words (overlap, like
+     position:absolute) BUT still sizes the slot to the widest word — absolute
+     children would collapse the slot to 0 width. */
+  .word-slot__list {
+    display: inline-grid;
+    grid-template-columns: minmax(0, max-content);
+    grid-template-rows: 1fr;
+  }
+  .word-slot__list li {
+    grid-column: 1;
+    grid-row: 1;
+    /* 1.4 (was 1.15): background-clip:text paints the gradient only inside the
+       line box; a tight line-height cut Satoshi's g/y/p descender tails even with
+       the slot clip loosened. 1.4 gives the descender room INSIDE the paint box. */
+    line-height: 1.4;
+    white-space: nowrap;
+    display: block;
+    background: linear-gradient(180deg, var(--accent) 0%, color-mix(in oklab, var(--accent) 55%, white) 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    /* Each word: same 10s cycle, offset by 2s (5 words → 1/5 each). Out of its
+       own ~2s window it sits at opacity 0 above the line, invisible. */
+    opacity: 0;
+    animation: word-fall 10s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    will-change: transform, opacity;
+  }
+  .word-slot__list li:nth-child(1) { animation-delay: 0s; }
+  .word-slot__list li:nth-child(2) { animation-delay: 2s; }
+  .word-slot__list li:nth-child(3) { animation-delay: 4s; }
+  .word-slot__list li:nth-child(4) { animation-delay: 6s; }
+  .word-slot__list li:nth-child(5) { animation-delay: 8s; }
+  /* Fallback if background-clip not supported */
+  @supports not (background-clip: text) {
+    .word-slot__list li { color: var(--accent); -webkit-text-fill-color: currentColor; }
+  }
+  /* One word's life within the 10s loop (each li offset by 2s = 20%). The
+     visible span is wider than 20% so consecutive words OVERLAP — the incoming
+     word is fully in BEFORE the outgoing one leaves, so there is never an empty
+     frame (the bug: adjacent, non-overlapping windows flashed a blank slot):
+       0%   parked just above the line, invisible
+       3%   fallen into place + faded in (the "drop")
+       20%  still fully held … (next word starts its own drop here)
+       24%  still visible while the next word finishes arriving (cross-fade)
+       28%  dropped out the bottom + faded, next word now solo
+       →100% parked above again (invisible) until its next turn
+     Fall distance = 0.9em — a clear drop from above (the clip masks the word
+     until it crosses into the line, so a taller start needs no bigger box). */
+  @keyframes word-fall {
+    0%   { transform: translateY(-0.9em); opacity: 0; }
+    3%   { transform: translateY(-0.9em); opacity: 0; }
+    9%   { transform: translateY(0);      opacity: 1; }
+    20%  { transform: translateY(0);      opacity: 1; }
+    24%  { transform: translateY(0);      opacity: 1; }
+    28%  { transform: translateY(0.7em);  opacity: 0; }
+    100% { transform: translateY(-0.9em); opacity: 0; }
+  }
+  /* The fall translate is NEW motion (the cycler itself is grandfathered, V27).
+     Under reduced-motion: keep cycling words but swap via fade only — no fall. */
+  @media (prefers-reduced-motion: reduce) {
+    .word-slot__list li {
+      animation-name: word-fade;
+      animation-timing-function: ease;
+    }
+    @keyframes word-fade {
+      0%, 24%, 100% { opacity: 0; transform: none; }
+      4%, 20%       { opacity: 1; transform: none; }
+    }
+  }
+
+  /* ============ HERO ACRONYM CYCLER (XR → VR → AR → MR) ============
+     A SECOND cycler in the same H1 as .word-slot, on the "… Solutions," line.
+     Phase-locked to the .word-slot round: that cycler's full round is 10s (5
+     words staggered INSIDE one shared 10s loop, not 5×10s — see word-fall). This
+     one is 4 acronyms × 10s = a 40s loop, delays 0/10/20/30s. 40 is a multiple of
+     10 and BOTH lists are static HTML present at first paint, so they share the
+     document timeline origin and stay phase-locked with ZERO drift — each acronym
+     swap lands exactly on a .word-slot round boundary (t=10/20/30/40s). No JS: a
+     JS timer would drift against the CSS animation; CSS-vs-CSS holds the lock.
+     DELIBERATELY MORE SUBTLE than word-fall: opacity cross-fade only + a hair of
+     blur, no vertical drop. Canonical SR/SEO text is "XR" (the superset term —
+     VR/AR/MR ⊂ XR); DOM order XR,VR,AR,MR at delays 0/10/20/30 makes XR the word
+     shown at t=0 (matches the canonical), cycling XR→VR→AR→MR→XR… verbatim. */
+  .xr-slot {
+    position: relative;
+    display: inline-grid;
+    grid-template-columns: minmax(0, max-content);
+    grid-template-rows: 1fr;
+    vertical-align: baseline;
+  }
+  .xr-slot__list {
+    display: inline-grid;
+    grid-template-columns: minmax(0, max-content);
+    grid-template-rows: 1fr;
+  }
+  .xr-slot__list li {
+    grid-column: 1;
+    grid-row: 1;
+    white-space: nowrap;
+    display: block;
+    /* gradient fill matches .word-slot so both cyclers read as one system */
+    background: linear-gradient(180deg, var(--accent) 0%, color-mix(in oklab, var(--accent) 55%, white) 100%);
+    -webkit-background-clip: text;
+            background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    opacity: 0;
+    /* 40s loop, 4 acronyms; quick fade-and-soften (no drop). */
+    animation: xr-cross 40s ease-in-out infinite;
+    will-change: opacity, filter;
+  }
+  /* VR/AR/MR: single looping cycle, offset 10/20/30s — each fades in quick on
+     EVERY turn, including its first appearance. */
+  .xr-slot__list li:nth-child(2) { animation-delay: 10s; }
+  .xr-slot__list li:nth-child(3) { animation-delay: 20s; }
+  .xr-slot__list li:nth-child(4) { animation-delay: 30s; }
+  /* XR is special: it must be SOLID at first paint (no fade-in flash), but still
+     fade in quick on its LATER turns (t=40s, 80s…). So it runs TWO animations:
+       • xr-first — one-shot, NON-repeating, opacity:1 from load (instant), then
+         softens out at the same instant a normal turn would (27% of 40s ≈ 10.8s).
+       • xr-cross — the normal infinite loop, but delayed a full 40s so it only
+         drives XR's 2nd appearance onward (where the quick fade-in is wanted).
+     The two never overlap: xr-first ends ~10.8s, xr-cross's first visible frame
+     is at 40s. Keeps the 0/10/20/30 boundary math intact (no negative-delay
+     seek, which would drift XR's swaps off the word-slot round boundaries). */
+  .xr-slot__list li:nth-child(1) {
+    animation: xr-first 40s ease-in-out 1 both,
+               xr-cross 40s ease-in-out 40s infinite;
+  }
+  @supports not (background-clip: text) {
+    .xr-slot__list li { color: var(--accent); -webkit-text-fill-color: currentColor; }
+  }
+  /* One acronym's life in the 40s loop (each li offset by 10s = 25%). BOTH the
+     fade-in and the fade-out are now quick AND symmetric (~0.2s each), so the
+     acronym snaps in and clips out crisply — no slow melt on exit. The exit is
+     deliberately placed to overlap the NEXT acronym's entrance: the next li is
+     +10s = +25% of the loop, so its fade-in (2.5%→3% of ITS cycle) lands at THIS
+     word's 27.5%→28%. Holding opaque to 27.5% then clipping out by 28% means the
+     outgoing word leaves exactly as the incoming snaps in — overlap, no empty
+     slot, no mid-dip. %s are of the FULL 40s loop:
+       0–2.5%   invisible, faintly soft
+       3%       fully in + sharp (≈0.2s snap)  ← just after the round boundary
+       3–27.5%  held sharp
+       28%      clipped out (≈0.2s, the next acronym is snapping in right here)
+       →100%    invisible until its next turn.
+     Exit blur trimmed to 0.8px (was 1.5px): a near-pure opacity clip reads faster
+     than a blur-smear at the same duration. */
+  @keyframes xr-cross {
+    0%     { opacity: 0; filter: blur(1.5px); }
+    2.5%   { opacity: 0; filter: blur(1.5px); }
+    3%     { opacity: 1; filter: blur(0);     }
+    27.5%  { opacity: 1; filter: blur(0);     }
+    28%    { opacity: 0; filter: blur(0.8px); }
+    100%   { opacity: 0; filter: blur(0.8px); }
+  }
+  /* XR's first-paint, one-shot: SOLID from load (opacity:1, no blur) — the word
+     is fully there the instant the page renders, no fade-in. Same quick clip-out
+     as a normal turn: holds to 27.5%, gone by 28% (≈11.1s), exactly when VR's
+     xr-cross fade-in lands. After this single run, `both` fill holds XR invisible
+     until the delayed looping xr-cross takes over at t=40s. */
+  @keyframes xr-first {
+    0%     { opacity: 1; filter: blur(0);     }
+    27.5%  { opacity: 1; filter: blur(0);     }
+    28%    { opacity: 0; filter: blur(0.8px); }
+    100%   { opacity: 0; filter: blur(0.8px); }
+  }
+  /* Reduced-motion: keep cycling, pure fade (drop the blur too). XR-first too:
+     solid-from-load, fade out only. */
+  @media (prefers-reduced-motion: reduce) {
+    .xr-slot__list li {
+      animation-name: xr-fade;
+      animation-timing-function: ease;
+    }
+    .xr-slot__list li:nth-child(1) {
+      animation-name: xr-first-fade, xr-fade;
+    }
+    @keyframes xr-fade {
+      0%, 28%, 100% { opacity: 0; filter: none; }
+      3%, 27.5%     { opacity: 1; filter: none; }
+    }
+    @keyframes xr-first-fade {
+      0%, 27.5%     { opacity: 1; filter: none; }
+      28%, 100%     { opacity: 0; filter: none; }
+    }
+  }
+
+  /* ============ HERO ORBITAL RING ============
+     A SINGLE static perspective-flattened ellipse + 3 static waypoint nodes,
+     framing the headset. Deliberately NOT animated: the headset (model-viewer
+     auto-rotate) is the one point of motion in the hero; a still frame around
+     moving focal content reads stronger than competing rotations. The old
+     ring-spin + node-pulse keyframes were removed for this reason. */
+  .hero__ring-arc {
+    stroke: color-mix(in oklab, var(--c-fg) 18%, transparent);
+    stroke-width: 1;
+  }
+  .hero__node {
+    fill: color-mix(in oklab, var(--c-fg) 50%, transparent);
+  }
+  .hero__node--accent {
+    fill: var(--accent);
+    /* the single spark of colour — stronger glow so the static dot reads as an
+       intentional focal accent, not a leftover from the removed pulse. */
+    filter: drop-shadow(0 0 8px var(--accent-glow));
+  }
+}

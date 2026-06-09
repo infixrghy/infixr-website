@@ -96,8 +96,8 @@ const readdirT = (path: string) =>
 
 import { decodePageMeta, type PageMeta } from "./src/schema/page.ts";
 import { renderHead } from "./src/templates/head.ts";
-import { renderNav } from "./src/templates/nav.ts";
-import { renderFooter } from "./src/templates/footer.ts";
+import { renderNav } from "./src/components/nav/nav.ts";
+import { renderFooter } from "./src/components/footer/footer.ts";
 import { indexMeta } from "./src/pages/index.ts";
 import { aboutMeta } from "./src/pages/about.ts";
 import { blogMeta } from "./src/pages/blog.ts";
@@ -108,11 +108,36 @@ import { renderAboutBody } from "./src/about.ts";
 const SRC = "src";
 const OUT = "public";
 
+// Component CSS — co-located under src/components/<name>/. THE ORDER OF THIS
+// ARRAY IS THE CASCADE CONTRACT: it reproduces the top-to-bottom rule order the
+// old monolithic components.css had, which several rules depend on (equal
+// specificity → later-in-source wins; media queries add no specificity). Edit
+// with care — do NOT alphabetise or derive from a dir scan. Notably:
+//   • glass-card loads AFTER u-card (glass:hover overrides .u-card--text:hover);
+//   • u-card.overrides loads AFTER glass-card (the --neon-fill white-title
+//     override for photo cards must win over the glass + base-u-card neon rules).
+// (Was one src/css/components.css block — split for source co-location; output
+// is rule-order-identical, only extra @layer-component wrappers differ. Each
+// file self-wraps `@layer components {}`; same-named layers merge in order.)
+const COMPONENT_CSS = [
+  "src/components/typography/typography.css",
+  "src/components/cursor/cursor.css",
+  "src/components/nav/nav.css",
+  "src/components/button/button.css",
+  "src/components/hero/hero.css",
+  "src/components/carousel/carousel.css",
+  "src/components/u-card/u-card.css",
+  "src/components/glass-card/glass-card.css",
+  "src/components/u-card/u-card.overrides.css",
+  "src/components/contact/contact.css",
+  "src/components/footer/footer.css",
+];
+
 const CSS_ORDER = [
   "src/css/reset.css",
   "src/css/tokens.css",
   "src/css/layout.css",
-  "src/css/components.css",
+  ...COMPONENT_CSS,
 ];
 const PAGES_CSS = "src/css/pages.css";
 

@@ -1,0 +1,42 @@
+/* footer/footer.css — .footer-h + .footer-links + .social-links — pairs with footer.ts.
+   Sliced verbatim from css/components.css (lines 1367-1404); order is load-bearing — see CSS_ORDER in build.ts. */
+@layer components {
+  /* ============ FOOTER ============ */
+  .footer-h {
+    font-size: var(--step-0);
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+    color: var(--fg);
+    letter-spacing: .01em;
+    line-height: 1.3;
+  }
+  .site-footer {
+    & p, & address { color: var(--fg-muted); font-style: normal; }
+    & a:hover { color: var(--accent); }
+  }
+  .footer-links { display: grid; gap: var(--space-2); color: var(--fg-muted); }
+  .social-links {
+    display: flex;
+    gap: var(--space-3);
+    & a {
+      display: grid;
+      place-items: center;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      /* Resting disc = faint teal tint + accent hairline (was the flat grey
+         --bg-card, the same dead grey Ari flagged). The icon itself picks up a
+         little accent so the link reads as part of the teal vocabulary at rest;
+         hover fills solid teal. */
+      background: color-mix(in oklab, var(--accent) 12%, transparent);
+      border: 1px solid color-mix(in oklab, var(--accent) 28%, transparent);
+      color: color-mix(in oklab, var(--accent) 55%, var(--fg-muted));
+      transition: background .2s, color .2s, border-color .2s, transform .2s;
+      &:hover {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #001a14;
+        transform: translateY(-2px);
+      }
+    }
+  }
+}

@@ -2,8 +2,13 @@
  * lint.ts — dead-token check (V26).
  *
  * Reads css/tokens.css, extracts every --var declaration, then greps the rest
- * of css/* for `var(--<name>)`. Any token defined but never referenced is
+ * of the CSS for `var(--<name>)`. Any token defined but never referenced is
  * reported. Exit code 1 if dead tokens found.
+ *
+ * Consumers = the shared non-component CSS (pages/layout/reset) PLUS every
+ * co-located component CSS under src/components/ (since components.css was split
+ * + moved there). Component-local custom props (e.g. .glass-card --gc-*) are
+ * exempted from orphan-ref checks below — V26 only governs tokens.css tokens.
  *
  * Usage: `bun run lint.ts`
  */
@@ -11,7 +16,12 @@ import { readFile } from "node:fs/promises";
 import { Glob } from "bun";
 
 const TOKENS_FILE = "src/css/tokens.css";
-const CONSUMER_GLOB = "src/css/{components,pages,layout,reset}.css";
+// Two globs, NOT one nested-brace pattern: Bun's Glob does not expand nested
+// `{…{…}…}` braces (it silently matches nothing). Scanned in turn below.
+const CONSUMER_GLOBS = [
+  "src/css/{pages,layout,reset}.css",
+  "src/components/**/*.css",
+];
 
 const tokensSrc = await readFile(TOKENS_FILE, "utf8");
 
@@ -22,9 +32,10 @@ for (const m of tokensSrc.matchAll(/--([a-z][a-z0-9-]*)\s*:/gi)) {
 }
 
 let consumerSrc = "";
-const glob = new Glob(CONSUMER_GLOB);
-for await (const file of glob.scan(".")) {
-  consumerSrc += await readFile(file, "utf8");
+for (const pattern of CONSUMER_GLOBS) {
+  for await (const file of new Glob(pattern).scan(".")) {
+    consumerSrc += await readFile(file, "utf8");
+  }
 }
 
 const referenced = new Set<string>();

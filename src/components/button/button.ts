@@ -1,7 +1,7 @@
 /**
- * templates/button.ts — the button component, rendered once.
+ * components/button/button.ts — the button component, rendered once.
  *
- * The button SURFACES live as context-free .btn--* classes (css/components.css);
+ * The button SURFACES live as context-free .btn--* classes (components/button/button.css);
  * this is the typed AUTHORING path that assembles them. One signature emits every
  * button on the site: hero CTAs (glass + uppercase links), the contact form's send
  * (glass + uppercase submit), and the about CTA (primary link).
@@ -12,12 +12,12 @@
  * not a silently wrong element).
  */
 import { Option } from "effect";
-import { html, esc } from "./html.ts";
+import { html, esc } from "../../templates/html.ts";
 import {
   decodeButton,
   type ButtonParams,
   type ButtonAction,
-} from "../schema/button.ts";
+} from "../../schema/button.ts";
 
 /** Assemble the class list: base .btn + the variant surface + optional modifiers. */
 const classList = (p: ButtonParams): string => {

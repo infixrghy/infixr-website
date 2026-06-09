@@ -1,8 +1,8 @@
 /**
- * templates/glass-card.ts — the frosted glass-card component, rendered once.
+ * components/glass-card/glass-card.ts — the frosted glass-card component, rendered once.
  *
  * The approved V3 glass (sheen sweep + lit teal rim + tinted surface) lives as the
- * .glass-card CSS class (css/components.css) and can be dropped onto ANY card. This
+ * .glass-card CSS class (components/glass-card/glass-card.css) and can be dropped onto ANY card. This
  * component is the typed AUTHORING path for the text-card shapes that carry it: the
  * blog/article cards (eyebrow + linked title + <time> meta) AND the Solutions cards
  * (plain title + CTA link, no eyebrow). One signature serves both — the shape
@@ -16,13 +16,13 @@
  * boundary. Full spec: design/GLASS-CARD.md.
  */
 import { Option } from "effect";
-import { html, esc } from "./html.ts";
-import { displayDate } from "../blog.ts";
+import { html, esc } from "../../templates/html.ts";
+import { displayDate } from "../../blog.ts";
 import {
   decodeGlassCard,
   type GlassCardParams,
   type GlassFooter,
-} from "../schema/glass-card.ts";
+} from "../../schema/glass-card.ts";
 
 /** Build the inline `style` for any supplied per-instance dial overrides. Returns
  *  "" when none are set (the variant preset / V3 default then drives the look). */

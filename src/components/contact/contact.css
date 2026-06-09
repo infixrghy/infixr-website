@@ -1,0 +1,104 @@
+/* contact/contact.css — .field form wells + contact-form actions/status.
+   Sliced verbatim from css/components.css (lines 1266-1365); order is load-bearing — see CSS_ORDER in build.ts. */
+@layer components {
+  /* ============ FORM ============
+     The contact form was the only homepage surface left in the "plain bordered
+     box" idiom while everything around it went glass/glow. Reworked into the same
+     engineered vocabulary: labels read as instrument kickers (uppercase micro-
+     caps, accent-tinted), fields are recessed "wells" (inset shadow → they sit
+     INTO the frosted card, not floating on it), and the accent focus ring already
+     in place now lands on a surface that earns it. The submit button is pulled
+     into the accent-rimmed glass-pill family (see .btn--primary). */
+
+  /* Label = engineered kicker. Same micro-cap treatment as the .eyebrow, scoped
+     to the form so it reads as a field instrument tag, not a heading. */
+  .field {
+    display: grid;
+    gap: var(--space-2);
+
+    & label {
+      font-size: var(--step--1);
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: color-mix(in oklab, var(--accent) 64%, var(--c-fg));
+    }
+
+    & input,
+    & textarea {
+      /* recessed well: a hair darker than the card + an inset shadow so the
+         field reads as carved INTO the pane. Brightens + lifts out on focus. */
+      background: color-mix(in oklab, var(--c-bg) 90%, black);
+      border: 1px solid var(--border-strong);
+      border-radius: var(--radius);
+      padding: .85rem 1rem;
+      color: var(--fg);
+      caret-color: var(--accent);
+      width: 100%;
+      font-family: inherit;
+      font-size: var(--step-0);
+      box-shadow: inset 0 1px 3px rgba(0,0,0,.34);
+      transition: border-color .2s, background .2s, box-shadow .2s, transform .2s;
+
+      &::placeholder { color: var(--fg-dim); }
+
+      &:hover {
+        border-color: color-mix(in oklab, var(--accent) 32%, var(--border-strong));
+      }
+      &:focus {
+        outline: none;
+        /* Active field lifts toward the ACCENT directly (not the white-based --lift):
+           the focused well should read teal, matching the ring + border + caret —
+           the grey-toward-white lift was the colour that looked "off". ~16% accent
+           keeps it a dark, recessed field, just unmistakably teal-tinted now. */
+        background: color-mix(in oklab, var(--c-bg) 84%, var(--accent));
+        border-color: var(--accent);
+        /* inset shadow flips off + an outer accent ring + faint bloom: the field
+           "lights up" and rises out of the recess on focus. */
+        box-shadow:
+          0 0 0 3px color-mix(in oklab, var(--accent) 24%, transparent),
+          0 8px 22px -12px var(--accent-glow);
+        transform: translateY(-1px);
+      }
+      &:user-invalid {
+        border-color: #ff6464;
+        box-shadow: 0 0 0 3px rgba(255, 100, 100, .15);
+      }
+      &:user-valid {
+        border-color: color-mix(in oklab, var(--accent) 60%, transparent);
+      }
+    }
+    & textarea { resize: vertical; min-height: 140px; line-height: 1.5; }
+  }
+
+  /* Reduced motion: drop the field focus lift (keep the colour/ring cues). */
+  @media (prefers-reduced-motion: reduce) {
+    .field input:focus,
+    .field textarea:focus { transform: none; }
+  }
+
+  .contact-form__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-top: var(--space-3);
+  }
+  /* Send button = the glass-pill variant (.btn--glass .btn--upper), same as the
+     hero "Request a Demo" — applied via button() in home.ts. No bespoke surface
+     rule here anymore: the old contact-scoped solid-teal copy is what made the
+     button look permanently lit, and its hover-lift needed a special RM override
+     (its (0,4,0) specificity outranked the global .btn:hover reset). Both are gone
+     — the shared .btn--glass hover lift is covered by the global RM reset. */
+  .contact-form__status:not(:empty) {
+    font-size: var(--step--1);
+    color: var(--fg-muted);
+  }
+  .contact-form__status[data-state="success"] { color: var(--accent); }
+  .contact-form__status[data-state="error"] { color: #ff8a8a; }
+
+  .contact-form button[type="submit"][aria-busy="true"] {
+    opacity: .7;
+    pointer-events: none;
+  }
+}
