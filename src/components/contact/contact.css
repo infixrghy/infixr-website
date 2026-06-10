@@ -69,6 +69,21 @@
       }
     }
     & textarea { resize: vertical; min-height: 140px; line-height: 1.5; }
+
+    /* Auto-grow the MESSAGE textarea with typed content — the CSS-native
+       replacement for the JS-autosize most sites ship (✓ V1, 0 new bytes).
+       Scoped TIGHT to `.field--full textarea` (= #cf-message, the only textarea)
+       on purpose: a bare `& textarea` would be `.field textarea` and silently
+       auto-grow every FUTURE field textarea (the defect V40 names). min-height
+       above stays the rest FLOOR (field-sizing collapses an empty box to ~rows
+       height else); max-block-size caps a paste-bomb at ~half-viewport → the box
+       inner-scrolls past the cap; `rows="5"` is the no-support fallback height. */
+    &.field--full textarea {
+      @supports (field-sizing: content) {
+        field-sizing: content;
+        max-block-size: clamp(140px, 50vh, 540px);
+      }
+    }
   }
 
   /* Reduced motion: drop the field focus lift (keep the colour/ring cues). */
