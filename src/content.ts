@@ -54,6 +54,18 @@ export const displayDate = (iso: string): string => {
 };
 
 /**
+ * The post meta-line fragment: `<time datetime=…>Mon D, YYYY</time> &middot;
+ * N min read` — the ONE source for it (it was hand-built in three files: the
+ * blog cards, the home feature card, the glass-card meta footer). Returns the
+ * inner fragment only: callers own their wrapper (`<p class="post__meta">` vs
+ * `<p class="u-card__meta">`) and any trailing segments (the blog index appends
+ * `&middot; Category`). Inputs are schema-validated upstream (IsoDate pattern,
+ * positive number), so they interpolate raw.
+ */
+export const timeMeta = (date: string, readMinutes: number): string =>
+  `<time datetime="${date}">${displayDate(date)}</time> &middot; ${String(readMinutes)} min read`;
+
+/**
  * Split a raw .md file into its front-matter object + markdown body. Front-matter
  * is the block between the leading `---` fences; values may be quoted. This is a
  * deliberately tiny parser (no YAML dep) — our front-matter is flat key:value.

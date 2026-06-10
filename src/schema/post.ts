@@ -48,9 +48,7 @@ export const BlogPostFrontMatter = Schema.Struct({
 
   // ── optional → Option, never null ──
   // OptionFromOptional: a missing key OR a present `undefined` decodes to None.
-  // The front-matter omits these keys entirely when the post has no cover/update.
-  /** Hero/cover image path; absent posts render text-only cards. */
-  coverImage: Schema.OptionFromOptional(Schema.NonEmptyString),
+  // The front-matter omits the key entirely when the post has no update.
   /** Last-updated date if revised after publish. */
   updated: Schema.OptionFromOptional(IsoDate),
 });

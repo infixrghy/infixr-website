@@ -24,7 +24,7 @@ import { html, esc } from "../../templates/html.ts";
 import { picture } from "../../templates/picture.ts";
 import { glassCard } from "../../components/glass-card/glass-card.ts";
 import { button } from "../../components/button/button.ts";
-import { displayDate } from "../../content.ts";
+import { timeMeta } from "../../content.ts";
 import type { BlogPost } from "../../schema/post.ts";
 
 /**
@@ -65,9 +65,7 @@ const renderHomeFeature = (p: BlogPost): string =>
         </div>
         <a class="u-card__link" href="blog/${esc(p.slug)}.html">
           <div class="u-card__overlay">
-            <p class="u-card__meta"><time datetime="${p.date}">${displayDate(
-    p.date
-  )}</time> &middot; ${String(p.readMinutes)} min read</p>
+            <p class="u-card__meta">${timeMeta(p.date, p.readMinutes)}</p>
             <h3>${esc(p.title)}</h3>
           </div>
           <span class="u-card__badge" aria-hidden="true">&rarr;</span>

@@ -17,7 +17,7 @@
  */
 import { Option } from "effect";
 import { html, esc } from "../../templates/html.ts";
-import { displayDate } from "../../content.ts";
+import { timeMeta } from "../../content.ts";
 import {
   decodeGlassCard,
   type GlassCardParams,
@@ -40,11 +40,7 @@ const overrideStyle = (p: GlassCardParams): string => {
 const renderFooter = (f: GlassFooter): string => {
   switch (f._tag) {
     case "meta":
-      return html`<p class="post__meta"><time datetime="${
-        f.date
-      }">${displayDate(f.date)}</time> &middot; ${String(
-        f.readMinutes
-      )} min read</p>`;
+      return html`<p class="post__meta">${timeMeta(f.date, f.readMinutes)}</p>`;
     case "cta":
       return html`<a class="link-arrow" href="${esc(f.href)}">${esc(
         f.label
