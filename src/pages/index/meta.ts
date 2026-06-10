@@ -1,10 +1,10 @@
 /**
- * pages/index.ts — page-meta config for the home page (index.html).
+ * pages/index/meta.ts — page-meta config for the home page (index.html).
  *
  * This is the full <head> superset: og:image:alt + og:locale are present here
  * (Option Some) and absent on about/blog (Option None). Raw object, decoded by
  * build.ts through PageMeta — so a typo here (e.g. empty title) fails the build.
- * Body markup lives in pages/index.body.html (static partial).
+ * Body markup lives beside it in pages/index/body.ts (renderHomeBody).
  */
 export const indexMeta = {
   title: "Industrial VR Development & Corporate Solutions | InfiXR",

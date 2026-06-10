@@ -43,6 +43,21 @@
   // legitimate, so the pattern doesn't trip the gate as new schemas are added.
   "ignoreExportsUsedInFile": true,
 
+  // ── Unresolved imports ────────────────────────────────────────────────────
+  // pages/index/body.ts emits `<script src="js/hero-3d/loader.js">` as HTML TEXT
+  // inside its `html` tagged-template (the page's <main> string) — it is NOT a JS
+  // import, just markup the build inlines. fallow's static resolver scans the .ts
+  // source and mistakes that string literal for a relative module specifier, then
+  // can't resolve it (the loader lives under src/js/hero-3d/, already excluded from
+  // the graph by ignorePatterns above — hero 3D is deferred, not shipped via the
+  // module graph). The mis-read only surfaced after the per-page-folder move put
+  // body.ts one dir deeper. A line-suppression can't sit inside the template string
+  // (it'd render into the HTML output), so the specifier is whitelisted here — the
+  // narrow, honest fix fallow's own report recommends for a known non-import.
+  "ignoreUnresolvedImports": [
+    "./js/hero-3d/loader.js"
+  ],
+
   // ── Duplication ───────────────────────────────────────────────────────────
   "duplicates": {
     // Hide pair-only clones; focus on widespread copy-paste worth refactoring.

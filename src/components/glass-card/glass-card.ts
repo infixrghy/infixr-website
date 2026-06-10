@@ -17,7 +17,7 @@
  */
 import { Option } from "effect";
 import { html, esc } from "../../templates/html.ts";
-import { displayDate } from "../../blog.ts";
+import { displayDate } from "../../content.ts";
 import {
   decodeGlassCard,
   type GlassCardParams,

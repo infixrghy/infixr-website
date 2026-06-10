@@ -11,9 +11,10 @@
  *
  * Shared chrome (head/nav/footer) is now rendered ONCE from src/templates/*, so
  * the old three-hand-copies drift (missing Home link, stale year, divergent
- * footer links) is structurally impossible. Page bodies stay as static HTML
- * partials (src/pages/*.body.html); the blog body is data-driven from
- * content/posts/*.md (see renderBlogBody).
+ * footer links) is structurally impossible. Page bodies are typed render fns
+ * co-located with their head meta under src/pages/<page>/ (body.ts + meta.ts); the
+ * blog body is data-driven from content/posts/*.md (see renderBlogBody). The shared
+ * post data layer (loadPosts) lives in src/content.ts.
  *
  * src/ is the source of truth and is NEVER written to. public/ is generated and
  * gitignored; GitHub Actions builds it and deploys via actions/deploy-pages.
@@ -98,12 +99,13 @@ import { decodePageMeta, type PageMeta } from "./src/schema/page.ts";
 import { renderHead } from "./src/templates/head.ts";
 import { renderNav } from "./src/components/nav/nav.ts";
 import { renderFooter } from "./src/components/footer/footer.ts";
-import { indexMeta } from "./src/pages/index.ts";
-import { aboutMeta } from "./src/pages/about.ts";
-import { blogMeta } from "./src/pages/blog.ts";
-import { renderBlogBody, renderPost, postPageMeta, loadPosts } from "./src/blog.ts";
-import { renderHomeBody } from "./src/home.ts";
-import { renderAboutBody } from "./src/about.ts";
+import { indexMeta } from "./src/pages/index/meta.ts";
+import { aboutMeta } from "./src/pages/about/meta.ts";
+import { blogMeta } from "./src/pages/blog/meta.ts";
+import { renderHomeBody } from "./src/pages/index/body.ts";
+import { renderAboutBody } from "./src/pages/about/body.ts";
+import { renderBlogBody, renderPost, postPageMeta } from "./src/pages/blog/body.ts";
+import { loadPosts } from "./src/content.ts";
 
 const SRC = "src";
 const OUT = "public";
@@ -281,10 +283,11 @@ const program = Effect.gen(function* () {
   const coreCss = yield* readCss(CSS_ORDER);
   const pagesCss = yield* readCss([PAGES_CSS]);
 
-  // Page bodies: all three are now render fns (about was a static partial until its
-  // CTA moved to the typed button() component — a .html file can't call a TS fn, so
-  // it became renderAboutBody, mirroring the index→home.ts promotion). index + blog
-  // also pull the latest posts (home into its blog mosaic — see src/home.ts).
+  // Page bodies: all three are render fns under src/pages/<page>/body.ts (about was
+  // a static partial until its CTA moved to the typed button() component — a .html
+  // file can't call a TS fn). index + blog also pull the latest posts (home into its
+  // blog mosaic — see pages/index/body.ts). loadPosts is the shared data layer in
+  // src/content.ts (was src/blog.ts — extracted so it's not owned by the blog page).
   const aboutBody = renderAboutBody();
   const posts = yield* loadPosts;
   const indexBody = renderHomeBody(posts);

@@ -1,9 +1,9 @@
 /**
- * pages/about.ts — page-meta config for About (about.html).
+ * pages/about/meta.ts — page-meta config for About (about.html).
  *
  * Subset of the head: no og:image:alt, no og:locale (those stay undefined →
  * decoded to Option None → head template emits nothing for them). Body markup
- * lives in pages/about.body.html.
+ * lives beside it in pages/about/body.ts (renderAboutBody).
  */
 export const aboutMeta = {
   title: "About Us | InfiXR",

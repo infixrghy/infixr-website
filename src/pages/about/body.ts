@@ -1,18 +1,21 @@
 /**
- * about.ts — the About page <main>, as a typed render fn `renderAboutBody() → string`.
+ * pages/about/body.ts — the About page <main>, as a typed render fn
+ * `renderAboutBody() → string`.
  *
- * Was src/pages/about.body.html (a hand-authored static partial read raw in build.ts).
- * Promoted to a render fn for ONE reason: its CTA button now goes through the typed
- * button() component (templates/button.ts) like every other button on the site — a
- * static .html file can't call a TS function, so the page had to become a render fn
- * (mirrors the index→home.ts promotion). The prose is otherwise byte-for-byte the
- * old partial; only the trailing CTA <a> is now button({variant:"glass", …}).
+ * Was src/pages/about.body.html (a hand-authored static partial read raw in
+ * build.ts) → src/about.ts → here (the per-page folder, paired with meta.ts).
+ * Promoted from the static partial to a render fn for ONE reason: its CTA button
+ * now goes through the typed button() component (components/button/button.ts) like
+ * every other button on the site — a static .html file can't call a TS function, so
+ * the page had to become a render fn. The prose is otherwise byte-for-byte the old
+ * partial; only the trailing CTA <a> is now button({variant:"glass", …}).
  *
- * Takes no data (unlike home/blog which take posts) — the About body is static copy.
- * Page meta still lives in src/pages/about.ts (aboutMeta); this is body only.
+ * Takes no data (unlike index/blog which take posts) — the About body is static
+ * copy. Page meta lives beside it in pages/about/meta.ts (aboutMeta); this is body
+ * only.
  */
-import { html } from "./templates/html.ts";
-import { button } from "./components/button/button.ts";
+import { html } from "../../templates/html.ts";
+import { button } from "../../components/button/button.ts";
 
 export const renderAboutBody = (): string =>
   html`<main>

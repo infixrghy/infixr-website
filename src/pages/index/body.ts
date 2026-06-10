@@ -1,8 +1,9 @@
 /**
- * home.ts — the homepage <main>, rendered from templates + live post data.
+ * pages/index/body.ts — the homepage <main>, rendered from templates + live post data.
  *
- * Was src/pages/index.body.html (a hand-authored static partial). Promoted to a
- * render fn for two reasons:
+ * Was src/pages/index.body.html (a hand-authored static partial) → src/home.ts →
+ * here (the per-page folder, paired with meta.ts). Promoted from the static partial
+ * to a render fn for two reasons:
  *   1. The blog section was a hand-copied snapshot of content/posts/*.md that had
  *      already drifted — wrong links (all → blog.html, never the per-post page),
  *      invented read-times, and a fixed top-5 that silently ignored new posts.
@@ -15,14 +16,16 @@
  * build. The trailing hero-3d loader <script> is part of this body (it sat after
  * </main> in the partial), so it's appended after the closing tag here too.
  *
- * Mirrors blog.ts: a `posts → string` render fn fed by loadPosts in build.ts.
+ * A `posts → string` render fn fed by loadPosts (content.ts) in build.ts; the post
+ * data layer (loadPosts/displayDate) lives in src/content.ts — shared with the blog
+ * page, not owned by either.
  */
-import { html, esc } from "./templates/html.ts";
-import { picture } from "./templates/picture.ts";
-import { glassCard } from "./components/glass-card/glass-card.ts";
-import { button } from "./components/button/button.ts";
-import { displayDate } from "./blog.ts";
-import type { BlogPost } from "./schema/post.ts";
+import { html, esc } from "../../templates/html.ts";
+import { picture } from "../../templates/picture.ts";
+import { glassCard } from "../../components/glass-card/glass-card.ts";
+import { button } from "../../components/button/button.ts";
+import { displayDate } from "../../content.ts";
+import type { BlogPost } from "../../schema/post.ts";
 
 /**
  * The homepage blog teaser is 3 cards, NOT the full index (a "View More →" link

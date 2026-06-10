@@ -17,9 +17,8 @@ static infixr.com rebuild. html+css. minimal js. mobile-OK. GH Pages host.
 - build pipeline = Effect.ts (Schema + Option, ⊥ null) as build-time-only LIBRARY (ships 0 client bytes — ✓ ⊥-framework). templating = typed `Data → string` render fns, ⊥ templating DSL. markdown via `marked`, build-time only, 0 client bytes.
 
 ## §I INTERFACES
-- page: `src/index.html` → home (hero, who-we-are carousel, solutions, blog teaser, contact form, footer)
-- page: `src/about.html` → company prose + values
-- page: `src/blog.html` → post list (lorem mock)
+- pages: each is a folder `src/pages/<page>/` with co-located `body.ts` (the `<main>` render fn) + `meta.ts` (`PageMeta` config). `index/` → home (hero, who-we-are carousel, solutions, blog teaser, contact form); `about/` → company prose + values; `blog/` → post list (data-driven from `content/posts/*.md`). build wraps each body in shared chrome → `public/{index,about,blog}.html`. (No static `src/*.html` files — bodies are typed render fns; cites V33/V35.)
+- content data: `src/content.ts` → `loadPosts` (read+validate+render `content/posts/*.md` → `BlogPost[]`) + `displayDate`. The post data layer, shared by `pages/index/body.ts` (homepage teaser), `pages/blog/body.ts` (index + per-post pages), `components/glass-card` (`<time>` meta). Build-time only, 0 client bytes.
 - asset: `src/assets/hero2.png` → hero bg
 - asset: `src/assets/who-{1,2,3}.jpg` → carousel cards
 - asset: `src/assets/sol-{corporate,industrial,realestate}.png` → solutions cards
