@@ -229,16 +229,15 @@ function inlineAndPreload(
     .replace(/<link rel="stylesheet" href="css\/[^"]+">\s*/g, "");
 
   // Preloads injected just inside <head> so they start ASAP.
-  // Font: crossorigin required even same-origin. Image: homepage hero only.
+  // Font: crossorigin required even same-origin. (No hero-image preload: the real
+  // LCP — hero-headset webp — is already eager + fetchpriority=high in the body
+  // markup; the old hero2 preload was a ghost with no on-page consumer, V45/B8.)
   const fontPreload = `<link rel="preload" as="font" type="font/woff2" href="${base}assets/Satoshi-Variable.woff2" crossorigin>`;
-  const heroPreload = isHome
-    ? `\n  <link rel="preload" as="image" type="image/webp" href="assets/hero2-1600.webp" imagesrcset="assets/hero2-900.webp 900w, assets/hero2-1600.webp 1600w" imagesizes="100vw" fetchpriority="high">`
-    : "";
   html = html.replace(/<head>([\s\S]*?)<title>/, (_m, headInside) => {
     const cleaned = headInside
       .replace(/\s*<link rel="preload" as="font"[^>]*>/g, "")
       .replace(/\s*<link rel="preload" as="image"[^>]*>/g, "");
-    return `<head>\n  ${fontPreload}${heroPreload}${cleaned}<title>`;
+    return `<head>\n  ${fontPreload}${cleaned}<title>`;
   });
 
   const block = `${START}\n<style>${FONT_FACE}\n${css}\n</style>\n${END}`;
