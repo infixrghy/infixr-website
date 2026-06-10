@@ -9,15 +9,20 @@
  * or `undefined`. Present → the <meta> line is emitted; None → nothing.
  *
  * The favicon + manifest + charset/viewport block is invariant across pages, so it
- * lives here literally rather than in the schema. The <!--CSS_INLINE--> markers are
- * emitted empty; build.ts fills them with inlined CSS + @font-face afterwards.
+ * lives here literally rather than in the schema.
+ *
+ * HEAD IS RENDERED FINISHED (V47): renderHead takes `preloads` + `inlineCss` as
+ * params and emits the COMPLETE head — the <style> block and any <link rel=preload>
+ * lines come out in their final position. There is no post-assembly regex mutation
+ * of the built HTML (no marker-replace, no link-strip, no head-splice): that layer
+ * failed silently (a pattern that stopped matching shipped degraded output green,
+ * the class of scar B8 hid in). The old <!--CSS_INLINE--> marker pair + build.ts's
+ * inlineAndPreload regexes are gone; CSS + preloads are data flowing in, not text
+ * spliced after the fact.
  */
 import { Option } from "effect";
 import { html } from "./html.ts";
 import type { PageMeta } from "../schema/page.ts";
-
-const START = "<!--CSS_INLINE_START-->";
-const END = "<!--CSS_INLINE_END-->";
 
 /** Emit a single optional <meta property> line, or "" when the Option is None. */
 const optMeta = (property: string, value: Option.Option<string>): string =>
@@ -32,8 +37,18 @@ const optMeta = (property: string, value: Option.Option<string>): string =>
  *   post pages). Prefixes the root-relative favicon + manifest links so they
  *   resolve from blog/<slug>.html. canonical/og:url carry full URLs (from meta);
  *   og:image/twitter:image are absolute — none of those take `base`.
+ * @param preloads pre-formatted <link rel=preload> lines to inject just inside
+ *   <head> (each already `\n  `-indented), or "" for none. Built by build.ts so
+ *   the asset hints land at the top of the head; this template just places them.
+ * @param inlineCss the complete inner text of the page's <style> block (@font-face
+ *   + concatenated CSS), assembled by build.ts. Emitted verbatim inside <style>.
  */
-export const renderHead = (m: PageMeta, base = ""): string => html`<head>
+export const renderHead = (
+  m: PageMeta,
+  base = "",
+  preloads = "",
+  inlineCss = ""
+): string => html`<head>${preloads}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#232323">
@@ -66,6 +81,5 @@ export const renderHead = (m: PageMeta, base = ""): string => html`<head>
   <meta name="twitter:description" content="${m.twitterDescription}">
   <meta name="twitter:image" content="https://infixr.com/assets/og-image.png">
 
-  ${START}
-${END}
+<style>${inlineCss}</style>
 </head>`;

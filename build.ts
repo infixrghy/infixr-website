@@ -4,9 +4,12 @@
  * Effect pipeline (templating refactor):
  *   1. wipe public/ for a clean build
  *   2. for each page: decode its PageMeta (Schema) → assemble the shell
- *      (head + nav + body + footer) from shared templates → inline @font-face +
- *      all CSS into the <!--CSS_INLINE--> block → inject font/hero preloads →
- *      write to public/
+ *      (head + nav + body + footer) from shared templates. The head is rendered
+ *      FINISHED (V47): the font @font-face + concatenated CSS (styleInner) and the
+ *      <link rel=preload> lines (preloadsFor) are passed INTO renderHead as params,
+ *      so it emits the complete <style> + preload block in place — no post-assembly
+ *      regex splicing of the built HTML (the old inlineAndPreload + <!--CSS_INLINE-->
+ *      marker dance is gone; that silent-failing layer is where B8's ghost hid).
  *   3. copy static assets (assets/, js/, manifest, .nojekyll) into public/
  *
  * Shared chrome (head/nav/footer) is now rendered ONCE from src/templates/*, so
@@ -166,9 +169,6 @@ const FONT_FACE = `
 }
 `;
 
-const START = "<!--CSS_INLINE_START-->";
-const END = "<!--CSS_INLINE_END-->";
-
 /** Read + concatenate CSS files in cascade order. Each read is tagged
  *  (FileReadError) so a missing CSS file fails the build with its path. */
 const readCss = (paths: string[]): Effect.Effect<string, FileReadError> =>
@@ -179,10 +179,30 @@ const readCss = (paths: string[]): Effect.Effect<string, FileReadError> =>
   });
 
 /**
+ * The page's <link rel=preload> lines, ready to drop in just inside <head>
+ * (each `\n  `-indented so they sit at head indent). Today: the Satoshi woff2
+ * only — crossorigin is required even same-origin. NO hero-image preload: the
+ * real LCP (hero-headset webp) is already eager + fetchpriority=high in the body
+ * markup, and the old hero2 preload was a ghost with no on-page consumer (V45/B8).
+ * `base` path-prefixes the href for nested (blog/<slug>) pages.
+ */
+const preloadsFor = (base: string): string =>
+  `\n  <link rel="preload" as="font" type="font/woff2" href="${base}assets/Satoshi-Variable.woff2" crossorigin>`;
+
+/**
+ * The complete inner text of a page's <style> block: @font-face then the
+ * cascade-ordered CSS. renderHead wraps this in <style>…</style> verbatim. The
+ * trailing "\n" keeps `</style>` on its own line (byte-stable with the old
+ * marker-spliced block, which closed `${css}\n</style>`).
+ */
+const styleInner = (css: string): string => `${FONT_FACE}\n${css}\n`;
+
+/**
  * Assemble a full HTML document from the shared templates + a body string.
- * Reproduces the source byte structure exactly: doctype, html, head, then
- * `<body>` + blank line + header + blank line + body + blank line + footer +
- * blank line + main.js script + body/html close + trailing newline.
+ * Reproduces the source byte structure exactly: doctype, html, head (rendered
+ * FINISHED — preloads + inlined CSS passed in as params, V47), then `<body>` +
+ * blank line + header + blank line + body + blank line + footer + blank line +
+ * main.js script + body/html close + trailing newline.
  *
  * `isHome` switches nav/footer section links between same-page anchors and
  * cross-page `index.html#…`. The main.js script ships on every page now so the
@@ -192,10 +212,11 @@ const readCss = (paths: string[]): Effect.Effect<string, FileReadError> =>
 function assembleShell(
   meta: PageMeta,
   body: string,
+  css: string,
   isHome: boolean,
   base = ""
 ): string {
-  const head = renderHead(meta, base);
+  const head = renderHead(meta, base, preloadsFor(base), styleInner(css));
   const nav = renderNav(meta.nav, isHome, base);
   const footer = renderFooter(isHome, base);
   return (
@@ -211,50 +232,13 @@ function assembleShell(
   );
 }
 
-/**
- * Inline CSS into the markers + inject preloads. Ported verbatim from the prior
- * processHtml so output stays byte-identical: same link-strip, same preload
- * injection (font always; hero image on index only), same marker replacement.
- */
-function inlineAndPreload(
-  html: string,
-  css: string,
-  isHome: boolean,
-  base = ""
-): string {
-  // Strip any stray stylesheet/preload links so the build is the only source.
-  html = html
-    .replace(/<link rel="preconnect" href="https:\/\/rsms\.me">\s*/g, "")
-    .replace(/<link rel="stylesheet" href="https:\/\/rsms\.me\/[^"]+">\s*/g, "")
-    .replace(/<link rel="stylesheet" href="css\/[^"]+">\s*/g, "");
-
-  // Preloads injected just inside <head> so they start ASAP.
-  // Font: crossorigin required even same-origin. (No hero-image preload: the real
-  // LCP — hero-headset webp — is already eager + fetchpriority=high in the body
-  // markup; the old hero2 preload was a ghost with no on-page consumer, V45/B8.)
-  const fontPreload = `<link rel="preload" as="font" type="font/woff2" href="${base}assets/Satoshi-Variable.woff2" crossorigin>`;
-  html = html.replace(/<head>([\s\S]*?)<title>/, (_m, headInside) => {
-    const cleaned = headInside
-      .replace(/\s*<link rel="preload" as="font"[^>]*>/g, "")
-      .replace(/\s*<link rel="preload" as="image"[^>]*>/g, "");
-    return `<head>\n  ${fontPreload}${cleaned}<title>`;
-  });
-
-  const block = `${START}\n<style>${FONT_FACE}\n${css}\n</style>\n${END}`;
-  if (html.includes(START) && html.includes(END)) {
-    html = html.replace(new RegExp(`${START}[\\s\\S]*?${END}`), block);
-  } else {
-    html = html.replace(/<\/head>/, `${block}\n</head>`);
-  }
-  return html;
-}
-
 /** Decode raw page-meta config → validated PageMeta (typed failure on bad data). */
 const metaOf = (raw: unknown) => decodePageMeta(raw);
 
 /**
- * Build one page end-to-end as an Effect: decode meta → assemble shell → inline
- * CSS + preloads → write to public/<page>. Returns the output path.
+ * Build one page end-to-end as an Effect: decode meta → render the finished shell
+ * (head carries preloads + inlined CSS as data, no post-assembly regex splice) →
+ * write to public/<page>. Returns the output path.
  */
 const buildPage = (
   page: string,
@@ -266,8 +250,7 @@ const buildPage = (
 ) =>
   Effect.gen(function* () {
     const meta = yield* metaOf(raw);
-    const shell = assembleShell(meta, body, isHome, base);
-    const html = inlineAndPreload(shell, css, isHome, base);
+    const html = assembleShell(meta, body, css, isHome, base);
     const outPath = join(OUT, page);
     yield* writeFileT(outPath, html);
     return outPath;
