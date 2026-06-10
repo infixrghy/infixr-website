@@ -2,9 +2,11 @@
  * schema/post.ts — Effect Schema for blog post front-matter.
  *
  * Each content/posts/*.md file begins with YAML-ish front-matter that decodes
- * into BlogPost. Required fields fail the build if missing (a post with no date
- * cannot render its <time>); genuinely optional fields are Option<string> so the
- * template must branch on presence — never a null slipping through.
+ * into BlogPost. Missing/malformed fields fail the build (a post with no date
+ * cannot render its <time>). Every field here is read by a renderer — a field
+ * nothing consumes is a promise the code doesn't keep (coverImage + updated
+ * were dropped for exactly that; re-add one WITH its renderer, as
+ * Schema.OptionFromOptional so absence stays typed, never null).
  *
  * `date` is kept as an ISO string (YYYY-MM-DD) rather than a Date: the build is
  * deterministic and string dates avoid timezone drift in the rendered <time>.
@@ -45,12 +47,6 @@ export const BlogPostFrontMatter = Schema.Struct({
   /** Feature the post at the top of the index? Exactly one should be true.
    *  Absent in front-matter → defaults to false. */
   featured: Schema.Boolean.pipe(Schema.withDecodingDefaultType(Effect.succeed(false))),
-
-  // ── optional → Option, never null ──
-  // OptionFromOptional: a missing key OR a present `undefined` decodes to None.
-  // The front-matter omits the key entirely when the post has no update.
-  /** Last-updated date if revised after publish. */
-  updated: Schema.OptionFromOptional(IsoDate),
 });
 export type BlogPostFrontMatter = typeof BlogPostFrontMatter.Type;
 
