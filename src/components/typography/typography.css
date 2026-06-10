@@ -34,18 +34,18 @@
      at one hue, 0 offset, blur 4→46px (tight core → wide ambient) = overlapping
      halos the eye reads as EMITTED light. The fill is brightened PAST the accent
      (mix +white) so the glyph is brighter than its own halo — the letters are the
-     light source, not grey glyphs under a lamp. Retune per call site by setting
-     --neon-fill / --neon-1..4 (e.g. photo cards keep their white fill).
+     light source, not grey glyphs under a lamp.
+
+     The --neon-* dials are now defined ONCE: registered as @property (layout.css,
+     top-level) + their live values in :root (tokens.css). They were declared
+     verbatim here and in u-card.css; that duplication is gone (V41/T35/B7).
+     Retune per call site by re-setting --neon-fill / --neon-1..4 locally
+     (e.g. photo cards keep their white fill at u-card.overrides.css).
 
      PERF: text-shadow is paint-bound (repaints each frame, unlike GPU-composited
      transform/opacity). Fine on a handful of accent moments; do NOT spray it
      site-wide. Scope every use. (V39.) */
   .u-neon {
-    --neon-fill: color-mix(in oklab, var(--accent) 88%, white);
-    --neon-1: color-mix(in oklab, var(--accent) 80%, transparent);
-    --neon-2: color-mix(in oklab, var(--accent) 65%, transparent);
-    --neon-3: color-mix(in oklab, var(--accent) 50%, transparent);
-    --neon-4: color-mix(in oklab, var(--accent) 35%, transparent);
     transition: color .25s ease, text-shadow .25s ease;
   }
   .u-neon--lit {

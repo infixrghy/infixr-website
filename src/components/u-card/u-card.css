@@ -55,8 +55,10 @@
     /* CARD HEADER NEON (V39/T33) — the new standard: every card header lights
        teal when its card is hovered (the "this card is active" affordance). One
        rule for the whole .u-card family (What We Build, Solutions, blog teaser,
-       blog index, about values). Reuses the .u-neon dials (declared on .u-neon
-       above) so the effect + the contact eyebrow share one set of tunables.
+       blog index, about values). Consumes the shared --neon-* dials (registered
+       @property in layout.css + live values in :root, tokens.css) so this glow,
+       the .u-neon utility, and the contact eyebrow share one set of tunables
+       (V41/T35 — was a verbatim copy of the dials here, now inherited).
 
        Two targets, one trigger:
          - the heading carries the bloom (text-shadow inherits down to a nested
@@ -65,18 +67,14 @@
            (blog/blog-index <h2><a>/<h3><a> — the <a>'s own colour would shadow an
            inherited one) AND on the heading itself for plain titles (Solutions/
            about <h3>).
-       Photo-feature cards keep their white fill (--neon-fill overridden below);
-       only the halo is added there.
+       Photo-feature cards keep their white fill (--neon-fill overridden at
+       u-card.overrides.css:39 on .u-card--overlay); only the halo is added there.
 
        REPLACES the old colour-swap title hovers (was `.blog-text &:hover h3 a`
        here + `.blog-list … h3 a:hover` in pages.css) — those are deleted, NOT
        layered: two live rules at one element is the specificity trap this spec
-       keeps logging. At rest = no shadow, so only the hovered card repaints. */
-    --neon-fill: color-mix(in oklab, var(--accent) 88%, white);
-    --neon-1: color-mix(in oklab, var(--accent) 80%, transparent);
-    --neon-2: color-mix(in oklab, var(--accent) 65%, transparent);
-    --neon-3: color-mix(in oklab, var(--accent) 50%, transparent);
-    --neon-4: color-mix(in oklab, var(--accent) 35%, transparent);
+       keeps logging. At rest = no shadow, so only the hovered card repaints.
+       The --neon-* dials are inherited from :root now (V41/T35), not redeclared. */
     & :is(h2, h3) {
       transition: color .25s ease, text-shadow .25s ease;
     }

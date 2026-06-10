@@ -28,6 +28,22 @@
     --accent: var(--c-accent);
     --accent-glow: color-mix(in oklab, var(--c-accent) 35%, transparent);
 
+    /* ---- Neon-glow dials (V39/V41/T35) ----
+       The canonical, LIVE values for the reusable neon text effect: a fill
+       brightened past the accent (the glyph is the light source) + four
+       text-shadow alphas (tight core → wide ambient halo). These track
+       var(--accent), so the palette stays single-source (V18/V33). Registered
+       as @property in layout.css (top-level) for type-guard + interpolation;
+       that registration's initial-value is only an unset-fallback — THESE win.
+       Were declared verbatim-twice in typography.css + u-card.css; hoisted here
+       so every consumer inherits one definition. Retuners (e.g. the white photo-
+       card title at u-card.overrides.css) still override locally. */
+    --neon-fill: color-mix(in oklab, var(--accent) 88%, white);
+    --neon-1: color-mix(in oklab, var(--accent) 80%, transparent);
+    --neon-2: color-mix(in oklab, var(--accent) 65%, transparent);
+    --neon-3: color-mix(in oklab, var(--accent) 50%, transparent);
+    --neon-4: color-mix(in oklab, var(--accent) 35%, transparent);
+
     /* ---- Radius ---- */
     --radius-sm: 8px;
     --radius: 14px;

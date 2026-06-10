@@ -29,6 +29,60 @@
   }
 }
 
+/* ============================================================================
+   Neon-glow dial registration (V39/V41/T35).
+
+   The five --neon-* custom props (fill + four shadow alphas) drive the reusable
+   neon text effect (.u-neon, .u-card header glow, the contact eyebrow). Used to
+   be declared VERBATIM-TWICE (typography.css + u-card.css); registering them
+   here collapses those to ONE source — the LIVE values live in :root (tokens.css)
+   and every consumer inherits them.
+
+   WHY top-level, not inside @layer: @property registration is layer-agnostic
+   (it registers globally wherever it sits), but V37 logged that at-rule
+   registration inside a cascade layer is unreliable in the wild, so we follow
+   the same precedent as @view-transition above and keep it top-of-file =
+   top-level in the inlined output.
+
+   WHY initial-value is a STATIC #1FD1A1 mix, not the var(--accent) mix (B7):
+   a registered prop's initial-value MUST be computationally-independent —
+   var() is FORBIDDEN there (it's resolved at registration, before the cascade
+   knows --accent). A var()-bearing initial-value makes the parser REJECT the
+   whole @property rule (and build.ts, being a concat with no CSS validation,
+   ships that GREEN — a lying channel). So the accent is inlined as its literal
+   #1FD1A1 here. These values are a FALLBACK ONLY: :root always sets the dials,
+   so the live, palette-tracking color-mix(var(--accent)…) is what renders; this
+   initial-value only shows if a consumer somehow goes unset (never happens).
+
+   BONUS: registered <color> props are interpolable, so the neon transition
+   (declared on .u-neon / card headers) can now animate smoothly instead of
+   flipping discretely. Opt-in; the existing transitions just get smoother. */
+@property --neon-fill {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: color-mix(in oklab, #1FD1A1 88%, white);
+}
+@property --neon-1 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: color-mix(in oklab, #1FD1A1 80%, transparent);
+}
+@property --neon-2 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: color-mix(in oklab, #1FD1A1 65%, transparent);
+}
+@property --neon-3 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: color-mix(in oklab, #1FD1A1 50%, transparent);
+}
+@property --neon-4 {
+  syntax: "<color>";
+  inherits: true;
+  initial-value: color-mix(in oklab, #1FD1A1 35%, transparent);
+}
+
 @layer layout {
 
   /* Site header */
