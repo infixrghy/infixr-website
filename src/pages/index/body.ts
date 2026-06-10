@@ -16,15 +16,15 @@
  * build. The trailing hero-3d loader <script> is part of this body (it sat after
  * </main> in the partial), so it's appended after the closing tag here too.
  *
- * A `posts → string` render fn fed by loadPosts (content.ts) in build.ts; the post
- * data layer (loadPosts/displayDate) lives in src/content.ts — shared with the blog
+ * A `posts → string` render fn fed by loadPosts (data/posts.ts) in build.ts; the post
+ * data layer (loadPosts/displayDate) lives in src/data/posts.ts — shared with the blog
  * page, not owned by either.
  */
 import { html, esc } from "../../templates/html.ts";
 import { picture } from "../../templates/picture.ts";
 import { glassCard } from "../../components/glass-card/glass-card.ts";
 import { button } from "../../components/button/button.ts";
-import { timeMeta } from "../../content.ts";
+import { timeMeta } from "../../data/posts.ts";
 import type { BlogPost } from "../../schema/post.ts";
 
 /**

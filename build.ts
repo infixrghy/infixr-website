@@ -17,7 +17,7 @@
  * footer links) is structurally impossible. Page bodies are typed render fns
  * co-located with their head meta under src/pages/<page>/ (body.ts + meta.ts); the
  * blog body is data-driven from content/posts/*.md (see renderBlogBody). The shared
- * post data layer (loadPosts) lives in src/content.ts.
+ * post data layer (loadPosts) lives in src/data/posts.ts.
  *
  * src/ is the source of truth and is NEVER written to. public/ is generated and
  * gitignored; GitHub Actions builds it and deploys via actions/deploy-pages.
@@ -108,7 +108,7 @@ import { blogMeta } from "./src/pages/blog/meta.ts";
 import { renderHomeBody } from "./src/pages/index/body.ts";
 import { renderAboutBody } from "./src/pages/about/body.ts";
 import { renderBlogBody, renderPost, postPageMeta } from "./src/pages/blog/body.ts";
-import { loadPosts } from "./src/content.ts";
+import { loadPosts } from "./src/data/posts.ts";
 
 const SRC = "src";
 const OUT = "public";
@@ -269,7 +269,7 @@ const program = Effect.gen(function* () {
   // a static partial until its CTA moved to the typed button() component — a .html
   // file can't call a TS fn). index + blog also pull the latest posts (home into its
   // blog mosaic — see pages/index/body.ts). loadPosts is the shared data layer in
-  // src/content.ts (was src/blog.ts — extracted so it's not owned by the blog page).
+  // src/data/posts.ts (was src/blog.ts → src/content.ts — extracted so it's not owned by the blog page).
   const aboutBody = renderAboutBody();
   const posts = yield* loadPosts;
   const indexBody = renderHomeBody(posts);

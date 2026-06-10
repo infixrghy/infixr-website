@@ -17,7 +17,7 @@
  */
 import { Option } from "effect";
 import { html, esc } from "../../templates/html.ts";
-import { timeMeta } from "../../content.ts";
+import { timeMeta } from "../../data/posts.ts";
 import {
   decodeGlassCard,
   type GlassCardParams,

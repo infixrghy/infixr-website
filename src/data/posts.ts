@@ -1,5 +1,5 @@
 /**
- * content.ts — the blog-post DATA LAYER, shared across pages.
+ * data/posts.ts — the blog-post DATA LAYER, shared across pages.
  *
  * Reads content/posts/*.md → validates front-matter (schema/post.ts) → marked-
  * renders the body → returns a newest-first BlogPost[]. Plus the deterministic
@@ -12,7 +12,10 @@
  *   - components/glass-card — displayDate, for the <time> meta line
  * Previously this lived in src/blog.ts and home.ts imported displayDate FROM the
  * blog page — a page reaching into another page's file. Pulling it here makes the
- * dependency arrow page→data (correct) instead of page→page (the misfiling).
+ * dependency arrow page→data (correct) instead of page→page (the misfiling). Then
+ * moved src/content.ts → src/data/posts.ts: names the layer like its siblings
+ * (pages/, components/, templates/, schema/) + kills the name-shadow with the
+ * repo-root content/ dir (loader named like the thing it loads = confusion).
  *
  * marked runs build-time only (0 client bytes). The pipeline is an Effect with a
  * typed failure channel: a bad/missing front-matter field fails with a
@@ -27,7 +30,7 @@ import { marked } from "marked";
 import {
   decodeFrontMatter,
   type BlogPost,
-} from "./schema/post.ts";
+} from "../schema/post.ts";
 
 const POSTS_DIR = "content/posts";
 
@@ -72,7 +75,7 @@ export const timeMeta = (date: string, readMinutes: number): string =>
  */
 // CC 11 / CRAP 132: VERBATIM-relocated from the old src/blog.ts (this code is
 // unchanged by the per-page-folder reorg — fallow's new-only gate flags it only
-// because content.ts is a new FILE path, not because the logic is new). It passed
+// because data/posts.ts is a new FILE path, not because the logic is new). It passed
 // the gate in blog.ts. The scalar-coercion branch ladder is inherently branchy but
 // simple + covered by the build (a bad field fails the Schema decode downstream).
 // fallow-ignore-next-line complexity

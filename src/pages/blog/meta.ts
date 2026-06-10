@@ -3,7 +3,7 @@
  *
  * Subset head (no og:image:alt / og:locale → Option None). Unlike index/about,
  * blog's BODY (pages/blog/body.ts) is data-driven — build.ts renders it from
- * content/posts/*.md (via loadPosts in content.ts). This module supplies only the
+ * content/posts/*.md (via loadPosts in data/posts.ts). This module supplies only the
  * <head> metadata for that page; the per-POST head meta is postPageMeta in body.ts.
  */
 export const blogMeta = {

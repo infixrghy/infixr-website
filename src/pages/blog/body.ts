@@ -3,21 +3,21 @@
  *
  * Was src/blog.ts → here (the per-page folder, paired with meta.ts). When it moved,
  * the post DATA LAYER (loadPosts / displayDate / parseFrontMatter / the post IO
- * errors) was extracted to src/content.ts — that's content infrastructure shared
+ * errors) was extracted to src/data/posts.ts — that's content infrastructure shared
  * with the homepage mosaic, not blog-page code. What's left here is purely the blog
  * page's render fns: the index body, the per-post page, and the per-post head meta.
  *
  * The blog body is the one page body generated from data (content/posts/*.md →
- * validated BlogPost[] → marked HTML, all in content.ts). Posts arrive newest-first
- * (content.ts sorts); the single `featured: true` post renders as the large lead
+ * validated BlogPost[] → marked HTML, all in data/posts.ts). Posts arrive newest-first
+ * (data/posts.ts sorts); the single `featured: true` post renders as the large lead
  * card, the rest fill the grid.
  */
 import type { BlogPost } from "../../schema/post.ts";
-import { timeMeta } from "../../content.ts";
+import { timeMeta } from "../../data/posts.ts";
 import { html, esc } from "../../templates/html.ts";
 
 /** Meta line: `<time>Date</time> · N min read · Category`. The shared
- *  date + read-time fragment is timeMeta (content.ts); the category segment is
+ *  date + read-time fragment is timeMeta (data/posts.ts); the category segment is
  *  this page's own addition. */
 const postMeta = (p: BlogPost): string =>
   html`<p class="post__meta">${timeMeta(p.date, p.readMinutes)} &middot; ${esc(p.category)}</p>`;

@@ -19,12 +19,12 @@
     // is sound; it's what guards the Effect Schema / Option usage). Left OFF:
     // noUncheckedIndexedAccess — it'd flag dozens of provably-present literal index
     // accesses across the EXISTING code (carousel WHO_SLIDES[n], regex groups in
-    // content.ts parseFrontMatter, etc.) that aren't bugs. Adopting it is a separate codebase-wide
+    // data/posts.ts parseFrontMatter, etc.) that aren't bugs. Adopting it is a separate codebase-wide
     // policy change, not part of this work; keep the gate green on the tree as-is.
     "strict": true,
     "noFallthroughCasesInSwitch": true,
 
-    // Runtime types: Bun globals + node: specifiers used by build.ts / content.ts.
+    // Runtime types: Bun globals + node: specifiers used by build.ts / data/posts.ts.
     "types": ["bun", "node"],
 
     "skipLibCheck": true,
