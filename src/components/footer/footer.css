@@ -2,19 +2,56 @@
    Sliced verbatim from css/components.css (lines 1367-1404); order is load-bearing — see CSS_ORDER in build.ts. */
 @layer components {
   /* ============ FOOTER ============ */
+  /* Column headings = the site-wide engineered kicker (same recipe as .eyebrow and
+     the contact-form labels): uppercase teal micro-caps, not the grey-on-grey
+     body-colour they used to be. This is what makes each column read as a labelled
+     instrument group and pulls the footer into the accent vocabulary the rest of
+     the page speaks. Smaller step (-1) + tracking sells the micro-cap read. */
   .footer-h {
-    font-size: var(--step-0);
+    font-size: var(--step--1);
     font-weight: 600;
     margin-bottom: var(--space-3);
-    color: var(--fg);
-    letter-spacing: .01em;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: color-mix(in oklab, var(--accent) 64%, var(--c-fg));
     line-height: 1.3;
   }
   .site-footer {
-    & p, & address { color: var(--fg-muted); font-style: normal; }
+    /* Body copy at full --fg (was the muted 78% grey that read "bland"): the email
+       + address are real content, so they get the same weight as page text, not a
+       dimmed-down version. The teal kickers above still out-contrast them, so the
+       column hierarchy holds even with the copy brighter. */
+    & p, & address { color: var(--fg); font-style: normal; }
     & a:hover { color: var(--accent); }
   }
-  .footer-links { display: grid; gap: var(--space-2); color: var(--fg-muted); }
+  /* Brand column = the footer's lead block: logo + a one-line positioning statement
+     so the column carries weight instead of a logo floating over a dead void.
+     Base (mobile / narrow footer): a single column — the auto-fit grid collapses to
+     1-2 tracks at phone width, so spanning 2 + a max-width here would overflow. */
+  .site-footer__brand {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+  }
+  /* Only once the footer is wide enough to hold the brand AS A WIDER lead block
+     (≥3 link columns alongside it) does it span 2 tracks + cap the tagline width.
+     Container query (not viewport): keyed to the footer's own inline size. */
+  @container site-footer (min-width: 48rem) {
+    .site-footer__brand {
+      grid-column: span 2;
+      max-width: 34ch;
+    }
+  }
+  .site-footer__tagline {
+    font-size: var(--step--1);
+    line-height: 1.5;
+    /* Colour inherits the footer's full --fg via the `& p` rule above (the whole
+       footer reads white per Ari) — no override here. */
+    text-wrap: balance;
+  }
+  /* Links at full --fg (was --fg-muted): they're the primary actionable copy in the
+     footer, so they read white like body text; teal only on hover. */
+  .footer-links { display: grid; gap: var(--space-2); color: var(--fg); }
   .social-links {
     display: flex;
     gap: var(--space-3);

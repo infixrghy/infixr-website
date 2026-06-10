@@ -451,9 +451,45 @@
   .site-footer {
     /* No border-top: every page's last <main> section now carries a border-bottom
        (see `main > section`), which IS the content|footer divider. A footer
-       border-top would double it. */
+       border-top would double it — so the seam below is a TOP-EDGE GLOW (a soft
+       teal bloom that fades down), NOT a second hairline. It rides on the existing
+       border-bottom: the line stays the divider, the glow gives that line the same
+       lit, atmospheric quality the rest of the site has (about/blog have no glowing
+       section above, so this self-contained bloom is what carries the teal there). */
+    position: relative;
+    isolation: isolate;
+    /* inline-size container so the brand column's 2-col span (footer.css) can be
+       gated on the footer being WIDE enough to hold it — at phone width the grid
+       collapses to 1-2 tracks and an unconditional span 2 + max-width overflows. */
+    container: site-footer / inline-size;
     padding: var(--space-8) max(var(--space-5), calc((100% - var(--container-w)) / 2)) var(--space-5);
-    background: color-mix(in oklab, var(--bg) 80%, black);
+    /* Grounded base plate: the darkest surface on the site (it's the terminal
+       chrome — should read as the floor), but tinted toward teal-black not pure
+       black, so it belongs to the accent world. A faint top-anchored accent wash
+       layers over it so the footer isn't a flat slab — it has the same depth as the
+       sections above, just dialled down (this is the floor, not a hero). */
+    background:
+      linear-gradient(to bottom,
+        color-mix(in oklab, var(--accent) 7%, transparent),
+        transparent 40%),
+      color-mix(in oklab, var(--bg) 82%, black);
+  }
+  /* Top-edge glow seam — a wide, soft teal bloom hugging the divider line so the
+     content→footer boundary reads lit (matching every section seam on the site)
+     instead of a dead cut. z-index:-1 keeps it under the footer content; the radial
+     gradient's transparent stop fades it out downward so only the top edge glows.
+     Self-contained: works the same on home (under the contact glow) and about/blog
+     (under a plain section). */
+  .site-footer::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto;
+    height: 180px;
+    z-index: -1;
+    background: radial-gradient(120% 100% at 50% 0%,
+      var(--accent-glow), transparent 60%);
+    opacity: .5;
+    pointer-events: none;
   }
   .site-footer__grid {
     display: grid;
@@ -463,9 +499,13 @@
   .site-footer__copy {
     margin-top: var(--space-7);
     padding-top: var(--space-5);
-    border-top: 1px solid var(--border);
+    /* Teal-tinted rule (was dead --border): matches the --divider hairline so the
+       copyright bar joins the accent vocabulary instead of reading as a grey line. */
+    border-top: 1px solid var(--divider);
     text-align: center;
-    color: var(--fg-dim);
+    /* Full --fg like the rest of the footer copy (Ari: whole footer reads white);
+       set explicitly so it doesn't depend on the `& p` cascade. */
+    color: var(--fg);
     font-size: var(--step--1);
   }
 }

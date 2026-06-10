@@ -27,8 +27,9 @@ export const renderFooter = (isHome: boolean, base = ""): string => {
 
   return html`<footer class="site-footer">
   <div class="site-footer__grid">
-    <div>
+    <div class="site-footer__brand">
       ${brandLogo("site-footer__logo")}
+      <p class="site-footer__tagline">Immersive experiences that change how teams train and decide.</p>
     </div>
     <div>
       <h3 class="footer-h">Email</h3>
