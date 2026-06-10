@@ -22,6 +22,16 @@
        dimmed-down version. The teal kickers above still out-contrast them, so the
        column hierarchy holds even with the copy brighter. */
     & p, & address { color: var(--fg); font-style: normal; }
+    /* text-wrap:pretty on the address ONLY (V44): reset.css:10 covers p + headings
+       but not `address`. The location line is ~55 chars in a narrow footer column —
+       at 360px (V4) it wraps to several lines, so pretty avoids a stranded last-line
+       word. Progressive-enhance: un-supporting engines wrap normally (not broken).
+       Kept OFF the shared `& p` rule on purpose: `.site-footer p` is (0,1,1) and would
+       beat `.site-footer__tagline`'s deliberate text-wrap:balance (0,1,0), silently
+       flipping the tagline to pretty (the footer `& p` (0,1,1) > single-class trap,
+       see [[infixr-footer-amp-p-specificity]]). Footer <p> already inherits pretty
+       from the reset anyway, so `& p` needs nothing — only address is the real gap. */
+    & address { text-wrap: pretty; }
     & a:hover { color: var(--accent); }
   }
   /* Brand column = the footer's lead block: logo + a one-line positioning statement

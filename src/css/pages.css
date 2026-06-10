@@ -61,7 +61,12 @@
       display: grid;
       gap: var(--space-2);
     }
-    & li { padding-left: .2em; }
+    /* text-wrap:pretty here too (V44): reset.css:10 sets it on p + headings, but
+       its type-selector list doesn't reach `li`. Blog-post markdown emits multi-
+       line list items, so without this they'd wrap with the default greedy algo
+       (a stranded one-word last line possible). Progressive-enhance: un-supporting
+       engines (Firefox early-2026) just wrap normally — not broken. */
+    & li { padding-left: .2em; text-wrap: pretty; }
     & strong { color: var(--fg); font-weight: 700; }
     & a {
       color: var(--accent);
