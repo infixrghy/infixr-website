@@ -105,12 +105,41 @@
      button look permanently lit, and its hover-lift needed a special RM override
      (its (0,4,0) specificity outranked the global .btn:hover reset). Both are gone
      — the shared .btn--glass hover lift is covered by the global RM reset. */
+  /* Status msg ENTRY animation (V42): the success/error/sending line fades +
+     slides in when JS injects text, instead of hard-popping. Mechanism is a
+     discrete `display` flip animated via @starting-style:
+       - empty  → display:none (also drops the phantom flex gap after Send)
+       - filled → display:block, animated FROM the @starting-style enter state.
+     STRUCTURE (display toggle) is UNGATED → works on every engine; only the
+     animation is `@supports`-gated, so un-supporting browsers still SHOW the
+     message (it just appears instantly). `transition` sits on the BASE selector
+     (not `:not(:empty)`, which is (0,2,0) via the `:not()` arg) so the reduced-
+     motion `transition:none` below — also on the base selector, (0,1,0)·(0,1,0)
+     — matches specificity and wins by source order (the V38/contact-card hover
+     specificity trap, avoided). JS is unchanged (still just sets textContent +
+     data-state); the CSS does the reveal. */
+  .contact-form__status {
+    display: none;
+    @supports (transition-behavior: allow-discrete) {
+      transition: opacity .25s ease, transform .25s ease;
+      transition-behavior: allow-discrete; /* separate decl → old engines drop only this line, not the shorthand */
+    }
+  }
   .contact-form__status:not(:empty) {
+    display: block;
     font-size: var(--step--1);
     color: var(--fg-muted);
+    @starting-style { opacity: 0; transform: translateY(4px); }
   }
   .contact-form__status[data-state="success"] { color: var(--accent); }
   .contact-form__status[data-state="error"] { color: #ff8a8a; }
+
+  /* Reduced motion: keep the instant show (display toggle stays), drop the
+     fade/slide. Base-selector specificity (0,1,0) matches the base transition
+     rule above → source order wins, so this reliably kills the animation. */
+  @media (prefers-reduced-motion: reduce) {
+    .contact-form__status { transition: none; }
+  }
 
   .contact-form button[type="submit"][aria-busy="true"] {
     opacity: .7;
