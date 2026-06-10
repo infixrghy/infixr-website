@@ -25,6 +25,8 @@
  */
 import { Effect, Schema } from "effect";
 
+import { IsoDate } from "./common.ts";
+
 /** A CSS percentage 0–100%, e.g. "50%". Pattern + bound; kept as a string so it
  *  drops straight into a custom-prop value. Guards the teal-strength overrides. */
 const Percent = Schema.NonEmptyString.pipe(
@@ -32,19 +34,6 @@ const Percent = Schema.NonEmptyString.pipe(
     Schema.isPattern(/^(?:100|\d{1,2})%$/, {
       title: "percentage",
       description: "must be a percentage 0%–100% (e.g. \"50%\")",
-    })
-  )
-);
-
-/** ISO calendar date (YYYY-MM-DD) — same shape as schema/post.ts. The component
- *  OWNS the meta line: it builds `<time datetime=…>…</time> · N min read` from
- *  date + readMinutes, so the machine-readable <time> is never lost (a flat meta
- *  string would regress it). */
-const IsoDate = Schema.NonEmptyString.pipe(
-  Schema.check(
-    Schema.isPattern(/^\d{4}-\d{2}-\d{2}$/, {
-      title: "ISO date",
-      description: "date must be ISO YYYY-MM-DD",
     })
   )
 );

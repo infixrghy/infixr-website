@@ -13,15 +13,7 @@
  */
 import { Effect, Schema } from "effect";
 
-/** ISO calendar date, e.g. "2026-05-01". Validated by pattern, kept as string. */
-const IsoDate = Schema.NonEmptyString.pipe(
-  Schema.check(
-    Schema.isPattern(/^\d{4}-\d{2}-\d{2}$/, {
-      title: "ISO date",
-      description: "date must be ISO YYYY-MM-DD",
-    })
-  )
-);
+import { IsoDate } from "./common.ts";
 
 /** Front-matter of a single blog post (the fields above the `---` fence). */
 export const BlogPostFrontMatter = Schema.Struct({

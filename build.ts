@@ -232,9 +232,6 @@ function assembleShell(
   );
 }
 
-/** Decode raw page-meta config → validated PageMeta (typed failure on bad data). */
-const metaOf = (raw: unknown) => decodePageMeta(raw);
-
 /**
  * Build one page end-to-end as an Effect: decode meta → render the finished shell
  * (head carries preloads + inlined CSS as data, no post-assembly regex splice) →
@@ -249,7 +246,7 @@ const buildPage = (
   base = ""
 ) =>
   Effect.gen(function* () {
-    const meta = yield* metaOf(raw);
+    const meta = yield* decodePageMeta(raw);
     const html = assembleShell(meta, body, css, isHome, base);
     const outPath = join(OUT, page);
     yield* writeFileT(outPath, html);

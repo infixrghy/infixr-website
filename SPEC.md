@@ -25,8 +25,8 @@ static infixr.com rebuild. html+css. minimal js. mobile-OK. GH Pages host.
 - asset: `src/assets/favicon.svg`, `favicon-32.png`, `apple-touch-icon.png`, `og-image.png`
 - file: `src/manifest.webmanifest` → PWA manifest
 - script: `src/js/main.js` → contact form submit handler + year stamp + who-carousel (transform-track loop, autoplay, nav). ENDPOINT placeholder `https://example.com/api/contact`. each behavior no-ops where its target is absent.
-- build: `build.ts` → Effect SSG: `src/` + `content/` → `public/`. per page: decode PageMeta (Schema) → assemble shell (head+nav+body+footer from templates) → inline CSS + @font-face → inject preloads → write. emits `public/blog/<slug>.html` per post. copy assets/js/manifest, emit `.nojekyll`. NEVER writes `src/`. `bun run build.ts` (no args — hook depends).
-- build: `lint.ts` → dead-token check `src/css/tokens.css` vs consumers. `bun run lint`.
+- build: `build.ts` → Effect SSG: `src/` + `content/` → `public/`. per page: decode PageMeta (Schema) → render head FINISHED (V47: preloads + inlined CSS/@font-face flow INTO renderHead as params; ∅ post-assembly regex/marker splice) → assemble shell (head+nav+body+footer from templates) → write. emits `public/blog/<slug>.html` per post. copy assets/js/manifest, emit `.nojekyll`. NEVER writes `src/`. `bun run build.ts` (no args — hook depends).
+- build: `lint.ts` → dead-token check `src/css/tokens.css` vs consumers + V46 dead-asset pass over BUILT output (∀ `public/assets/**` ! referenced in shipped html/js/webmanifest; preload hrefs excluded — a hint ≠ a use). `bun run lint`.
 - script: `server.ts` → Bun dev server, serves `public/`. `bun run server.ts` (or `bun run dev` = build+serve) → 127.0.0.1:8765
 - ci: `.github/workflows/deploy.yml` → on push to `main`: build `public/` → deploy via `actions/deploy-pages`.
 - vendor: `vendor/rotating-metaquest3/` → 3D MetaQuest3 source (subtree). SHIPPED via T27: `headset.glb` → `src/assets/headset.glb`; model-viewer 4.2.0 dist self-hosted → `src/js/hero-3d/model-viewer.min.js` (cross-origin unpkg in the vendored `index.html` NOT used). lazy-loaded by `src/js/hero-3d/loader.js`.

@@ -8,16 +8,8 @@
  * (on the home page) and "index.html#solutions" (cross-page from about/blog).
  */
 import { html } from "../../templates/html.ts";
+import { brandLogo } from "../brand/brand.ts";
 import type { NavId } from "../../schema/page.ts";
-
-/** Brand SVG logo — identical in header + footer, so defined once. */
-export const brandLogo = (extraClass = ""): string => html`<svg class="brand__logo${
-  extraClass ? " " + extraClass : ""
-}" viewBox="0 0 120 36" role="img" ${extraClass ? 'aria-label="InfiXR"' : 'aria-hidden="true"'}>
-      <text x="0" y="28" font-family="Satoshi, system-ui, sans-serif" font-weight="800" letter-spacing="-0.04em">
-        <tspan font-size="24" fill="currentColor">infi</tspan><tspan font-size="32" fill="currentColor" dy="2">XR</tspan>
-      </text>
-    </svg>`;
 
 /** One nav <li>. Adds is-active class + aria-current when this item is the page. */
 const navItem = (id: NavId, active: NavId, href: string, label: string): string => {

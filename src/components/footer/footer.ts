@@ -9,7 +9,7 @@
  * Applications" is canonicalised to "Our Solutions" to match the nav.
  */
 import { html } from "../../templates/html.ts";
-import { brandLogo } from "../nav/nav.ts";
+import { brandLogo } from "../brand/brand.ts";
 
 const linkedInIcon = html`<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8.04h4.56V24H.22V8.04zM7.86 8.04h4.37v2.18h.06c.61-1.15 2.11-2.36 4.34-2.36 4.64 0 5.5 3.06 5.5 7.03V24h-4.56v-7.34c0-1.75-.03-4-2.44-4-2.44 0-2.81 1.9-2.81 3.87V24H7.86V8.04z"/></svg>`;
 const instagramIcon = html`<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor"/></svg>`;

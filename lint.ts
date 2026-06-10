@@ -99,7 +99,8 @@ try {
   const builtNoPreload = builtSrc.replace(/<link\b[^>]*\brel="preload"[^>]*>/gi, "");
 
   const assetFiles: string[] = [];
-  for await (const f of new Glob(`${ASSETS_DIR}/*`).scan(".")) {
+  // Recursive (`**/*`) so a future assets/<subdir>/ can't smuggle files past the check.
+  for await (const f of new Glob(`${ASSETS_DIR}/**/*`).scan(".")) {
     // basename: the literal that template-constructed refs + absolute URLs both carry.
     assetFiles.push(f.split(/[\\/]/).pop()!);
   }
