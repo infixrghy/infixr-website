@@ -76,4 +76,51 @@ if (dead.length === 0 && orphanRefs.length === 0) {
   console.log("✓ no dead tokens, no orphan refs");
 }
 
-process.exit(dead.length + orphanRefs.length > 0 ? 1 : 0);
+// ── V46 dead-asset pass: assets/ is copied WHOLESALE into public/ (V31), so an
+//    unreferenced file ships forever. This pass runs over BUILT output, NOT src/:
+//    who-/sol- image paths are template-constructed (`assets/${s.img}.webp`) so the
+//    literal filename never appears in src; og-image is referenced by ABSOLUTE URL
+//    (filename-match, not path-match) — only the emitted public/*.html carries the
+//    real literals. A preload is a HINT not a USE (B8: a ghost preload would self-
+//    justify its own dead asset), so preload <link> hrefs are stripped before the
+//    reference scan — an asset must have a NON-preload consumer to survive. ──
+const OUT = "public";
+const ASSETS_DIR = `${OUT}/assets`;
+
+let assetFails = 0;
+try {
+  // Built files that may reference an asset: HTML (img/src/srcset/inline-CSS url()),
+  // js (none today, but a future sprite/lazy-loader could), manifest (icon paths).
+  let builtSrc = "";
+  for await (const file of new Glob(`${OUT}/**/*.{html,js,webmanifest}`).scan(".")) {
+    builtSrc += await readFile(file, "utf8");
+  }
+  // Strip preload <link> tags so their hrefs don't count as a "use" (V46/B8).
+  const builtNoPreload = builtSrc.replace(/<link\b[^>]*\brel="preload"[^>]*>/gi, "");
+
+  const assetFiles: string[] = [];
+  for await (const f of new Glob(`${ASSETS_DIR}/*`).scan(".")) {
+    // basename: the literal that template-constructed refs + absolute URLs both carry.
+    assetFiles.push(f.split(/[\\/]/).pop()!);
+  }
+
+  const deadAssets = assetFiles
+    .filter((name) => !builtNoPreload.includes(name))
+    .sort();
+
+  console.log(`\nassets in public/: ${assetFiles.length}`);
+  if (deadAssets.length) {
+    console.warn(`⚠ dead assets (in public/assets/, referenced by nothing shipped):`);
+    for (const a of deadAssets) console.warn(`  assets/${a}`);
+    assetFails = deadAssets.length;
+  } else {
+    console.log("✓ no dead assets");
+  }
+} catch (cause) {
+  // public/ absent → build hasn't run. Don't hard-fail the token check on that;
+  // warn so CI (which builds first) still catches real orphans.
+  console.warn(`\n⚠ dead-asset pass skipped — could not read ${ASSETS_DIR} (run build first):`);
+  console.warn(`  ${String(cause)}`);
+}
+
+process.exit(dead.length + orphanRefs.length + assetFails > 0 ? 1 : 0);

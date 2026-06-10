@@ -30,3 +30,4 @@ design/*
 
 # session handoff notes (local only — scratch for cross-session continuity)
 .handoff/
+.t41-baseline/
