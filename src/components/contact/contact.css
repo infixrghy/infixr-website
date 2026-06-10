@@ -24,6 +24,23 @@
       color: color-mix(in oklab, var(--accent) 64%, var(--c-fg));
     }
 
+    /* Field-group state reacts to its OWN input via :has() (V43): when the input
+       goes :user-invalid the LABEL reddens too, not just the input border (V10
+       only reddened the field itself). Extends V10's input-state styling UP to the
+       sibling label through the parent. No specificity trap here (the V38/contact-
+       card class): `.field:has(:user-invalid) label` is (0,2,1) — the :has() arg
+       contributes its own (0,1,0) — which naturally OUTRANKS the base `.field
+       label` (0,1,1), so the override wins on the class column regardless of
+       source order. No transition on purpose: an instant colour swap keeps the
+       verify honest (a mid-transition computed read would lie, the T36 trap) and
+       matters not for a 1-frame label tint. :user-invalid (not :invalid) so the
+       label only reacts AFTER the user has touched + left an invalid field — no
+       red-on-load yell. :has() is baseline (late-2023, all major engines) → no
+       @supports guard; un-supporting engines just leave the label its default
+       colour (⊥ broken). Scoped to .field (⊥ site-wide :has()). */
+    &:has(:user-invalid) label { color: #ff8a8a; }
+    &:has(:user-valid) label { color: var(--accent); }
+
     & input,
     & textarea {
       /* recessed well: a hair darker than the card + an inset shadow so the
