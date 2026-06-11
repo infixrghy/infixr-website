@@ -33,18 +33,40 @@
 
     @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
       & {
-        /* teal-tinted glass surface: tint% accent into c-bg, then to alpha translucency */
-        background: color-mix(in oklab,
-                     color-mix(in oklab, var(--accent) var(--gc-tint), var(--c-bg)) var(--gc-alpha),
-                     transparent);
-        -webkit-backdrop-filter: blur(22px) saturate(170%);
-                backdrop-filter: blur(22px) saturate(170%);
+        /* Surface base is transparent — the tinted glass + blur live on ::before
+           (below), CLIPPED by .u-card's overflow:clip + border-radius. Why a child
+           and not this element: a backdrop-filter on the element ITSELF is re-clipped
+           to the rounded corners inconsistently across Chromium forks — Brave paints
+           the filter's rectangular region UNCLIPPED, so a square frosted halo escapes
+           past the radius and laps onto the neighbouring cards (the reported "faint
+           box", Brave-only; Chrome clips it fine). overflow:clip reliably clips a
+           DESCENDANT's filter in every engine, so the blur goes on ::before. Border +
+           box-shadow stay HERE — box-shadow is never clipped by overflow, so the lift
+           glow still escapes as intended. */
+        background: transparent;
         border: 1.5px solid var(--gc-rim);
         box-shadow:
           inset 0 1px 0 color-mix(in oklab, white 34%, transparent),
           inset 0 0 0 1px color-mix(in oklab, var(--accent) var(--gc-ring), transparent),
           0 0 0 1px color-mix(in oklab, var(--accent) var(--gc-halo), transparent),
           0 14px 44px -16px rgba(0,0,0,.72);
+      }
+      /* Frosted glass layer — tinted translucent surface + blur, clipped by the
+         parent. z-index 0: above the card's own (transparent) background box, below
+         the sheen (::after, z-index 1) and the body text (z-index 2). */
+      &::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        /* teal-tinted glass surface: tint% accent into c-bg, then to alpha translucency */
+        background: color-mix(in oklab,
+                     color-mix(in oklab, var(--accent) var(--gc-tint), var(--c-bg)) var(--gc-alpha),
+                     transparent);
+        -webkit-backdrop-filter: blur(22px) saturate(170%);
+                backdrop-filter: blur(22px) saturate(170%);
+        transition: background .25s, backdrop-filter .25s, -webkit-backdrop-filter .25s;
       }
 
       /* Sheen sweep: a diagonal light streak parked off the left edge, wiped
@@ -68,22 +90,27 @@
         transition: transform 1.05s cubic-bezier(.2,.7,.2,1);
       }
 
-      /* Hover: surface brightens (alpha drops 8pts), frost deepens, rim brightens,
-         lift to -8px, sheen sweeps L→R. Glow stays restrained (no big bloom). */
+      /* Hover: lift -8px + brighter rim + sheen sweep + title neon. The surface FILL
+         deliberately does NOT change (Ari's pick: "stay put") — every fill shift we
+         tried read wrong on the dark bg (thinned alpha → grey; more accent → too
+         bright; darker → muddy). Letting the lift/rim/sheen/title-glow carry the whole
+         hover is the cleanest read: there's no fill colour to dislike. So there is no
+         &:hover::before rule — the resting ::before frost simply persists on hover. */
       &:hover {
         transform: translateY(-8px);
-        background: color-mix(in oklab,
-                     color-mix(in oklab, var(--accent) var(--gc-tint), var(--c-bg)) calc(var(--gc-alpha) - 8%),
-                     transparent);
-        -webkit-backdrop-filter: blur(28px) saturate(185%);
-                backdrop-filter: blur(28px) saturate(185%);
         border-color: var(--gc-rim-hover);
+        /* Shadow REACH must stay inside the 24px grid gap or the bloom washes onto
+           the neighbouring cards (most visible on the bottom row, InfiExplore/
+           InfiLearn, where the downward-offset shadow pools in open section space
+           below — reads as a faint box bleeding outward). Reach ≈ blur − |spread|:
+           dark drop 42 − 24 = 18px, accent glow 30 − 22 = 8px, both < 24px gap. The
+           lift + rim + sheen are unchanged; only the bloom is contained. */
         box-shadow:
           inset 0 1px 0 color-mix(in oklab, white 38%, transparent),
           inset 0 0 0 1px color-mix(in oklab, var(--accent) calc(var(--gc-ring) + 4%), transparent),
           0 0 0 1px color-mix(in oklab, var(--accent) calc(var(--gc-halo) + 6%), transparent),
-          0 24px 58px -16px rgba(0,0,0,.8),
-          0 0 44px -18px color-mix(in oklab, var(--accent) 32%, transparent);
+          0 16px 42px -24px rgba(0,0,0,.8),
+          0 0 30px -22px color-mix(in oklab, var(--accent) 32%, transparent);
       }
       &:hover::after { transform: translateX(120%); }
     }
