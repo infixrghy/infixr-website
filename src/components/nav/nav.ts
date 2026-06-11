@@ -9,6 +9,7 @@
  */
 import { html } from "../../templates/html.ts";
 import { brandLogo } from "../brand/brand.ts";
+import { button } from "../button/button.ts";
 import type { NavId } from "../../schema/page.ts";
 
 /** One nav <li>. Adds is-active class + aria-current when this item is the page. */
@@ -48,7 +49,11 @@ export const renderNav = (active: NavId, isHome: boolean, base = ""): string => 
       ${navItem("about", active, `${base}about.html`, "Who We Are")}
       ${navItem("products", active, sec("#products"), "Products")}
       ${navItem("blog", active, `${base}blog.html`, "Blogs")}
-      <li><a class="cta-pill" href="${sec("#contact")}">Contact Us</a></li>
+      <li>${button({
+    label: "Contact Us",
+    variant: "glass",
+    action: { _tag: "link", href: sec("#contact") },
+  })}</li>
     </ul>
   </nav>
 </header>`;

@@ -8,7 +8,13 @@
       gap: var(--space-5);
       align-items: center;
     }
-    & a {
+    /* :not(.btn) — these are the GENERIC nav-link rules (muted text, hover→fg).
+       The Contact Us CTA is now a button() component (.btn.btn--glass, same as the
+       hero "Request a Demo"); excluding .btn keeps the component's own surface +
+       always-on glow authoritative. Without :not(.btn) this descendant selector
+       (0,1,1) would silently beat .btn--glass's color rules (0,1,0) and kill its
+       hover — the exact location-beats-component trap the button system avoids. */
+    & a:not(.btn) {
       font-weight: 500;
       font-size: var(--step--1);
       text-transform: uppercase;
@@ -18,20 +24,6 @@
       &:hover { color: var(--fg); }
       /* Active page (HOME on the home route) — brighter, matches the mock */
       &.is-active { color: var(--fg); font-weight: 600; }
-    }
-    & .cta-pill {
-      padding: .55rem 1.15rem;
-      border-radius: var(--radius-pill);
-      border: 1px solid var(--border-strong);
-      background: color-mix(in oklab, var(--c-bg) 55%, transparent);
-      color: var(--fg);
-      font-weight: 600;
-      transition: background .2s, color .2s, border-color .2s;
-      &:hover {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: #001a14;
-      }
     }
   }
 
