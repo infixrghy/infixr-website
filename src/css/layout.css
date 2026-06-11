@@ -352,6 +352,79 @@
     .solution-feature { grid-column: 2; grid-row: 1 / 3; }
   }
 
+  /* Services layout — the InfiXR product family. Third glass section; sits between
+     Solutions and Blog in scroll order, so its glow signature is CENTER-BALANCED
+     (twin glows top-left + top-right, symmetric) — distinct from Solutions (left-
+     weighted) and Blog (right-weighted). Same glass vocabulary, third composition,
+     mirroring the contact section's center-bloom logic. The 2×2 card grid is
+     symmetric (4 equal products), unlike Solutions' asymmetric 2+feature. */
+  .services {
+    position: relative;
+    isolation: isolate;
+  }
+  .services::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(42% 52% at 22% 18%, var(--accent-glow), transparent 70%),
+      radial-gradient(42% 52% at 78% 22%, color-mix(in oklab, var(--accent) 18%, transparent), transparent 70%);
+    pointer-events: none;
+  }
+  /* Engineered-console grid (same recipe as .solutions/.blog ::after). Mask is
+     CENTER-TOP-weighted to follow this section's symmetric twin glows + the 2×2
+     card field, so the grid pools across the cards rather than to one side. */
+  .services::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(color-mix(in oklab, var(--c-fg) 4%, transparent) 1px, transparent 1px),
+      linear-gradient(90deg, color-mix(in oklab, var(--c-fg) 4%, transparent) 1px, transparent 1px);
+    background-size: 44px 44px;
+    -webkit-mask-image: radial-gradient(60% 55% at 50% 30%, #000 30%, transparent 76%);
+            mask-image: radial-gradient(60% 55% at 50% 30%, #000 30%, transparent 76%);
+    pointer-events: none;
+  }
+  /* Head: headline left, lead right at ≥760px (mirrors solutions, minus the
+     "View More" — the product cards each carry their own CTA). */
+  .services__head {
+    display: grid;
+    gap: var(--space-3);
+    margin-bottom: var(--head-gap);
+    align-items: end;
+  }
+  @media (min-width: 760px) {
+    .services__head {
+      grid-template-columns: 1fr auto;
+      column-gap: var(--space-6);
+    }
+    .services__headline { grid-column: 1; }
+    .services__lead { grid-column: 2; max-width: 42ch; justify-self: end; text-align: right; }
+  }
+  .services__lead { color: var(--fg-muted); }
+
+  /* Symmetric grid: 1 col mobile → 2×2 at ≥620px. auto-fit keeps it robust if a
+     5th product is ever added; minmax floor holds the cards readable at 360px. */
+  .services__grid {
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 620px) {
+    .services__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  /* Product-name titles read a touch larger + tighter than the Solutions card
+     titles — they ARE the brand mark on each card. */
+  .services__grid .u-card h3 {
+    font-size: var(--step-1);
+    letter-spacing: -0.02em;
+  }
+
   /* Blog section: its own stacking context so the glow backdrop sits behind the
      cards but inside the section (z-index:-1 stays scoped here, not page-global).
      The glass text cards (components.css) need something behind them to refract —

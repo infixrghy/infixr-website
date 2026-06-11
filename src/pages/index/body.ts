@@ -298,6 +298,45 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
     </ul>
   </section>
 
+  <!-- OUR SERVICES — the InfiXR product family. Sits between Solutions and Who-We-Are
+       so DOM scroll order matches the nav order (Solutions → Services → Who We Are).
+       Four branded products as a SYMMETRIC frosted glass-card grid (2×2 desktop,
+       1-col mobile) — distinct from Solutions' asymmetric 2+feature layout. Same
+       glassCard() component (V3 frost); the .services::before glow is the light the
+       frost refracts (glass-card contrast principle). Products have no imagery yet,
+       so glass (not photo cards) is the right shape — same reason as the blog teaser. -->
+  <section class="services" id="services" aria-labelledby="services-title">
+    <header class="services__head">
+      <div class="services__headline">
+        <p class="eyebrow">Our Services</p>
+        <h2 id="services-title">One Platform, Four Realities</h2>
+      </div>
+      <p class="services__lead">A family of XR offerings—each tuned to a different world, from high-risk industry floors to museum halls and classrooms.</p>
+    </header>
+    <ul class="services__grid">
+      ${glassCard({
+    title: "InfiTrain",
+    body: "VR-based simulation solutions for hands-on skill training in high-risk, equipment-intensive industries.",
+    footer: { _tag: "cta", label: "Talk to Us", href: "#contact" },
+  })}
+      ${glassCard({
+    title: "InfiSoft",
+    body: "AI-powered XR solutions for developing interpersonal, leadership, and communication skills through immersive roleplay simulations.",
+    footer: { _tag: "cta", label: "Talk to Us", href: "#contact" },
+  })}
+      ${glassCard({
+    title: "InfiExplore",
+    body: "AR & MR powered experiential solutions for museums, heritage sites, and tourism destinations.",
+    footer: { _tag: "cta", label: "Talk to Us", href: "#contact" },
+  })}
+      ${glassCard({
+    title: "InfiLearn",
+    body: "Browser-accessible XR learning solutions for vocational institutes, polytechnics, and schools.",
+    footer: { _tag: "cta", label: "Talk to Us", href: "#contact" },
+  })}
+    </ul>
+  </section>
+
   <!-- WHO WE ARE -->
   <section class="who" id="about" aria-labelledby="who-title">
     <div class="who__intro">
@@ -338,7 +377,7 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
   <!-- BLOG -->
   <section class="blog" id="blog" aria-labelledby="blog-title">
     <header class="blog__head">
-      <p class="eyebrow">Blogs</p>
+      <p class="eyebrow">Blog</p>
       <h2 id="blog-title">The Future of Spatial Experiences</h2>
       <p class="blog__lead">Exploring immersive experiences, spatial storytelling, and where VR training goes next.</p>
       <a class="link-arrow link-arrow--bold blog__more" href="blog.html">View More &rarr;</a>
