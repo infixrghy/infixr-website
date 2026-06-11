@@ -20,8 +20,14 @@
       text-transform: uppercase;
       letter-spacing: .12em;
       color: var(--fg-muted);
-      transition: color .2s;
-      &:hover { color: var(--fg); }
+      transition: color .2s, text-shadow .2s;
+      /* Hover: push PAST --fg (#e0e0e0, warm grey) toward white so the link
+         visibly brightens, + a faint teal-then-white glow so "whiter" reads as
+         LIT (the site's neon vocabulary), not just a flat lighter grey. */
+      &:hover {
+        color: color-mix(in oklab, white 70%, var(--fg));
+        text-shadow: 0 0 12px color-mix(in oklab, white 35%, transparent);
+      }
       /* Active page (HOME on the home route) — brighter, matches the mock */
       &.is-active { color: var(--fg); font-weight: 600; }
     }

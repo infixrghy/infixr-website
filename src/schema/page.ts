@@ -12,7 +12,7 @@
 import { Schema } from "effect";
 
 /** Which top-nav item is the current page. Drives `aria-current` + `is-active`. */
-export const NavId = Schema.Literals(["home", "about", "solutions", "products", "blog"]);
+export const NavId = Schema.Literals(["home", "about", "solutions", "services", "blog"]);
 export type NavId = typeof NavId.Type;
 
 /**
