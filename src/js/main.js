@@ -142,10 +142,17 @@
     snap = true;
   });
 
+  // Read the swell factor CSS owns (.is-over → --tail-scale, @property-tweened) and
+  // fold it INTO this transform, so scale pivots around the translated pointer center.
+  // (An independent CSS `scale:` pivots around the box's own (30,30) center → flings
+  // the glow cornerward on hover — the "snaps to wrong spot" bug. One transform, one
+  // pivot.) translate3d → centering translate → scale, evaluated in that order.
+  const css = getComputedStyle(tail);
   const chase = () => {
     tailX += (mouseX - tailX) * EASE;
     tailY += (mouseY - tailY) * EASE;
-    tail.style.transform = `translate3d(${tailX}px, ${tailY}px, 0) translate(-50%, -50%)`;
+    const s = css.getPropertyValue("--tail-scale") || 1;
+    tail.style.transform = `translate3d(${tailX}px, ${tailY}px, 0) translate(-50%, -50%) scale(${s})`;
     requestAnimationFrame(chase);
   };
   requestAnimationFrame(chase);

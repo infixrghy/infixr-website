@@ -1,5 +1,17 @@
 /* cursor/cursor.css — pure-CSS accent-dot custom cursor (pointer:fine only).
    Sliced verbatim from css/components.css (lines 59-99); order is load-bearing — see CSS_ORDER in build.ts. */
+
+/* Registers --tail-scale as a real <number> so the .is-over swell can INTERPOLATE
+   (.25s ease) instead of jumping discretely — untyped custom props animate by swap,
+   not tween. initial-value: 1 means main.js always reads a valid number off
+   getComputedStyle even before any .is-over toggle. @property must live at the top
+   level, outside @layer. */
+@property --tail-scale {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
+}
+
 @layer components {
   /* ============ CUSTOM CURSOR ============ */
   /* Pure-CSS accent dot. No JS — `cursor:` swaps the pointer IMAGE only, so all
@@ -77,14 +89,22 @@
          doesn't sit parked at 0,0 on load. translate set by JS. */
       transform: translate3d(-200px, -200px, 0) translate(-50%, -50%);
       opacity: 0;
-      transition: opacity .3s ease, scale .25s ease;
       will-change: transform;
+      /* Swell factor over clickable targets. CSS OWNS this dial; main.js READS it
+         (getComputedStyle) and folds it into the single transform it writes, so the
+         scale pivots around the translated pointer center — NOT the element's own
+         (30px,30px) box center, which is where the old independent `scale:` property
+         pivoted, flinging the glow toward the top-left corner on hover (the "snaps to
+         wrong spot" bug). Transitioning the VAR (it's @property-registered as <number>,
+         so it interpolates instead of swapping discretely) keeps the swell smooth while
+         the transform itself stays JS-driven each frame. */
+      transition: opacity .3s ease, --tail-scale .25s ease;
     }
     /* main.js adds .is-active after the first pointer move (reveal), and toggles
        .is-over on interactive elements — the glow swells slightly over clickable
        targets (a light "warming up", scaled not resized so the gradient stays soft). */
     .cursor-tail.is-active { opacity: 1; }
-    .cursor-tail.is-over { scale: 1.35; }
+    .cursor-tail.is-over { --tail-scale: 1.35; }
   }
 
   /* Reduced motion: the lazy chase is non-essential decoration — drop the tail
