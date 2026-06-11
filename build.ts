@@ -222,7 +222,11 @@ function assembleShell(
   return (
     `<!doctype html>\n<html lang="en">\n` +
     head +
-    `\n<body>\n\n` +
+    `\n<body>\n` +
+    // Cursor trail: a lerp-following dot that lags behind the native CSS cursor.
+    // pointer-events:none + aria-hidden so it never intercepts clicks or hits a11y.
+    // Gated to pointer:fine in CSS; main.js no-ops where this element is absent.
+    `<div class="cursor-tail" aria-hidden="true"></div>\n\n` +
     nav +
     `\n\n` +
     body +

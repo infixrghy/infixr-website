@@ -7,8 +7,8 @@
 - GH Pages serves `public/` via GitHub Actions (`.github/workflows/deploy.yml`). Pages source = "GitHub Actions".
 
 ## JS Rules
-- budget: ≤5 KB total across all `src/js/*.js` files.
-- only allowed: form handler, year stamp, who-carousel (transform-track loop + autoplay + nav; Ari-approved exception). All three live in one bundle: `src/js/main.js`.
+- budget: ≤10 KB total across all `src/js/*.js` files. (Raised from 5 KB on 2026-06-11 — Ari, for the cursor glow-trail.)
+- only allowed: form handler, year stamp, who-carousel (transform-track loop + autoplay + nav), cursor glow-trail (lerp-following accent glow behind the native CSS dot cursor; Ari-approved). All four live in one bundle: `src/js/main.js`, each no-ops where its target is absent.
 - ANY new JS needs Ari approval first. ask, do not assume.
 - prefer CSS / HTML / browser-native every time.
 
@@ -31,7 +31,7 @@
 - `src/schema/*.ts` (`page.ts`, `post.ts`, `glass-card.ts`, `button.ts`, `common.ts`) — Effect Schema for page meta, blog front-matter, and the component param APIs (glass card + button); malformed data/params fail the build, not the browser. `common.ts` = shared atoms used by >1 schema module (`IsoDate` — extract on the SECOND consumer, not speculatively).
 - `content/posts/*.md` — blog post sources (front-matter + markdown). `src/data/posts.ts` (`loadPosts`) validates + `marked`-renders them (build-time only, 0 client bytes); `pages/blog/body.ts` renders them into the blog index AND one page each at `public/blog/<slug>.html`. Latest few also surface in the homepage blog teaser (`pages/index/body.ts`).
 - `src/css/reset.css`, `tokens.css`, `layout.css`, `pages.css` — source of truth for the SHARED (non-component) styles. Component-scoped CSS lives co-located under `src/components/<name>/` (see above). (`components.css` was split into those folders; it no longer exists.)
-- `src/js/main.js` — ~3.5 KB, the only shipped JS file (year stamp + contact form + who-carousel; each no-ops where its target is absent). Ships on every page via `build.ts`.
+- `src/js/main.js` — ~7.6 KB, the only shipped JS file (year stamp + contact form + who-carousel + cursor glow-trail; each no-ops where its target is absent). Ships on every page via `build.ts`. NOTE: `.js` is OUTSIDE the post-edit build-hook gate (it watches `.css`/`.ts`/`.md`), so editing this file does NOT auto-rebuild — run `bun run build.ts` by hand after.
 - `src/assets/` — images, favicon, og-image, `Satoshi-Variable.woff2` + `Satoshi-VariableItalic.woff2` (self-hosted, fontshare; no rsms.me/Google Fonts)
 - `src/manifest.webmanifest` — PWA manifest
 - `public/` — GENERATED build output. gitignored. NEVER hand-edit. CI deploys this.

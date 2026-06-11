@@ -41,5 +41,55 @@
     textarea {
       cursor: text;
     }
+
+    /* ---- CURSOR TAIL (glow only) ----
+       The native CSS dot above IS the cursor; this is its BLOOM — diffuse accent
+       light that lerp-lags behind it (main.js, ease 0.07). Deliberately NO ring,
+       NO border, NO hard edge: the paint is a radial-gradient whose falloff is the
+       only edge, so you read luminance, not a shape. Two stacked gradients =
+       optical bloom: a hot tight core bleeding into a wide ambient aura (same
+       multi-stop philosophy as the --neon-1..4 text glow). Box is square but never
+       seen — every edge pixel resolves to transparent.
+
+       JS writes only `translate3d(x,y,0)` each frame; the trailing `-50% -50%`
+       here centers the glow on that point (JS passes raw clientX/Y, no offset
+       math). translate3d = its own compositor layer, so the chase is GPU-only with
+       no per-frame layout/paint, and the baked gradient never recomputes while it
+       moves (cheaper + ghost-free vs filter:blur on a moving disc).
+       pointer-events:none so it never blocks clicks; fixed so it ignores scroll. */
+    .cursor-tail {
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999;
+      width: 60px;          /* glow diameter — bigger than the ring was; it's soft */
+      height: 60px;
+      pointer-events: none;
+      background:
+        radial-gradient(circle at center,
+          color-mix(in oklab, var(--accent) 55%, transparent) 0%,
+          color-mix(in oklab, var(--accent) 22%, transparent) 35%,
+          transparent 70%),
+        radial-gradient(circle at center,
+          color-mix(in oklab, var(--accent) 14%, transparent) 0%,
+          transparent 75%);
+      /* Start off-screen + invisible; main.js fades it in on first mousemove so it
+         doesn't sit parked at 0,0 on load. translate set by JS. */
+      transform: translate3d(-200px, -200px, 0) translate(-50%, -50%);
+      opacity: 0;
+      transition: opacity .3s ease, scale .25s ease;
+      will-change: transform;
+    }
+    /* main.js adds .is-active after the first pointer move (reveal), and toggles
+       .is-over on interactive elements — the glow swells slightly over clickable
+       targets (a light "warming up", scaled not resized so the gradient stays soft). */
+    .cursor-tail.is-active { opacity: 1; }
+    .cursor-tail.is-over { scale: 1.35; }
+  }
+
+  /* Reduced motion: the lazy chase is non-essential decoration — drop the tail
+     entirely (main.js also bails, so the element just never appears). */
+  @media (prefers-reduced-motion: reduce) {
+    .cursor-tail { display: none; }
   }
 }

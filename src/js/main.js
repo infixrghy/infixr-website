@@ -99,3 +99,54 @@
 
   setInterval(() => { if (!reduce.matches && Date.now() >= pauseUntil) advance(1); }, 5000); // autoplay: advance, never hold
 })();
+
+// Cursor trail: one accent ring (.cursor-tail) that lerp-chases the native CSS
+// cursor dot. The dot stays the precise pointer (CSS `cursor:`); this ring lags
+// behind it at ease 0.07 per frame (tailX += (mouseX - tailX) * ease), the same
+// smoothing the old infixr.com used — but written as transform: translate3d (one
+// compositor layer, no per-frame layout) instead of left/top. No-ops when the
+// element is absent (CSS gates it to pointer:fine) or reduced-motion is set.
+// (Ari-approved JS; 10 KB budget.)
+(() => {
+  const tail = document.querySelector(".cursor-tail");
+  if (!tail) return;
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  let mouseX = 0, mouseY = 0;          // latest pointer position
+  let tailX = 0, tailY = 0;            // eased glow position (chases the pointer)
+  let snap = true;                     // next move should teleport (no streak): true
+                                       // on load AND after the pointer re-enters the
+                                       // window, so the glow appears under the cursor
+                                       // instead of flying in from its last edge spot
+  const EASE = 0.07;                   // per-frame catch-up fraction; lower = lazier
+
+  addEventListener("mousemove", (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    if (snap) {                        // first move / re-entry: place glow under pointer
+      snap = false;
+      tailX = mouseX;
+      tailY = mouseY;
+    }
+    tail.classList.add("is-active");   // reveal on EVERY move — re-shows after a leave,
+                                       // not just the first time (was the disappear bug)
+    // Swell the glow over clickable targets (a light "warming up" on hover).
+    tail.classList.toggle("is-over", !!e.target.closest("a,button,[role=button],summary,label,input,select,textarea"));
+  }, { passive: true });
+
+  // Pointer left the window: hide the glow AND arm a re-snap so it doesn't streak
+  // back from the edge on return. `mouseleave` on <html> fires only at the window
+  // boundary and does NOT bubble (unlike `mouseout`), so no per-element false hides.
+  document.documentElement.addEventListener("mouseleave", () => {
+    tail.classList.remove("is-active");
+    snap = true;
+  });
+
+  const chase = () => {
+    tailX += (mouseX - tailX) * EASE;
+    tailY += (mouseY - tailY) * EASE;
+    tail.style.transform = `translate3d(${tailX}px, ${tailY}px, 0) translate(-50%, -50%)`;
+    requestAnimationFrame(chase);
+  };
+  requestAnimationFrame(chase);
+})();
