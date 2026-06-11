@@ -309,11 +309,16 @@ const program = Effect.gen(function* () {
   }
   // .nojekyll: belt-and-suspenders (Actions artifact path doesn't run Jekyll anyway)
   yield* writeFileT(join(OUT, ".nojekyll"), "");
+  // CNAME: binds the GH Pages custom domain. public/ is gitignored + regenerated,
+  // so the domain MUST be emitted here (a hand-dropped public/CNAME dies on rebuild).
+  // One bare apex hostname, newline-terminated — GH Pages parses it as the host and
+  // redirects the github.io URL here. Matches the hardcoded canonical/OG URLs.
+  yield* writeFileT(join(OUT, "CNAME"), "infixr.com\n");
 
   const assetCount = (yield* readdirT(join(OUT, "assets"))).length;
   console.log("built pages:", pages.join(", "));
   console.log(
-    `copied: assets/ (${assetCount} files), js/, manifest.webmanifest, .nojekyll`
+    `copied: assets/ (${assetCount} files), js/, manifest.webmanifest, .nojekyll, CNAME`
   );
   console.log("css inlined:", coreCss.length + pagesCss.length, "bytes (concat)");
   console.log("blog posts rendered:", posts.length);
