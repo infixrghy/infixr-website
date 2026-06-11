@@ -44,34 +44,81 @@
         transition: transform .25s, opacity .2s;
       }
     }
+    /* Dropdown panel = the site's frosted-glass vocabulary, NOT a flat grey slab.
+       Was background:var(--bg-elev) (= c-bg lightened toward white) → read as a
+       default-looking opaque grey box, off-brand against the dark teal-glass site.
+       Now it's the same recipe shape as .glass-card: a dark teal-tinted TRANSLUCENT
+       surface + backdrop blur, a lit teal rim, inner + outer accent rings, and a
+       soft --accent-glow halo so the panel GLOWS like every other surface (the
+       glowing Contact Us CTA inside it now belongs instead of floating on grey).
+         Items left-aligned (reading column); the CTA <li> is centered + separated
+       below (see &:last-child). overflow:clip clips the children's corners to the
+       panel radius. */
     .primary-nav ul {
       position: absolute;
-      top: 100%;
+      top: calc(100% + var(--s-1));
       right: var(--space-4);
       flex-direction: column;
       align-items: stretch;
-      gap: var(--space-2);
-      background: var(--bg-elev);
-      border: 1px solid var(--border);
+      gap: var(--s-1);
+      /* fallback (no backdrop-filter): a solid-ish dark teal-tinted panel, still
+         on-brand (dark, not grey). The frosted version below enhances it. */
+      background: color-mix(in oklab, var(--accent) 8%, var(--c-bg));
+      border: 1.5px solid color-mix(in oklab, var(--accent) 55%, var(--border-strong));
       border-radius: var(--radius);
-      padding: var(--space-3);
-      min-width: 200px;
-      box-shadow: var(--shadow);
+      padding: var(--s-2);
+      min-width: 224px;
+      overflow: clip;
+      box-shadow:
+        inset 0 1px 0 color-mix(in oklab, white 22%, transparent),
+        inset 0 0 0 1px color-mix(in oklab, var(--accent) 14%, transparent),
+        0 0 0 1px color-mix(in oklab, var(--accent) 16%, transparent),
+        0 18px 50px -16px rgba(0,0,0,.8),
+        0 0 44px -14px var(--accent-glow);
       transform-origin: top right;
-      transform: scale(.95);
+      /* closed: nudged up + slightly shrunk → the open state drops it into place */
+      transform: translateY(-8px) scale(.96);
       opacity: 0;
       pointer-events: none;
-      transition: transform .2s, opacity .2s;
+      transition: transform .26s cubic-bezier(.2,.8,.25,1), opacity .2s ease;
+    }
+    /* Frosted enhancement — scoped INSIDE this @media so it only applies to the
+       absolute-positioned mobile panel, never the desktop inline nav row. */
+    @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      .primary-nav ul {
+        /* translucent teal glass: 8% accent into c-bg, taken to 72% opacity so the
+           page (and its glow) shows through the blur — the frost the site is built on */
+        background: color-mix(in oklab,
+                     color-mix(in oklab, var(--accent) 8%, var(--c-bg)) 72%,
+                     transparent);
+        -webkit-backdrop-filter: blur(20px) saturate(165%);
+                backdrop-filter: blur(20px) saturate(165%);
+      }
+    }
+    /* CTA row: a hairline separates it from the link list, and it centers the glass
+       button as the panel's anchor action (button() renders an inline-flex pill, so
+       justify-content centers it within the stretched <li>). */
+    .primary-nav ul li:last-child {
+      display: flex;
+      justify-content: center;
+      margin-top: var(--s-1);
+      padding-top: var(--s-2);
+      border-top: 1px solid color-mix(in oklab, var(--accent) 22%, var(--border));
     }
     .nav-toggle:checked {
       & ~ ul {
-        transform: scale(1);
+        transform: translateY(0) scale(1);
         opacity: 1;
         pointer-events: auto;
       }
       & ~ .nav-burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
       & ~ .nav-burger span:nth-child(2) { opacity: 0; }
       & ~ .nav-burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    }
+    /* Reduced motion: the panel still appears (opacity), but skip the slide/scale. */
+    @media (prefers-reduced-motion: reduce) {
+      .primary-nav ul { transition: opacity .2s ease; transform: none; }
+      .nav-toggle:checked ~ ul { transform: none; }
     }
   }
 }
