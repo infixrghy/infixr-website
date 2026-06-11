@@ -96,26 +96,31 @@
         transition: transform 1.05s cubic-bezier(.2,.7,.2,1);
       }
 
-      /* Hover: lift -8px + brighter rim + sheen sweep + title neon. The surface FILL
-         deliberately does NOT change (Ari's pick: "stay put") — every fill shift we
-         tried read wrong on the dark bg (thinned alpha → grey; more accent → too
-         bright; darker → muddy). Letting the lift/rim/sheen/title-glow carry the whole
-         hover is the cleanest read: there's no fill colour to dislike. So there is no
-         &:hover::before rule — the resting ::before frost simply persists on hover. */
+      /* Hover: brighter rim + sheen sweep + title neon. NO lift and NO fill change —
+         the surface colour must STAY PUT (Ari's pick). Two reasons there's no movement
+         and no &:hover::before:
+           1. The frost is translucent, so its colour = its tint + whatever section
+              glow shows THROUGH it. A `translateY` lift moved the card over a
+              different patch of the uneven .services glow, so the backdrop-filter
+              re-sampled a different teal and the surface APPEARED to shift colour —
+              even with the tint values fixed. Dropping the lift freezes what's behind
+              the glass, so the colour is genuinely constant.
+           2. Every direct fill shift we tried read wrong on the dark bg (thinned alpha
+              → grey; more accent → too bright; darker → muddy).
+         So hover = rim + sheen + title-glow only; the resting ::before frost persists
+         unmoved. (reduced-motion already forced transform:none — now they match.) */
       &:hover {
-        transform: translateY(-8px);
         border-color: var(--gc-rim-hover);
-        /* Shadow REACH must stay inside the 24px grid gap or the bloom washes onto
-           the neighbouring cards (most visible on the bottom row, InfiExplore/
-           InfiLearn, where the downward-offset shadow pools in open section space
-           below — reads as a faint box bleeding outward). Reach ≈ blur − |spread|:
-           dark drop 42 − 24 = 18px, accent glow 30 − 22 = 8px, both < 24px gap. The
-           lift + rim + sheen are unchanged; only the bloom is contained. */
+        /* No lift now, so the resting depth-shadow stays (a big downward-offset drop
+           would imply an elevation that isn't there). Hover adds ONLY: slightly
+           stronger accent rings (rim definition) + a restrained accent glow. Shadow
+           REACH stays inside the 24px grid gap so the glow can't wash onto neighbours
+           (reach ≈ blur − |spread| = 30 − 22 = 8px < 24px). */
         box-shadow:
           inset 0 1px 0 color-mix(in oklab, white 38%, transparent),
           inset 0 0 0 1px color-mix(in oklab, var(--accent) calc(var(--gc-ring) + 4%), transparent),
           0 0 0 1px color-mix(in oklab, var(--accent) calc(var(--gc-halo) + 6%), transparent),
-          0 16px 42px -24px rgba(0,0,0,.8),
+          0 14px 44px -16px rgba(0,0,0,.72),
           0 0 30px -22px color-mix(in oklab, var(--accent) 32%, transparent);
       }
       &:hover::after { transform: translateX(120%); }
