@@ -24,7 +24,13 @@
      @supports (backdrop-filter); the base opaque .u-card surface is the fallback. */
   .glass-card {
     /* V3 / Refined defaults */
-    --gc-tint: 10%;
+    /* tint raised 10%→18%: at 10% the frosted surface was ~90% base dark, so where the
+       section glow behind it is weak (e.g. the Our Services BOTTOM row — both
+       .services::before radials sit at the top, ~18-22% down) the frost refracted
+       mostly bare --c-bg and read grey. More accent in the tint means the glass carries
+       its own teal even with little glow to refract, so no card goes grey regardless of
+       where it sits in the grid. */
+    --gc-tint: 18%;
     --gc-alpha: 50%;
     --gc-rim: color-mix(in oklab, var(--accent) 60%, var(--border-strong));
     --gc-rim-hover: color-mix(in oklab, var(--accent) 70%, white 18%);

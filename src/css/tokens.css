@@ -3,15 +3,26 @@
     color-scheme: dark;
 
     /* ---- Palette (Figma) ---- */
-    --c-bg: #222526;
+    /* Base dark is a teal-leaning charcoal, NOT a neutral grey. The old #222526 was
+       a desaturated cool grey; mixed toward WHITE for raised surfaces (below) it
+       produced a flat, hueless grey that read as dead/nauseating (flagged repeatedly,
+       and patched piecemeal in nav/footer/contact — those local hacks are now removed
+       in favour of this single source). #1f2725 nudges the base ~8% toward the accent
+       so the whole site sits on a faintly teal dark; every surface derivative then
+       lifts toward the ACCENT (not white), so "elevated" reads as warmer teal, never
+       grey. One palette edit, every consumer healed. */
+    --c-bg: #1f2725;
     --c-fg: #e0e0e0;
     --c-accent: #1FD1A1;
 
     /* ---- Surface derivatives ---- */
+    /* Raised surfaces lift the base toward the ACCENT, never toward white — mixing a
+       dark teal toward white strips the hue back to grey (the bug). Toward accent =
+       the surface gains warmth as it rises. */
     --bg: var(--c-bg);
-    --bg-elev: color-mix(in oklab, var(--c-bg) 88%, white);
-    --bg-card: color-mix(in oklab, var(--c-bg) 82%, white);
-    --bg-card-hover: color-mix(in oklab, var(--c-bg) 74%, white);
+    --bg-elev: color-mix(in oklab, var(--c-bg) 90%, var(--accent));
+    --bg-card: color-mix(in oklab, var(--c-bg) 86%, var(--accent));
+    --bg-card-hover: color-mix(in oklab, var(--c-bg) 80%, var(--accent));
     --border: color-mix(in oklab, var(--c-fg) 12%, transparent);
     --border-strong: color-mix(in oklab, var(--c-fg) 20%, transparent);
     /* Section divider hairline. The about-page line (.cta-band) is plain --border
