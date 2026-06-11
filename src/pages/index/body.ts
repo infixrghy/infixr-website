@@ -355,6 +355,20 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
       <p class="contact__lead">At InfiXR, we design and develop VR solutions that go beyond visuals&mdash;helping teams train better, reduce risks, and perform with confidence in high-stakes environments. Tell us what you're building&mdash;we'd love to be a part of it.</p>
 
       <form class="contact-form" id="contact-form" novalidate>
+        <!-- Web3Forms wiring. access_key is PUBLIC by design (it only authorizes
+             "deliver to the bound inbox", not read/send-as) — safe in committed
+             HTML; swap in the real key from web3forms.com. subject + from_name shape
+             the inbox email. The form POSTs JSON via src/js/main.js. -->
+        <input type="hidden" name="access_key" value="YOUR-WEB3FORMS-ACCESS-KEY">
+        <input type="hidden" name="subject" value="New contact — infixr.com">
+        <input type="hidden" name="from_name" value="InfiXR Website">
+        <!-- Web3Forms native honeypot: hidden checkbox bots auto-tick → they drop
+             the submission server-side. Hidden from humans (off-layout + off-tab +
+             a11y-hidden). Pure markup, no JS. -->
+        <div class="cf-hp" aria-hidden="true">
+          <label for="cf-botcheck">Don't fill this out if you're human</label>
+          <input id="cf-botcheck" name="botcheck" type="checkbox" tabindex="-1" autocomplete="off">
+        </div>
         <div class="field">
           <label for="cf-name">Name</label>
           <input id="cf-name" name="name" type="text" required autocomplete="name" minlength="2" maxlength="80" placeholder="Ram Das">

@@ -4,8 +4,9 @@
   const form = document.getElementById("contact-form");
   if (!form) return;
 
-  // TODO: replace with real endpoint
-  const ENDPOINT = "https://example.com/api/contact";
+  // Web3Forms backend → contact@infixr.com. access_key is a public hidden field in
+  // the form (no secret); host-independent. See src/pages/index/body.ts.
+  const ENDPOINT = "https://api.web3forms.com/submit";
 
   const status = form.querySelector(".contact-form__status");
   const submit = form.querySelector('button[type="submit"]');

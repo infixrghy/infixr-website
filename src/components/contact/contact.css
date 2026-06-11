@@ -162,4 +162,17 @@
     opacity: .7;
     pointer-events: none;
   }
+
+  /* Honeypot wrapper: removed from layout, paint, tab order, and the a11y tree.
+     Real users never see or reach #cf-botcheck; bots that tick every checkbox trip
+     it, and Web3Forms drops any submission where it's checked (server-side). */
+  .cf-hp {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
