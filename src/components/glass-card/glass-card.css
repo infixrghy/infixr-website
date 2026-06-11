@@ -110,6 +110,16 @@
          So hover = rim + sheen + title-glow only; the resting ::before frost persists
          unmoved. (reduced-motion already forced transform:none — now they match.) */
       &:hover {
+        /* Hold the element background transparent on hover. .u-card--text:hover sets
+           `background: var(--bg-card-hover)` at (0,2,0), which beats .glass-card's
+           resting `background: transparent` (0,1,0) — so without this, the element's
+           OWN background (behind the 50%-translucent ::before frost) flips to an
+           opaque lighter teal on hover and shows through the glass, reading as a
+           colour shift. THIS is the "different teal on hover" (not the ::before tint,
+           not the lift, not the sheen — all previously suspected). .glass-card:hover
+           is also (0,2,0) and loads AFTER u-card.css, so it wins by source order.
+           The frost colour is now genuinely constant; sheen/rim/title-glow unaffected. */
+        background: transparent;
         border-color: var(--gc-rim-hover);
         /* No lift now, so the resting depth-shadow stays (a big downward-offset drop
            would imply an elevation that isn't there). Hover adds ONLY: slightly
