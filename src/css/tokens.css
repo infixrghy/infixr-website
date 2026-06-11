@@ -3,15 +3,18 @@
     color-scheme: dark;
 
     /* ---- Palette (Figma) ---- */
-    /* Base dark is a teal-leaning charcoal, NOT a neutral grey. The old #222526 was
+    /* Base dark is a teal-leaning near-black, NOT a neutral grey. The old #222526 was
        a desaturated cool grey; mixed toward WHITE for raised surfaces (below) it
        produced a flat, hueless grey that read as dead/nauseating (flagged repeatedly,
        and patched piecemeal in nav/footer/contact — those local hacks are now removed
-       in favour of this single source). #1f2725 nudges the base ~8% toward the accent
-       so the whole site sits on a faintly teal dark; every surface derivative then
-       lifts toward the ACCENT (not white), so "elevated" reads as warmer teal, never
-       grey. One palette edit, every consumer healed. */
-    --c-bg: #1f2725;
+       in favour of this single source). #0d1311 is a deep teal-black (~8% toward the
+       accent) so the whole site sits on a near-black with a faint teal undertone;
+       every surface derivative then lifts toward the ACCENT (not white), so "elevated"
+       reads as warmer teal, never grey. One palette edit, every consumer healed.
+       (Was #1f2725; deepened to near-black 2026-06-11 — Ari, for max glass/glow pop.
+       The static chrome hexes in head.ts <meta theme-color> + manifest.webmanifest
+       cannot read this var — they're hand-synced to match.) */
+    --c-bg: #0d1311;
     --c-fg: #e0e0e0;
     --c-accent: #1FD1A1;
 
@@ -31,6 +34,16 @@
        One dial — bump the accent % for a stronger tint, drop it toward --border
        for greyer. */
     --divider: color-mix(in oklab, var(--accent) 35%, var(--border));
+    /* Engineered-console blueprint grid line. The faint graph-paper lines behind the
+       Solutions/Services/Blog/Contact sections (each section's ::after, masked to a
+       soft radial pool). Was hardcoded color-mix(--c-fg 4%, transparent) in 8 gradient
+       declarations across 4 sections; hoisted to one dial so the grid can't drift
+       per-section. 4%→6%: slightly more visible (Ari). NOTE the new near-black --c-bg
+       already lifts this contrast vs the old base, so 6% is a small nudge, not a big
+       one. The per-section MASK radials stay inline — their weighting (solutions=left,
+       services=center, blog=right, contact=center) is an intentional composition
+       signature, NOT a shared value. */
+    --grid-line: color-mix(in oklab, var(--c-fg) 6%, transparent);
 
     --fg: var(--c-fg);
     --fg-muted: color-mix(in oklab, var(--c-fg) 78%, transparent);
