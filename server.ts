@@ -5,6 +5,9 @@ import { stat } from "node:fs/promises";
 // Serve the built site. Run `bun run build.ts` first (or `bun run dev` which chains both).
 const ROOT = join(import.meta.dir, "public");
 const PORT = Number(process.env.PORT ?? 8765);
+// Loopback by default (not LAN-exposed). For on-device testing from a phone on the same
+// Wi-Fi, opt in with `HOST=0.0.0.0 bun run server.ts` to bind all interfaces.
+const HOST = process.env.HOST ?? "127.0.0.1";
 
 const TYPES: Record<string, string> = {
   ".html": "text/html; charset=utf-8",
@@ -23,7 +26,7 @@ const TYPES: Record<string, string> = {
 
 const server = serve({
   port: PORT,
-  hostname: "127.0.0.1",
+  hostname: HOST,
   async fetch(req) {
     const url = new URL(req.url);
     let pathname = decodeURIComponent(url.pathname);

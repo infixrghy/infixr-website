@@ -70,9 +70,19 @@
         background: color-mix(in oklab,
                      color-mix(in oklab, var(--accent) var(--gc-tint), var(--c-bg)) var(--gc-alpha),
                      transparent);
-        -webkit-backdrop-filter: blur(22px) saturate(170%);
-                backdrop-filter: blur(22px) saturate(170%);
-        transition: background .25s, backdrop-filter .25s, -webkit-backdrop-filter .25s;
+        /* NO backdrop-filter (removed 2026-06-12). It used to be blur(22px) saturate(170%),
+           but ANY blur over the MOVING blueprint grid behind the card re-sampled that grid
+           every scroll frame and, aliasing against fractional mobile DPR, painted a
+           flickering vertical ghost line (the grid column at x≈44) AND cost enough GPU per
+           frame to jank the scroll. On-device bisect (the phone is the only renderer that
+           shows this inter-frame transient — desktop DPR 1.25 cannot): 22px → ghost+jank,
+           12px → still ghost+jank, none → clean + smoother. No threshold above zero is
+           clean on real hardware, and the "frost" wasn't carrying its visual weight anyway
+           (Ari), so the blur is gone. The teal-tinted translucent surface + lit rim + accent
+           rings (on the parent) + sheen sweep (::after) ARE the glass look; they stay.
+           NOTE saturate() is dropped with the blur — a bare backdrop saturate with no blur
+           is its own cheap-but-pointless filter layer; the tint already carries the colour. */
+        transition: background .25s;
       }
 
       /* Sheen sweep: a diagonal light streak parked off the left edge, wiped
