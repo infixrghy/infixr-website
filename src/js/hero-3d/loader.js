@@ -54,7 +54,7 @@
     mv.setAttribute("src", "assets/headset.glb");
     // Passive turntable: no `camera-controls` → no interaction prompt, no
     // zoom/pan/tap handlers, and wheel/touch scroll passes straight through.
-    mv.setAttribute("rotation-per-second", "30deg");
+    mv.setAttribute("rotation-per-second", "24deg");
     mv.setAttribute("interaction-prompt", "none");
     // Frame 0 = headset facing the viewer head-on (front lens toward the visitor),
     // slight top-down for dimension. The static webp is a pixel-exact capture of
