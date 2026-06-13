@@ -47,10 +47,10 @@ export const renderFooter = (isHome: boolean, base = ""): string => {
     <div>
       <h3 class="footer-h">Social</h3>
       <ul class="social-links" aria-label="Social media">
-        <li><a href="https://www.linkedin.com/" aria-label="LinkedIn" rel="noopener">
+        <li><a href="https://www.linkedin.com/company/infixr/" aria-label="LinkedIn" rel="noopener">
           ${linkedInIcon}
         </a></li>
-        <li><a href="https://www.instagram.com/" aria-label="Instagram" rel="noopener">
+        <li><a href="https://www.instagram.com/infixr" aria-label="Instagram" rel="noopener">
           ${instagramIcon}
         </a></li>
       </ul>
