@@ -3,7 +3,13 @@
 @layer components {
   /* ============ NAV ============ */
   .primary-nav {
-    & ul {
+    /* DIRECT-CHILD (> ul), not descendant (ul): the "Our Services" item now nests
+       its own .nav-dropdown <ul>. A bare `& ul` would lay that submenu out as a
+       horizontal flex row too (and the mobile rules below would make it absolute +
+       invisible). Scoping to the TOP-LEVEL list leaves the nested dropdown free to
+       define its own layout. Same descendant-selector trap as the footer `& p`
+       bite — fix at the root, don't override downstream. */
+    & > ul {
       display: flex;
       gap: var(--space-5);
       align-items: center;
@@ -30,6 +36,122 @@
       }
       /* Active page (HOME on the home route) — brighter, matches the mock */
       &.is-active { color: var(--fg); font-weight: 600; }
+    }
+
+    /* ---- "Our Services" dropdown (pure CSS, no JS) ---- */
+    /* The product names are intentionally camelCase ("InfiLearn"); the generic nav
+       rule above forces uppercase, so opt the dropdown links back out — otherwise
+       "INFILEARN". Also drop the wide nav letter-spacing for readable menu rows. */
+    .nav-dropdown a {
+      text-transform: none;
+      letter-spacing: 0;
+    }
+
+    /* The parent gets a small ▾ caret so it reads as "has a submenu", and the <li>
+       is the positioning context for the desktop flyout. */
+    .has-dropdown {
+      position: relative;
+      & > .nav-parent::after {
+        content: "";
+        display: inline-block;
+        width: .42em;
+        height: .42em;
+        margin-inline-start: .5em;
+        border-right: 1.5px solid currentColor;
+        border-bottom: 1.5px solid currentColor;
+        transform: translateY(-2px) rotate(45deg);
+        transition: transform .2s, opacity .2s;
+        opacity: .7;
+      }
+    }
+
+    /* DESKTOP flyout (above the burger breakpoint). The submenu floats below the
+       parent, hidden until hover OR keyboard focus enters the item. Reuses the
+       frosted-glass vocabulary the mobile panel defines (translucent teal + blur +
+       lit rim + accent glow) so it belongs to the same surface family — not a new
+       look. The mobile (<=800px) rules below override all of this back to an
+       always-open indented sub-list. */
+    @media (min-width: 801px) {
+      .nav-dropdown {
+        position: absolute;
+        top: calc(100% + var(--s-1));
+        left: 50%;
+        z-index: 60; /* above sticky header content (.site-header is z-index:50) */
+        display: grid;
+        gap: 2px;
+        min-width: 200px;
+        padding: var(--s-2);
+        list-style: none;
+        background: color-mix(in oklab, var(--accent) 8%, var(--c-bg));
+        border: 1.5px solid color-mix(in oklab, var(--accent) 55%, var(--border-strong));
+        border-radius: var(--radius);
+        box-shadow:
+          inset 0 1px 0 color-mix(in oklab, white 22%, transparent),
+          inset 0 0 0 1px color-mix(in oklab, var(--accent) 14%, transparent),
+          0 0 0 1px color-mix(in oklab, var(--accent) 16%, transparent),
+          0 18px 50px -16px rgba(0, 0, 0, .8),
+          0 0 44px -14px var(--accent-glow);
+        /* closed: nudged up + faded + lifted off the pointer so it can't be
+           hovered while invisible. transform-origin keeps the grow anchored to the
+           parent. translateX(-50%) centres the panel under the parent. */
+        transform: translateX(-50%) translateY(-8px) scale(.97);
+        transform-origin: top center;
+        opacity: 0;
+        pointer-events: none;
+        transition: transform .24s cubic-bezier(.2, .8, .25, 1), opacity .18s ease;
+        & a {
+          display: block;
+          padding: var(--s-2) var(--s-3);
+          border-radius: var(--radius-sm);
+          font-size: var(--step--1);
+          font-weight: 500;
+          color: var(--fg-muted);
+          /* a thin invisible hover-bridge: the dropdown sits `--s-1` below the
+             parent, and this top padding-area would be an un-hoverable gap that
+             closes the menu mid-reach. A ::before spanning that gap keeps the
+             hover chain unbroken. */
+          transition: background .18s, color .18s;
+          &:hover {
+            background: color-mix(in oklab, var(--accent) 16%, transparent);
+            color: var(--fg);
+          }
+        }
+      }
+      /* The gap-bridge: an invisible strip filling the space between parent and
+         panel so the pointer never crosses dead air (which would drop :hover). */
+      .nav-dropdown::before {
+        content: "";
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        right: 0;
+        height: calc(var(--s-1) + 4px);
+      }
+      /* Reveal on hover OR keyboard focus anywhere in the item (focus-within makes
+         it tab-accessible without a line of JS). */
+      .has-dropdown:hover > .nav-dropdown,
+      .has-dropdown:focus-within > .nav-dropdown {
+        transform: translateX(-50%) translateY(0) scale(1);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      /* Flip the caret up while open. */
+      .has-dropdown:hover > .nav-parent::after,
+      .has-dropdown:focus-within > .nav-parent::after {
+        transform: translateY(1px) rotate(-135deg);
+        opacity: 1;
+      }
+      /* Reduced motion: still reveal (opacity), but skip the slide/scale. */
+      @media (prefers-reduced-motion: reduce) {
+        .nav-dropdown {
+          transition: opacity .18s ease;
+          transform: translateX(-50%);
+        }
+        .has-dropdown:hover > .nav-dropdown,
+        .has-dropdown:focus-within > .nav-dropdown {
+          transform: translateX(-50%);
+        }
+      }
     }
   }
 
@@ -59,8 +181,11 @@
        glowing Contact Us CTA inside it now belongs instead of floating on grey).
          Items left-aligned (reading column); the CTA <li> is centered + separated
        below (see &:last-child). overflow:clip clips the children's corners to the
-       panel radius. */
-    .primary-nav ul {
+       panel radius.
+         DIRECT-CHILD (> ul): scopes this absolute-panel treatment to the TOP-LEVEL
+       nav list only. The nested .nav-dropdown (under "Our Services") must stay an
+       in-flow indented sub-list inside the panel, not a second absolute box. */
+    .primary-nav > ul {
       position: absolute;
       top: calc(100% + var(--s-1));
       right: var(--space-4);
@@ -91,7 +216,7 @@
     /* Frosted enhancement — scoped INSIDE this @media so it only applies to the
        absolute-positioned mobile panel, never the desktop inline nav row. */
     @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-      .primary-nav ul {
+      .primary-nav > ul {
         /* translucent teal glass: 8% accent into c-bg, taken to 72% opacity so the
            page (and its glow) shows through the blur — the frost the site is built on */
         background: color-mix(in oklab,
@@ -104,7 +229,7 @@
     /* CTA row: a hairline separates it from the link list, and it centers the glass
        button as the panel's anchor action (button() renders an inline-flex pill, so
        justify-content centers it within the stretched <li>). */
-    .primary-nav ul li:last-child {
+    .primary-nav > ul > li:last-child {
       display: flex;
       justify-content: center;
       margin-top: var(--s-1);
@@ -123,8 +248,32 @@
     }
     /* Reduced motion: the panel still appears (opacity), but skip the slide/scale. */
     @media (prefers-reduced-motion: reduce) {
-      .primary-nav ul { transition: opacity .2s ease; transform: none; }
+      .primary-nav > ul { transition: opacity .2s ease; transform: none; }
       .nav-toggle:checked ~ ul { transform: none; }
+    }
+
+    /* ---- MOBILE "Our Services" sub-list ---- */
+    /* Inside the burger panel a hover-flyout is meaningless (touch) and a second
+       checkbox-hack would be overkill, so the four products are just an
+       always-open indented sub-list under the parent link — no caret, no toggle. */
+    .has-dropdown { position: static; }
+    .has-dropdown > .nav-parent::after { display: none; } /* hide the desktop caret */
+    .nav-dropdown {
+      list-style: none;
+      display: grid;
+      gap: 2px;
+      margin: var(--s-1) 0 0;
+      padding: 0 0 0 var(--s-3);
+      /* a hairline rail on the indent edge ties the children to their parent */
+      border-left: 1.5px solid color-mix(in oklab, var(--accent) 30%, var(--border));
+      & a {
+        display: block;
+        padding: 6px 0;
+        font-size: var(--step--1);
+        color: var(--fg-muted);
+        transition: color .18s;
+        &:hover { color: var(--fg); }
+      }
     }
   }
 }

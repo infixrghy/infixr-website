@@ -20,6 +20,40 @@ const navItem = (id: NavId, active: NavId, href: string, label: string): string 
   return html`<li><a${cls} href="${href}"${aria}>${label}</a></li>`;
 };
 
+/** The four products, in services.html source order. Each deep-links to the
+ *  service block's anchor (renderServiceBlock emits id=name.toLowerCase()). */
+const SERVICES_MENU: ReadonlyArray<readonly [slug: string, label: string]> = [
+  ["infilearn", "InfiLearn"],
+  ["infitrain", "InfiTrain"],
+  ["infisoft", "InfiSoft"],
+  ["infiexplore", "InfiExplore"],
+];
+
+/**
+ * The "Our Services" <li> — a parent link to services.html PLUS a nested dropdown
+ * of the four products. Inlined (not folded into navItem) because it's the only
+ * item with children; generalising navItem for one caller would cost more than it
+ * saves. The disclosure is pure CSS (:hover + :focus-within on desktop, an
+ * always-open indented sub-list in the mobile burger panel) — no JS, matching the
+ * checkbox-hack burger already here. The parent <a> still navigates to the full
+ * Services page; the children are deep-links INTO it.
+ */
+const servicesNavItem = (active: NavId, base: string): string => {
+  const isActive = "services" === active;
+  const cls = isActive ? " is-active" : "";
+  const aria = isActive ? ' aria-current="page"' : "";
+  const items = SERVICES_MENU.map(
+    ([slug, label]) =>
+      html`<li><a href="${base}services.html#${slug}">${label}</a></li>`,
+  ).join("\n          ");
+  return html`<li class="has-dropdown">
+        <a class="nav-parent${cls}" href="${base}services.html"${aria}>Our Services</a>
+        <ul class="nav-dropdown" aria-label="Our Services">
+          ${items}
+        </ul>
+      </li>`;
+};
+
 /**
  * Render the full <header> for a page.
  * @param active which nav item is the current page
@@ -46,7 +80,7 @@ export const renderNav = (active: NavId, isHome: boolean, base = ""): string => 
     <ul>
       ${navItem("home", active, homeHref, "Home")}
       ${navItem("solutions", active, sec("#solutions"), "Our Solutions")}
-      ${navItem("services", active, `${base}services.html`, "Our Services")}
+      ${servicesNavItem(active, base)}
       ${navItem("about", active, `${base}about.html`, "Who We Are")}
       ${navItem("blog", active, `${base}blog.html`, "Blog")}
       <li>${button({
