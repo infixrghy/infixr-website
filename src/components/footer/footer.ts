@@ -57,7 +57,7 @@ export const renderFooter = (isHome: boolean, base = ""): string => {
     </div>
     <div>
       <h3 class="footer-h">Location</h3>
-      <address>InfiXR, Block 2B, Regent Paradise, Bhetapara, Ghy 781028</address>
+      <address>InfiXR<br>Guwahati, Assam<br>781028</address>
     </div>
   </div>
   <p class="site-footer__copy">Copyright &copy; <span id="year">2026</span> &nbsp;|&nbsp; Powered by InfiXR</p>
