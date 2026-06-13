@@ -256,8 +256,20 @@
     }
   }
   /* The block's CTA sits left-aligned under the columns (not centered like the
-     cta-band button). The base .btn handles the surface. */
-  .service-block .btn { justify-self: start; margin-top: var(--space-2); }
+     cta-band button). The base .btn handles the surface; here we make these four
+     "Request a Demo" pills a touch bolder + longer than the site default — bumped
+     weight (600 base -> 700; Satoshi is a variable woff2 so 700 is a true axis
+     stop, not faux-bold) and wider horizontal padding (1.4rem base -> 2.4rem;
+     padding-inline grows the pill AROUND the centred label, content-relative and
+     safe across the --step--1 font clamp — unlike a fixed width). Vertical padding
+     left at the base .8rem (wider, not taller). Scoped to .service-block so the
+     hero / contact / about CTAs keep the site-default weight + size. (Ari, 2026-06-13.) */
+  .service-block .btn {
+    justify-self: start;
+    margin-top: var(--space-2);
+    font-weight: 700;
+    padding-inline: 2.4rem;
+  }
 
   /* ============ BLOG LIST PAGE ============
      Cards are unified .u-card.u-card--text. .blog-featured is just a hook for
