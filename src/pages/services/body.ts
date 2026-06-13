@@ -62,12 +62,12 @@ const SERVICES: ReadonlyArray<Service> = [
       "NCERT, NSDC &amp; NELIT aligned",
     ],
     benefits: [
-      "Expands access to practical learning",
-      "Supports experiential education",
-      "Low deployment cost",
-      "Works on existing devices",
-      "Improves learning retention through hands-on practice",
-      "Bridges the skills gap between classroom and industry",
+      "Expand access to practical learning",
+      "Support experiential education",
+      "Deploy at low cost",
+      "Run on existing devices",
+      "Improve learning retention through hands-on practice",
+      "Bridge the skills gap between classroom and industry",
     ],
   },
   {
