@@ -6,7 +6,15 @@
     text-transform: uppercase;
     letter-spacing: .18em;
     font-size: var(--step--1);
-    color: var(--fg-dim);
+    /* Teal-tinted like body copy (--fg-muted), NOT the neutral-dim --fg-dim it
+       used to ride: --fg-dim fades to transparent → hueless grey on the teal-
+       black bg (the same grey-eyebrow complaint that hit body text). Point at
+       --fg-muted so the section kickers (What We Build / Our Services / Who We
+       Are / Blog / Get In Touch) carry the brand undertone. Stays distinct from
+       body via the uppercase + .18em tracking + smaller size, not via colour.
+       --fg-dim is left alone — its other consumers (form ::placeholder, card
+       meta) legitimately want a quiet neutral. 2026-06-13, Ari. */
+    color: var(--fg-muted);
     font-weight: 600;
   }
   h2 { font-size: var(--step-4); font-weight: 700; letter-spacing: -.02em; }
