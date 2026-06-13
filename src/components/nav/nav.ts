@@ -46,7 +46,7 @@ export const renderNav = (active: NavId, isHome: boolean, base = ""): string => 
     <ul>
       ${navItem("home", active, homeHref, "Home")}
       ${navItem("solutions", active, sec("#solutions"), "Our Solutions")}
-      ${navItem("services", active, sec("#services"), "Our Services")}
+      ${navItem("services", active, `${base}services.html`, "Our Services")}
       ${navItem("about", active, `${base}about.html`, "Who We Are")}
       ${navItem("blog", active, `${base}blog.html`, "Blog")}
       <li>${button({

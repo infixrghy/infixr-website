@@ -317,22 +317,22 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
       ${glassCard({
     title: "InfiTrain",
     body: "VR-based simulation solutions for hands-on skill training in high-risk, equipment-intensive industries.",
-    footer: { _tag: "cta", label: "Learn More", href: "#contact" },
+    footer: { _tag: "cta", label: "Learn More", href: "services.html#infitrain" },
   })}
       ${glassCard({
     title: "InfiSoft",
     body: "AI-powered XR solutions for developing interpersonal, leadership, and communication skills through immersive roleplay simulations.",
-    footer: { _tag: "cta", label: "Learn More", href: "#contact" },
+    footer: { _tag: "cta", label: "Learn More", href: "services.html#infisoft" },
   })}
       ${glassCard({
     title: "InfiExplore",
     body: "AR & MR powered experiential solutions for museums, heritage sites, and tourism destinations.",
-    footer: { _tag: "cta", label: "Learn More", href: "#contact" },
+    footer: { _tag: "cta", label: "Learn More", href: "services.html#infiexplore" },
   })}
       ${glassCard({
     title: "InfiLearn",
     body: "Browser-accessible XR learning solutions for vocational institutes, polytechnics, and schools.",
-    footer: { _tag: "cta", label: "Learn More", href: "#contact" },
+    footer: { _tag: "cta", label: "Learn More", href: "services.html#infilearn" },
   })}
     </ul>
   </section>

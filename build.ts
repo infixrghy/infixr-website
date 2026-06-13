@@ -104,9 +104,11 @@ import { renderNav } from "./src/components/nav/nav.ts";
 import { renderFooter } from "./src/components/footer/footer.ts";
 import { indexMeta } from "./src/pages/index/meta.ts";
 import { aboutMeta } from "./src/pages/about/meta.ts";
+import { servicesMeta } from "./src/pages/services/meta.ts";
 import { blogMeta } from "./src/pages/blog/meta.ts";
 import { renderHomeBody } from "./src/pages/index/body.ts";
 import { renderAboutBody } from "./src/pages/about/body.ts";
+import { renderServicesBody } from "./src/pages/services/body.ts";
 import { renderBlogBody, renderPost, postPageMeta } from "./src/pages/blog/body.ts";
 import { loadPosts } from "./src/data/posts.ts";
 
@@ -272,6 +274,7 @@ const program = Effect.gen(function* () {
   // blog mosaic — see pages/index/body.ts). loadPosts is the shared data layer in
   // src/data/posts.ts (was src/blog.ts → src/content.ts — extracted so it's not owned by the blog page).
   const aboutBody = renderAboutBody();
+  const servicesBody = renderServicesBody();
   const posts = yield* loadPosts;
   const indexBody = renderHomeBody(posts);
   const blogBody = renderBlogBody(posts);
@@ -281,6 +284,9 @@ const program = Effect.gen(function* () {
   pages.push(yield* buildPage("index.html", indexMeta, indexBody, coreCss, true));
   pages.push(
     yield* buildPage("about.html", aboutMeta, aboutBody, coreCss + "\n" + pagesCss, false)
+  );
+  pages.push(
+    yield* buildPage("services.html", servicesMeta, servicesBody, coreCss + "\n" + pagesCss, false)
   );
   pages.push(
     yield* buildPage("blog.html", blogMeta, blogBody, coreCss + "\n" + pagesCss, false)
