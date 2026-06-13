@@ -10,6 +10,7 @@
 import { html } from "../../templates/html.ts";
 import { brandLogo } from "../brand/brand.ts";
 import { button } from "../button/button.ts";
+import { SERVICES } from "../../data/services.ts";
 import type { NavId } from "../../schema/page.ts";
 
 /** One nav <li>. Adds is-active class + aria-current when this item is the page. */
@@ -19,15 +20,6 @@ const navItem = (id: NavId, active: NavId, href: string, label: string): string 
   const aria = isActive ? ' aria-current="page"' : "";
   return html`<li><a${cls} href="${href}"${aria}>${label}</a></li>`;
 };
-
-/** The four products, in services.html source order. Each deep-links to the
- *  service block's anchor (renderServiceBlock emits id=name.toLowerCase()). */
-const SERVICES_MENU: ReadonlyArray<readonly [slug: string, label: string]> = [
-  ["infilearn", "InfiLearn"],
-  ["infitrain", "InfiTrain"],
-  ["infisoft", "InfiSoft"],
-  ["infiexplore", "InfiExplore"],
-];
 
 /**
  * The "Our Services" <li> — a parent link to services.html PLUS a nested dropdown
@@ -42,7 +34,7 @@ const servicesNavItem = (active: NavId, base: string): string => {
   const isActive = "services" === active;
   const cls = isActive ? " is-active" : "";
   const aria = isActive ? ' aria-current="page"' : "";
-  const items = SERVICES_MENU.map(
+  const items = SERVICES.map(
     ([slug, label]) =>
       html`<li><a href="${base}services.html#${slug}">${label}</a></li>`,
   ).join("\n          ");
