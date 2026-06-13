@@ -46,7 +46,16 @@
     --grid-line: color-mix(in oklab, var(--c-fg) 6%, transparent);
 
     --fg: var(--c-fg);
-    --fg-muted: color-mix(in oklab, var(--c-fg) 78%, transparent);
+    /* Body / secondary copy. Mixes the fg toward the ACCENT, not toward
+       transparent — same reason surfaces lift toward accent not white (above).
+       Fading text to transparent over the teal-black bg desaturates it to a
+       hueless neutral grey (it can't pick up the bg hue; alpha-blends at
+       composite time, not in the value), which read as flat/dead against the
+       warm-dark page. Mixing toward --accent bakes a faint teal undertone into
+       the token so secondary text harmonises with the bg instead of fighting it.
+       (Was `--c-fg 78% → transparent`; retuned to teal-tinted 2026-06-13 — Ari,
+       killed the grey-ish body text. Picked "Option C" from a C-vs-D side-by-side.) */
+    --fg-muted: color-mix(in oklab, var(--c-fg) 82%, var(--accent));
     --fg-dim: color-mix(in oklab, var(--c-fg) 60%, transparent);
 
     --accent: var(--c-accent);
