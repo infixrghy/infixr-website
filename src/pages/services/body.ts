@@ -156,12 +156,12 @@ const renderServiceBlock = (s: Service): string => {
           <h3 id="${id}-title" class="service-block__name">${s.name}</h3>
           <p class="service-block__summary">${s.summary}</p>
 
-          <h4 class="service-block__subhead">What It Does</h4>
+          <h4 class="service-block__subhead">How It Works</h4>
           <p class="service-block__what">${s.whatItDoes}</p>
 
           <div class="service-block__cols">
-            ${bulletColumn("Key Features", s.features)}
-            ${bulletColumn("Benefits", s.benefits)}
+            ${bulletColumn("What You Get", s.features)}
+            ${bulletColumn("Why It Matters", s.benefits)}
           </div>
 
           ${button({
