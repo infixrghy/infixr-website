@@ -66,6 +66,8 @@ const SERVICES: ReadonlyArray<Service> = [
       "Supports experiential education",
       "Low deployment cost",
       "Works on existing devices",
+      "Improves learning retention through hands-on practice",
+      "Bridges the skills gap between classroom and industry",
     ],
   },
   {
@@ -88,6 +90,7 @@ const SERVICES: ReadonlyArray<Service> = [
       "Train at scale with consistent outcomes",
       "Improve safety compliance and retention",
       "Support multilingual training delivery",
+      "Cut equipment downtime and training costs",
     ],
   },
   {
@@ -109,6 +112,8 @@ const SERVICES: ReadonlyArray<Service> = [
       "Objective performance measurement",
       "Safe environment for practice and improvement",
       "Faster skill development and readiness",
+      "Build employee confidence before real-world stakes",
+      "Reduce onboarding and ramp-up time",
     ],
   },
   {
