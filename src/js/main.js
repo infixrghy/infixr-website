@@ -43,11 +43,11 @@
   });
 })();
 
-// Carousel: transform-track infinite loop + own prev/next + own dots + debounced
-// autoplay. Track is clone-padded [3'][1][2][3][1']; `i` indexes those 5. Stepping
-// onto an edge clone then instant-teleporting to its pixel-identical real twin =
-// seamless loop. Autoplay = one interval gated on `pauseUntil`; any user intent
-// pauses it 15s. No-ops where the carousel is absent. (Ari-approved JS.)
+// Carousel: transform-track infinite loop + own dots + debounced autoplay. Track
+// is clone-padded [3'][1][2][3][1']; `i` indexes those 5. Stepping onto an edge
+// clone then instant-teleporting to its pixel-identical real twin = seamless loop.
+// Autoplay = one interval gated on `pauseUntil`; any user intent (dot click, swipe,
+// wheel, key) pauses it 15s. No-ops where the carousel is absent. (Ari-approved JS.)
 (() => {
   const track = document.querySelector("[data-carousel]");
   if (!track) return;
@@ -90,9 +90,6 @@
   const advance = (dir) => { i += dir; position(!reduce.matches); };
   let pauseUntil = 0;
   const hold = () => { pauseUntil = Date.now() + 15000; }; // pause autoplay 15s on intent
-  const move = (dir) => { hold(); advance(dir); };         // user move = hold + advance
-  document.querySelector("[data-carousel-prev]").addEventListener("click", () => move(-1));
-  document.querySelector("[data-carousel-next]").addEventListener("click", () => move(1));
   dots.forEach((d, k) => d.addEventListener("click", () => { hold(); i = k + 1; position(!reduce.matches); }));
   ["pointerdown", "wheel", "touchstart", "keydown"].forEach((e) => carousel.addEventListener(e, hold, { passive: true }));
   addEventListener("resize", () => position(false));

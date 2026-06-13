@@ -8,7 +8,7 @@
      The track translateX-shifts inside a clip viewport; the carousel code in main.js
      centers one of the clone-padded [3'][1][2][3][1'] slides per step and, on
      transitionend at an edge clone, instant-jumps to its real twin → seamless
-     infinite loop. Own DOM dots + corner buttons drive it (Ari-approved JS).
+     infinite loop. Own DOM dots drive it + 5s autoplay (Ari-approved JS).
 
      Why not the CSS Overflow 5 scroll-container API (::scroll-button/marker)?
      It couldn't do seamless-loop + one-card-step + centered-peek together: native
@@ -19,7 +19,7 @@
   .carousel {
     position: relative;
     container-type: inline-size;
-    /* Reserve a control band under the cards for the dots + flanking buttons. */
+    /* Reserve a control band under the cards for the dots. */
     padding-bottom: clamp(3.5rem, 7cqi, 4.5rem);
   }
   /* Clip viewport: shows the centered card + neighbor peek slivers; hides the rest
@@ -44,48 +44,13 @@
     .carousel__track { transition: none; }
   }
 
-  /* ---- Prev / Next controls (own buttons, lower corners of the section) ---- */
-  .carousel__btn {
-    position: absolute;
-    z-index: 4;
-    bottom: .5rem;            /* centers the ~54px button in the control band */
-    display: grid;
-    place-items: center;
-    width: clamp(44px, 7cqi, 54px);
-    aspect-ratio: 1;
-    padding: 0;
-    border: 1px solid var(--border-strong);
-    border-radius: 50%;
-    background: color-mix(in oklab, var(--bg) 60%, transparent);
-    -webkit-backdrop-filter: blur(8px);
-    backdrop-filter: blur(8px);
-    color: var(--fg);
-    font-size: 1.6rem;
-    line-height: 1;
-    cursor: pointer;
-    transition: background .25s, border-color .25s, color .25s, transform .15s;
-  }
-  .carousel__btn--prev { left: 0; }
-  .carousel__btn--next { right: 0; }
-  .carousel__btn:hover {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #0b1f18;
-    transform: scale(1.08);
-  }
-  .carousel__btn:active { transform: scale(.96); }
-  .carousel__btn:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 3px;
-  }
-
   /* ---- Dots (own DOM, redesigned — hairline ring, no pill) ----
-     Centered in the control band between the prev/next buttons. JS sets
-     aria-selected on the active dot. */
+     Centered in the control band below the cards. JS sets aria-selected on the
+     active dot. (Prev/next buttons removed — dots are the sole control now.) */
   .carousel__dots {
     position: absolute;
     left: 50%;
-    bottom: 1.9rem;           /* dot centers line up with the 54px button centers */
+    bottom: 1.9rem;           /* vertically centered in the control band */
     transform: translateX(-50%);
     display: flex;
     gap: var(--space-3);

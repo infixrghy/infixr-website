@@ -351,7 +351,7 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
            first AND last card without runway hacks that fight flexbox). Clone-
            padded [3'][1][2][3][1']; the carousel code in main.js shifts one card per
            step and, on transitionend at an edge clone, instant-jumps to its real
-           twin → seamless infinite loop. Own dots + corner buttons drive it (the
+           twin → seamless infinite loop. Own dots + 5s autoplay drive it (the
            native ::scroll-marker/::scroll-button APIs can't do seamless-loop +
            one-card-step + centered-peek together). data-carousel="3" = real count. -->
       <div class="carousel__viewport">
@@ -363,14 +363,13 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
           ${renderWhoSlide(WHO_SLIDES[0], true)}
         </ol>
       </div>
-      <!-- Control band: prev/next in the lower corners, own dots centered between. -->
-      <button type="button" class="carousel__btn carousel__btn--prev" data-carousel-prev aria-label="Previous slide">&lsaquo;</button>
+      <!-- Control band: own dots, centered. (Prev/next buttons removed — dots +
+           autoplay are the only controls now.) -->
       <div class="carousel__dots" role="tablist" aria-label="Choose slide" data-carousel-dots>
         <button type="button" class="carousel__dot" role="tab" aria-label="Slide 1: VR Apps for Real-World Challenges"></button>
         <button type="button" class="carousel__dot" role="tab" aria-label="Slide 2: Scalable and Accessible"></button>
         <button type="button" class="carousel__dot" role="tab" aria-label="Slide 3: Practical, Not Experimental"></button>
       </div>
-      <button type="button" class="carousel__btn carousel__btn--next" data-carousel-next aria-label="Next slide">&rsaquo;</button>
     </div>
   </section>
 
