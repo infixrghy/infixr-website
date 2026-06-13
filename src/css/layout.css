@@ -499,16 +499,25 @@
      both rows, two editorial text cards stacked on the right. Asymmetric — the
      photo earns the width, the text cards carry the rest honestly (no filler
      gradients). Mobile keeps the inherited single-column stack (feature first).
-     Scoped to `.blog` so the blog-index grid is untouched. */
+     Scoped to `.blog` so the blog-index grid is untouched.
+
+     COUNT-AWARE via :has(.blog-text) — the two-column areas only kick in when a
+     text card actually exists (n >= 2 posts). With a single post the teaser
+     renders ONLY the feature card (renderHomeBody: textPosts is empty), so this
+     guard lets the grid fall back to the base single-column 1fr and the lone
+     feature card goes full-width instead of stranding an empty right column.
+     Self-healing: add posts -> text cards return -> :has() flips -> hybrid is
+     back. Pure CSS, no JS, no body.ts branch. (Ari, 2026-06-13 — blog collapsed
+     to one merged post.) */
   @media (min-width: 760px) {
-    .blog .blog__grid {
+    .blog .blog__grid:has(.blog-text) {
       grid-template-columns: 1.5fr 1fr;
       grid-template-areas:
         "feature text1"
         "feature text2";
       align-items: stretch;
     }
-    .blog .blog-feature { grid-area: feature; }
+    .blog .blog__grid:has(.blog-text) .blog-feature { grid-area: feature; }
     .blog .blog-text:nth-of-type(2) { grid-area: text1; }
     .blog .blog-text:nth-of-type(3) { grid-area: text2; }
   }

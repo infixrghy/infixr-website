@@ -23,13 +23,13 @@ export const renderAboutBody = (): string =>
   <section class="page-hero" aria-labelledby="page-title">
     <p class="eyebrow">About InfiXR</p>
     <h1 id="page-title" class="page-title">We build immersive experiences that change how teams train and decide.</h1>
-    <p class="page-lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. We're a team of engineers, designers, and domain specialists building XR tooling that holds up under real-world conditions&mdash;not just demo floors.</p>
+    <p class="page-lead">We're a team of engineers, designers, and domain specialists building XR tooling that holds up under real-world conditions&mdash;not just demo floors.</p>
   </section>
 
   <section class="prose" aria-labelledby="story-title">
     <h2 id="story-title">Our story</h2>
     <p>InfiXR started with a simple frustration: VR demos looked great in showrooms but rarely moved the needle on the metrics that matter&mdash;reduced incident rates, faster onboarding, measurable behavior change. We set out to close that gap.</p>
-    <p>Today we partner with industrial operators, corporate L&amp;D teams, and architectural firms to deliver experiences that are practical, accessible, and measurable. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <p>Today we partner with industrial operators, corporate L&amp;D teams, and architectural firms to deliver experiences that are practical, accessible, and measurable&mdash;built around real equipment, real workflows, and the outcomes each team is held to.</p>
 
     <h2>What we believe</h2>
     <ul class="value-grid">
@@ -60,8 +60,8 @@ export const renderAboutBody = (): string =>
     </ul>
 
     <h2>How we work</h2>
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-    <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+    <p>We start with the problem worth solving, not the technology. Before a single asset is modelled we map the procedure, the people who run it, and the metric the program is meant to move&mdash;so the experience is built backwards from the outcome rather than forwards from a demo.</p>
+    <p>From there it's a tight build-measure loop: a focused pilot proves the idea, telemetry tells us what's landing, and we design the rollout alongside the pilot so scaling is a gear change, not a restart. You finish owning version-controlled content and a clear handoff&mdash;not a dependency on us.</p>
   </section>
 
   <section class="cta-band" aria-labelledby="cta-title">

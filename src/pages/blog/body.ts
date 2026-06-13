@@ -95,21 +95,33 @@ export const renderBlogBody = (posts: ReadonlyArray<BlogPost>): string => {
   const featured = posts.find((p) => p.featured) ?? posts[0];
   const rest = posts.filter((p) => p !== featured);
 
+  // The "rest" grid is emitted ONLY when there are non-featured posts. With a
+  // single post (the blog collapsed to one merged piece), rest is empty — and an
+  // empty <div class="blog__grid"> still costs a row in the .blog-list parent grid
+  // (gap: --space-7), stranding ~48px of dead space under the featured card. A
+  // :empty CSS guard can't catch it (the template's newline indentation makes the
+  // div a whitespace node, not truly :empty), so gate the markup itself. Returns
+  // when rest grows back. (Ari, 2026-06-13.)
+  const restGrid =
+    rest.length > 0
+      ? html`
+
+    <div class="blog__grid">
+      ${rest.map((p) => "\n      " + renderCard(p)).join("")}
+    </div>`
+      : "";
+
   return html`<main>
 
   <section class="page-hero" aria-labelledby="page-title">
     <p class="eyebrow">Field Notes</p>
     <h1 id="page-title" class="page-title">Writing on shipping VR that actually gets used.</h1>
-    <p class="page-lead">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+    <p class="page-lead">Notes from the build: what it takes to ship immersive training that teams actually use&mdash;comfort, performance, safe-to-fail design, and measuring what changes.</p>
   </section>
 
   <section class="blog-list" aria-label="All blog posts">
 
-    ${renderFeatured(featured)}
-
-    <div class="blog__grid">
-      ${rest.map((p) => "\n      " + renderCard(p)).join("")}
-    </div>
+    ${renderFeatured(featured)}${restGrid}
 
   </section>
 
