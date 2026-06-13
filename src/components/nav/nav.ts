@@ -46,8 +46,13 @@ const servicesNavItem = (active: NavId, base: string): string => {
     ([slug, label]) =>
       html`<li><a href="${base}services.html#${slug}">${label}</a></li>`,
   ).join("\n          ");
+  // Chevron is a real inline SVG (not a CSS border-trick): exact stroke control,
+  // round caps so it reads as intentional, and it inherits the link's currentColor
+  // (so the muted→fg hover transition carries it for free). aria/focusable off —
+  // pure decoration; the <ul aria-label> already carries the submenu semantics.
+  const chevron = html`<svg class="nav-chevron" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg>`;
   return html`<li class="has-dropdown">
-        <a class="nav-parent${cls}" href="${base}services.html"${aria}>Our Services</a>
+        <a class="nav-parent${cls}" href="${base}services.html"${aria}>Our Services${chevron}</a>
         <ul class="nav-dropdown" aria-label="Our Services">
           ${items}
         </ul>

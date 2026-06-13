@@ -47,22 +47,30 @@
       letter-spacing: 0;
     }
 
-    /* The parent gets a small ▾ caret so it reads as "has a submenu", and the <li>
-       is the positioning context for the desktop flyout. */
+    /* The parent carries an inline-SVG chevron (rendered in nav.ts) so it reads as
+       "has a submenu"; the <li> is the positioning context for the desktop flyout.
+       The chevron is real geometry (round-capped stroke), not a CSS border-trick —
+       the old ::after wedge went sub-pixel-thin (0.8px) next to the 500-weight nav
+       caps and looked broken. currentColor + the link's own transition carry the
+       muted→fg hover shift onto the chevron for free. */
     .has-dropdown {
       position: relative;
-      & > .nav-parent::after {
-        content: "";
-        display: inline-block;
-        width: .42em;
-        height: .42em;
-        margin-inline-start: .5em;
-        border-right: 1.5px solid currentColor;
-        border-bottom: 1.5px solid currentColor;
-        transform: translateY(-2px) rotate(45deg);
-        transition: transform .2s, opacity .2s;
-        opacity: .7;
+      & > .nav-parent {
+        display: inline-flex;
+        align-items: center;
+        gap: .12em;
       }
+    }
+    .nav-chevron {
+      /* ~0.66em: a caret is a diacritic ON the label, not a peer of it — kept
+         subordinate to the cap height so "SERVICES" reads first, caret second. The
+         smaller box also renders the fixed stroke-width relatively heavier, so it
+         still weight-matches the 500-weight caps. Sizing in em tracks font-size. */
+      width: .66em;
+      height: .66em;
+      margin-top: .1em;          /* optical-center the V against the cap baseline */
+      opacity: .72;
+      transition: transform .22s cubic-bezier(.2, .8, .25, 1), opacity .2s;
     }
 
     /* DESKTOP flyout (above the burger breakpoint). The submenu floats below the
@@ -135,10 +143,11 @@
         opacity: 1;
         pointer-events: auto;
       }
-      /* Flip the caret up while open. */
-      .has-dropdown:hover > .nav-parent::after,
-      .has-dropdown:focus-within > .nav-parent::after {
-        transform: translateY(1px) rotate(-135deg);
+      /* Flip the chevron up while open (a clean 180° — round caps make the
+         half-rotation read smooth). */
+      .has-dropdown:hover > .nav-parent .nav-chevron,
+      .has-dropdown:focus-within > .nav-parent .nav-chevron {
+        transform: rotate(180deg);
         opacity: 1;
       }
       /* Reduced motion: still reveal (opacity), but skip the slide/scale. */
@@ -257,7 +266,7 @@
        checkbox-hack would be overkill, so the four products are just an
        always-open indented sub-list under the parent link — no caret, no toggle. */
     .has-dropdown { position: static; }
-    .has-dropdown > .nav-parent::after { display: none; } /* hide the desktop caret */
+    .has-dropdown > .nav-parent .nav-chevron { display: none; } /* hide the desktop chevron */
     .nav-dropdown {
       list-style: none;
       display: grid;
