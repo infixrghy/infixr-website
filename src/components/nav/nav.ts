@@ -79,7 +79,6 @@ export const renderNav = (active: NavId, isHome: boolean, base = ""): string => 
     </label>
     <ul>
       ${navItem("home", active, homeHref, "Home")}
-      ${navItem("solutions", active, sec("#solutions"), "Our Solutions")}
       ${servicesNavItem(active, base)}
       ${navItem("about", active, `${base}about.html`, "Who We Are")}
       ${navItem("blog", active, `${base}blog.html`, "Blog")}

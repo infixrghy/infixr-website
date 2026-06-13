@@ -5,8 +5,7 @@
  * <span id="year">; about/blog used index.html/about.html links + a hardcoded
  * "2026". Now ONE template: `isHome` switches anchor vs cross-page links, and a
  * single <span id="year"> means the sanctioned year-stamp JS (main.js) updates the
- * year on EVERY page — previously only index could be stamped. Footer "Our
- * Applications" is canonicalised to "Our Solutions" to match the nav.
+ * year on EVERY page — previously only index could be stamped.
  */
 import { html } from "../../templates/html.ts";
 import { brandLogo } from "../brand/brand.ts";
@@ -39,7 +38,7 @@ export const renderFooter = (isHome: boolean, base = ""): string => {
       <h3 class="footer-h">Quick Links</h3>
       <ul class="footer-links">
         <li><a href="${home}">Home</a></li>
-        <li><a href="${sec("#solutions")}">Our Solutions</a></li>
+        <li><a href="${base}services.html">Our Services</a></li>
         <li><a href="${about}">About Us</a></li>
         <li><a href="${sec("#contact")}">Contact</a></li>
       </ul>
