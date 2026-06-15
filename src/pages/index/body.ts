@@ -396,7 +396,7 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
              "deliver to the bound inbox", not read/send-as) — safe in committed
              HTML; swap in the real key from web3forms.com. subject + from_name shape
              the inbox email. The form POSTs JSON via src/js/main.js. -->
-        <input type="hidden" name="access_key" value="YOUR-WEB3FORMS-ACCESS-KEY">
+        <input type="hidden" name="access_key" value="7c892888-b3cd-4066-8c20-99577004b7f4">
         <input type="hidden" name="subject" value="New contact — infixr.com">
         <input type="hidden" name="from_name" value="InfiXR Website">
         <!-- Web3Forms native honeypot: hidden checkbox bots auto-tick → they drop
