@@ -60,7 +60,7 @@ export const GlassFooter = Schema.Union([
   }),
   Schema.Struct({
     _tag: Schema.Literal("cta"),
-    /** Visible CTA text, e.g. "View Case Study". */
+    /** Visible CTA text, e.g. "Learn More". */
     label: Schema.NonEmptyString,
     /** CTA destination, e.g. "#contact". */
     href: Schema.NonEmptyString,

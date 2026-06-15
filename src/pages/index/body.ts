@@ -260,7 +260,6 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
         <h2 id="solutions-title">From Idea to Immersive Reality</h2>
       </div>
       <p class="solutions__lead">A streamlined process that turns operational challenges into immersive, measurable training.</p>
-      <a class="link-arrow link-arrow--bold solutions__more" href="#contact">View More &rarr;</a>
     </header>
     <ul class="solutions__grid">
       <!-- 2 small frosted glass-card text cards (V3), via the same glassCard()
@@ -270,12 +269,12 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
       ${glassCard({
     title: "Corporate Training",
     body: "Immersive scenarios that sharpen communication, decision-making, and leadership—so teams practice high-stakes moments before they happen for real.",
-    footer: { _tag: "cta", label: "View Case Study", href: "#contact" },
+    footer: { _tag: "cta", label: "Learn More", href: "services.html#infisoft" },
   })}
       ${glassCard({
     title: "Workforce Training",
     body: "Hands-on skill-building at scale. Repeatable, measurable VR modules onboard and upskill your workforce faster than classroom or video ever could.",
-    footer: { _tag: "cta", label: "View Case Study", href: "#contact" },
+    footer: { _tag: "cta", label: "Learn More", href: "services.html#infitrain" },
   })}
       <!-- 1 large photo feature card (overlay, spans both rows) -->
       <li class="u-card u-card--overlay u-card--feature solution-feature">
@@ -292,7 +291,7 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
         <div class="u-card__body">
           <h3>Industrial &amp; Safety Training</h3>
           <p>Train for high-risk environments without the risk. From equipment handling to emergency response, we make dangerous work safe to rehearse&mdash;and scalable.</p>
-          <a class="link-arrow" href="#contact">View Case Study &rarr;</a>
+          <a class="link-arrow" href="services.html#infitrain">Learn More &rarr;</a>
         </div>
       </li>
     </ul>
