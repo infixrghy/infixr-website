@@ -32,23 +32,36 @@ const server = serve({
     let pathname = decodeURIComponent(url.pathname);
     if (pathname.endsWith("/")) pathname += "index.html";
 
-    const filePath = join(ROOT, pathname);
-    if (!filePath.startsWith(ROOT)) return new Response("forbidden", { status: 403 });
+    const base = join(ROOT, pathname);
+    if (!base.startsWith(ROOT)) return new Response("forbidden", { status: 403 });
 
-    try {
-      const s = await stat(filePath);
-      if (s.isDirectory()) return Response.redirect(url.pathname + "/", 301);
-      const file = Bun.file(filePath);
-      const type = TYPES[extname(filePath).toLowerCase()] ?? "application/octet-stream";
-      return new Response(file, {
-        headers: {
-          "content-type": type,
-          "cache-control": "no-cache",
-        },
-      });
-    } catch {
-      return new Response("not found", { status: 404 });
-    }
+    // Mirror GitHub Pages' extensionless resolution so the local mirror can't lie
+    // about which links work. For a clean URL `/about`, GH serves `about.html`; for
+    // `/blog` it serves `blog.html` EVEN THOUGH `blog/` is also a directory (the
+    // .html sibling wins). Resolve in GH's exact priority, serving the first hit at
+    // 200 with NO redirect (a trailing slash would shift the relative-link base and
+    // break resolution differently than production, making local tests lie):
+    //   1. public/about           literal file (assets, real .html)
+    //   2. public/about.html       the clean-URL page
+    //   3. public/blog/index.html  real dir-index, if one exists
+    const serveFile = async (p: string): Promise<Response | null> => {
+      try {
+        const s = await stat(p);
+        if (s.isDirectory()) return null;
+        const type = TYPES[extname(p).toLowerCase()] ?? "application/octet-stream";
+        return new Response(Bun.file(p), {
+          headers: { "content-type": type, "cache-control": "no-cache" },
+        });
+      } catch {
+        return null;
+      }
+    };
+
+    const res =
+      (await serveFile(base)) ??
+      (await serveFile(base + ".html")) ??
+      (await serveFile(join(base, "index.html")));
+    return res ?? new Response("not found", { status: 404 });
   },
 });
 
