@@ -12,8 +12,8 @@ export const servicesMeta = {
   title: "Our Services | InfiXR",
   description:
     "Custom XR & AI solutions across industries — InfiLearn, InfiTrain, InfiSoft, and InfiExplore. Browser-based learning, VR safety training, AI roleplay, and AR heritage experiences.",
-  canonical: "https://infixr.com/services.html",
-  ogUrl: "https://infixr.com/services.html",
+  canonical: "https://infixr.com/services",
+  ogUrl: "https://infixr.com/services",
   ogTitle: "Custom XR & AI Solutions Across Industries",
   ogDescription:
     "A family of AI-powered XR platforms crafted to deliver immersive, intelligent, and measurable outcomes.",

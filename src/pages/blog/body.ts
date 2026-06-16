@@ -26,9 +26,9 @@ const postMeta = (p: BlogPost): string =>
 const renderFeatured = (p: BlogPost): string => html`<article class="u-card u-card--text glass-card glass-card--v3 blog-featured">
       <div class="u-card__body">
         ${postMeta(p)}
-        <h2><a href="blog/${esc(p.slug)}.html">${esc(p.title)}</a></h2>
+        <h2><a href="blog/${esc(p.slug)}">${esc(p.title)}</a></h2>
         <p>${esc(p.excerpt)}</p>
-        <a class="link-arrow" href="blog/${esc(p.slug)}.html">Read post &rarr;</a>
+        <a class="link-arrow" href="blog/${esc(p.slug)}">Read post &rarr;</a>
       </div>
     </article>`;
 
@@ -36,9 +36,9 @@ const renderFeatured = (p: BlogPost): string => html`<article class="u-card u-ca
 const renderCard = (p: BlogPost): string => html`<article class="u-card u-card--text glass-card glass-card--v3">
         <div class="u-card__body">
           ${postMeta(p)}
-          <h3><a href="blog/${esc(p.slug)}.html">${esc(p.title)}</a></h3>
+          <h3><a href="blog/${esc(p.slug)}">${esc(p.title)}</a></h3>
           <p>${esc(p.excerpt)}</p>
-          <a class="link-arrow" href="blog/${esc(p.slug)}.html">Read &rarr;</a>
+          <a class="link-arrow" href="blog/${esc(p.slug)}">Read &rarr;</a>
         </div>
       </article>`;
 
@@ -62,7 +62,7 @@ export const renderPost = (p: BlogPost): string => html`<main class="post-page">
       ${p.bodyHtml}
     </div>
 
-    <p class="post-page__back"><a class="link-arrow" href="../blog.html">&larr; All posts</a></p>
+    <p class="post-page__back"><a class="link-arrow" href="../blog">&larr; All posts</a></p>
   </article>
 
 </main>`;
@@ -73,7 +73,7 @@ export const renderPost = (p: BlogPost): string => html`<main class="post-page">
  * (no og:image:alt / og:locale → Option None). nav highlights "blog".
  */
 export const postPageMeta = (p: BlogPost) => {
-  const url = `https://infixr.com/blog/${p.slug}.html`;
+  const url = `https://infixr.com/blog/${p.slug}`;
   return {
     title: `${p.title} | InfiXR`,
     description: p.excerpt,

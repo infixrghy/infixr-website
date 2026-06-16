@@ -70,7 +70,10 @@ export const renderAboutBody = (): string =>
     ${button({
     label: "Start a conversation",
     variant: "glass",
-    action: { _tag: "link", href: "index.html#contact" },
+    // Clean URL: the contact form lives on the homepage. `.#contact` = the root
+    // dir's #contact (NOT bare "#contact", which would target THIS page). About is
+    // root-depth, so `.` resolves to `/`. Keep the leading dot — don't "simplify".
+    action: { _tag: "link", href: ".#contact" },
   })}
   </section>
 

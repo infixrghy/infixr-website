@@ -63,7 +63,7 @@ const renderHomeFeature = (p: BlogPost): string =>
     loading: "lazy",
   })}
         </div>
-        <a class="u-card__link" href="blog/${esc(p.slug)}.html">
+        <a class="u-card__link" href="blog/${esc(p.slug)}">
           <div class="u-card__overlay">
             <p class="u-card__meta">${timeMeta(p.date, p.readMinutes)}</p>
             <h3>${esc(p.title)}</h3>
@@ -84,7 +84,7 @@ const renderHomeTextCard = (p: BlogPost): string =>
   glassCard({
     eyebrow: p.category,
     title: p.title,
-    href: `blog/${p.slug}.html`,
+    href: `blog/${p.slug}`,
     body: p.excerpt,
     footer: { _tag: "meta", date: p.date, readMinutes: p.readMinutes },
     extraClass: "blog-text",
@@ -269,12 +269,12 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
       ${glassCard({
     title: "Corporate Training",
     body: "Immersive scenarios that sharpen communication, decision-making, and leadership—so teams practice high-stakes moments before they happen for real.",
-    footer: { _tag: "cta", label: "Learn More", href: "services.html#infisoft" },
+    footer: { _tag: "cta", label: "Learn More", href: "services#infisoft" },
   })}
       ${glassCard({
     title: "Workforce Training",
     body: "Hands-on skill-building at scale. Repeatable, measurable VR modules onboard and upskill your workforce faster than classroom or video ever could.",
-    footer: { _tag: "cta", label: "Learn More", href: "services.html#infitrain" },
+    footer: { _tag: "cta", label: "Learn More", href: "services#infitrain" },
   })}
       <!-- 1 large photo feature card (overlay, spans both rows) -->
       <li class="u-card u-card--overlay u-card--feature solution-feature">
@@ -291,7 +291,7 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
         <div class="u-card__body">
           <h3>Industrial &amp; Safety Training</h3>
           <p>Train for high-risk environments without the risk. From equipment handling to emergency response, we make dangerous work safe to rehearse&mdash;and scalable.</p>
-          <a class="link-arrow" href="services.html#infitrain">Learn More &rarr;</a>
+          <a class="link-arrow" href="services#infitrain">Learn More &rarr;</a>
         </div>
       </li>
     </ul>
@@ -316,22 +316,22 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
       ${glassCard({
     title: "InfiTrain",
     body: "VR-based simulation solutions for hands-on skill training in high-risk, equipment-intensive industries.",
-    footer: { _tag: "cta", label: "Learn More", href: "services.html#infitrain" },
+    footer: { _tag: "cta", label: "Learn More", href: "services#infitrain" },
   })}
       ${glassCard({
     title: "InfiSoft",
     body: "AI-powered XR solutions for developing interpersonal, leadership, and communication skills through immersive roleplay simulations.",
-    footer: { _tag: "cta", label: "Learn More", href: "services.html#infisoft" },
+    footer: { _tag: "cta", label: "Learn More", href: "services#infisoft" },
   })}
       ${glassCard({
     title: "InfiExplore",
     body: "AR & MR powered experiential solutions for museums, heritage sites, and tourism destinations.",
-    footer: { _tag: "cta", label: "Learn More", href: "services.html#infiexplore" },
+    footer: { _tag: "cta", label: "Learn More", href: "services#infiexplore" },
   })}
       ${glassCard({
     title: "InfiLearn",
     body: "Browser-accessible XR learning solutions for vocational institutes, polytechnics, and schools.",
-    footer: { _tag: "cta", label: "Learn More", href: "services.html#infilearn" },
+    footer: { _tag: "cta", label: "Learn More", href: "services#infilearn" },
   })}
     </ul>
   </section>
@@ -341,7 +341,7 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
     <div class="who__intro">
       <p class="eyebrow">Who We Are</p>
       <h2 id="who-title" class="who__title">VR for Real-World Challenges</h2>
-      <a class="who__link link-arrow" href="about.html">Learn More &rarr;</a>
+      <a class="who__link link-arrow" href="about">Learn More &rarr;</a>
     </div>
 
     <div class="carousel" role="region" aria-label="Who we are highlights" aria-roledescription="carousel">
@@ -378,7 +378,7 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
       <p class="eyebrow">Blog</p>
       <h2 id="blog-title">The Future of Spatial Experiences</h2>
       <p class="blog__lead">Exploring immersive experiences, spatial storytelling, and where VR training goes next.</p>
-      <a class="link-arrow link-arrow--bold blog__more" href="blog.html">View More &rarr;</a>
+      <a class="link-arrow link-arrow--bold blog__more" href="blog">View More &rarr;</a>
     </header>
     <ul class="blog__grid">${blogCards}
     </ul>

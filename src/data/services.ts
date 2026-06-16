@@ -1,10 +1,10 @@
 /**
  * data/services.ts — THE product list, shared across chrome.
  *
- * The four InfiXR products in services.html source order, each as a
+ * The four InfiXR products in services-page source order, each as a
  * [slug, label] pair. The slug is the deep-link anchor: renderServiceBlock
  * (pages/services/body.ts) emits id=name.toLowerCase() on every <article>, so
- * `services.html#${slug}` jumps to that product's block.
+ * `services#${slug}` jumps to that product's block.
  *
  * Lives here (not in nav.ts) because BOTH the nav dropdown AND the footer Services
  * column render this list — a single source so adding/renaming a product updates

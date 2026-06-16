@@ -9,8 +9,8 @@ export const aboutMeta = {
   title: "About Us | InfiXR",
   description:
     "InfiXR designs and builds immersive VR experiences for real-world operational, training, and performance challenges.",
-  canonical: "https://infixr.com/about.html",
-  ogUrl: "https://infixr.com/about.html",
+  canonical: "https://infixr.com/about",
+  ogUrl: "https://infixr.com/about",
   ogTitle: "About InfiXR",
   ogDescription:
     "We build immersive experiences that change how teams train and decide.",

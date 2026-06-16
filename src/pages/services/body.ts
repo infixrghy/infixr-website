@@ -29,8 +29,8 @@
  * PDF (the PDF was image-only + OCR crashed, so copy was read off a rendered
  * screenshot — proofread against the source before this ships).
  * The "Request a Demo" CTA on each block (and the cta-band) deep-links to the one
- * site-wide contact form (index.html#contact) rather than duplicating the
- * Web3Forms form + handler here — same single-form rule the about page follows.
+ * site-wide contact form (the homepage #contact, as `.#contact`) rather than
+ * duplicating the Web3Forms form + handler here — same single-form rule about follows.
  */
 import { html, esc } from "../../templates/html.ts";
 import { button } from "../../components/button/button.ts";
@@ -152,7 +152,7 @@ const bulletColumn = (heading: string, items: ReadonlyArray<string>): string =>
  * One frosted service block. The V3 glass class is dropped directly onto a bespoke
  * <article> (the glassCard() component can't model this richer body). id = the
  * lowercased product name so the homepage #services CTAs could deep-link here
- * later (e.g. services.html#infitrain).
+ * later (e.g. services#infitrain).
  */
 const renderServiceBlock = (s: Service): string => {
   const id = s.name.toLowerCase();
@@ -172,7 +172,7 @@ const renderServiceBlock = (s: Service): string => {
           ${button({
     label: "Request a Demo",
     variant: "glass",
-    action: { _tag: "link", href: `index.html#contact` },
+    action: { _tag: "link", href: ".#contact" },
   })}
         </div>
       </article>`;
@@ -205,7 +205,7 @@ export const renderServicesBody = (): string =>
     ${button({
     label: "Start a conversation",
     variant: "glass",
-    action: { _tag: "link", href: "index.html#contact" },
+    action: { _tag: "link", href: ".#contact" },
   })}
   </section>
 

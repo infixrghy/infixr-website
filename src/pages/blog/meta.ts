@@ -10,8 +10,8 @@ export const blogMeta = {
   title: "Blog | InfiXR",
   description:
     "Field notes on building, shipping, and measuring industrial VR experiences.",
-  canonical: "https://infixr.com/blog.html",
-  ogUrl: "https://infixr.com/blog.html",
+  canonical: "https://infixr.com/blog",
+  ogUrl: "https://infixr.com/blog",
   ogTitle: "Blog | InfiXR",
   ogDescription:
     "Field notes on building, shipping, and measuring industrial VR experiences.",

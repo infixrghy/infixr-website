@@ -33,7 +33,7 @@
   }
 
   /* ============ PROSE ============
-     Long-form body for a single post (blog/<slug>.html). marked emits
+     Long-form body for a single post (blog/<slug>). marked emits
      h2 / p / ul / ol / li / strong / a from the markdown — every one of those
      is styled here so the post body never falls back to browser defaults. */
   .prose {

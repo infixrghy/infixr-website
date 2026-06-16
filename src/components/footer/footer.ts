@@ -2,7 +2,7 @@
  * components/footer/footer.ts — shared site footer.
  *
  * Unifies three drifted footers: index used #top/#about anchors + a JS-stamped
- * <span id="year">; about/blog used index.html/about.html links + a hardcoded
+ * <span id="year">; about/blog used root/about links + a hardcoded
  * "2026". Now ONE template: `isHome` switches anchor vs cross-page links, and a
  * single <span id="year"> means the sanctioned year-stamp JS (main.js) updates the
  * year on EVERY page — previously only index could be stamped.
@@ -16,14 +16,17 @@ const instagramIcon = html`<svg width="20" height="20" viewBox="0 0 24 24" aria-
 
 /**
  * Render the shared <footer>.
- * @param isHome true on index.html → Quick Links use bare anchors (#top, #about…)
+ * @param isHome true on the home page → Quick Links use bare anchors (#top, #about…)
  * @param base path prefix to site root for nested pages ("" at root, "../" for
  *   post pages) — same portability contract as renderNav.
  */
 export const renderFooter = (isHome: boolean, base = ""): string => {
-  const home = isHome ? "#top" : `${base}index.html`;
-  const about = isHome ? "#about" : `${base}about.html`;
-  const sec = (anchor: string) => (isHome ? anchor : `${base}index.html${anchor}`);
+  // Clean URLs (no `.html`): home is the site ROOT — `.` at root depth, `../`
+  // one level deep (NOT "/index"). See renderNav for the same contract.
+  const root = `${base || "."}`;
+  const home = isHome ? "#top" : root;
+  const about = isHome ? "#about" : `${base}about`;
+  const sec = (anchor: string) => (isHome ? anchor : `${root}${anchor}`);
 
   return html`<footer class="site-footer">
   <div class="site-footer__grid">
@@ -41,7 +44,7 @@ export const renderFooter = (isHome: boolean, base = ""): string => {
         <li><a href="${home}">Home</a></li>
         ${SERVICES.map(
     ([slug, label]) =>
-      html`<li><a href="${base}services.html#${slug}">${label}</a></li>`,
+      html`<li><a href="${base}services#${slug}">${label}</a></li>`,
   ).join("\n        ")}
         <li><a href="${about}">About Us</a></li>
         <li><a href="${sec("#contact")}">Contact</a></li>
