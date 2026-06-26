@@ -166,11 +166,12 @@ const renderWhoSlide = (
  *   section uses the first up-to-5; fewer posts simply fill fewer slots.
  */
 export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
-  // Newest-first already (loadPosts sorts). 3-card teaser: the FEATURED post (or
-  // newest as fallback) is the photo lead; the next two are editorial text cards.
-  // Fewer than 3 posts simply renders fewer cards (no index-past-end).
-  const feature = posts.find((p) => p.featured) ?? posts[0];
-  const textPosts = posts.filter((p) => p !== feature).slice(0, 2);
+  // Newest-first already (loadPosts sorts). 3-card teaser: the NEWEST post
+  // (posts[0]) is the photo lead on the left; the next two are editorial text
+  // cards. Purely date-driven — a newer post automatically takes the photo lead,
+  // no flag to set. Fewer than 3 posts simply renders fewer cards.
+  const feature = posts[0];
+  const textPosts = posts.slice(1, 3);
   const blogCards =
     (feature ? "\n      " + renderHomeFeature(feature) : "") +
     textPosts.map((p) => "\n      " + renderHomeTextCard(p)).join("");

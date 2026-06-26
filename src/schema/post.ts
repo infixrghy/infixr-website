@@ -11,7 +11,7 @@
  * `date` is kept as an ISO string (YYYY-MM-DD) rather than a Date: the build is
  * deterministic and string dates avoid timezone drift in the rendered <time>.
  */
-import { Effect, Schema } from "effect";
+import { Schema } from "effect";
 
 import { IsoDate } from "./common.ts";
 
@@ -36,9 +36,6 @@ export const BlogPostFrontMatter = Schema.Struct({
   ),
   /** One-paragraph excerpt for cards + meta description. */
   excerpt: Schema.NonEmptyString,
-  /** Feature the post at the top of the index? Exactly one should be true.
-   *  Absent in front-matter → defaults to false. */
-  featured: Schema.Boolean.pipe(Schema.withDecodingDefaultType(Effect.succeed(false))),
 });
 export type BlogPostFrontMatter = typeof BlogPostFrontMatter.Type;
 

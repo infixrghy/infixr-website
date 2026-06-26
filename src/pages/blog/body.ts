@@ -88,12 +88,13 @@ export const postPageMeta = (p: BlogPost) => {
 };
 
 /**
- * Render the full blog-index <main>. Featured post (the one with featured:true,
- * or newest as fallback) leads; the remaining posts fill the grid.
+ * Render the full blog-index <main>. The NEWEST post leads (posts is newest-first
+ * from loadPosts, so posts[0]); the remaining posts fill the grid. Lead is purely
+ * date-driven — publishing a newer post automatically promotes it, no flag to set.
  */
 export const renderBlogBody = (posts: ReadonlyArray<BlogPost>): string => {
-  const featured = posts.find((p) => p.featured) ?? posts[0];
-  const rest = posts.filter((p) => p !== featured);
+  const featured = posts[0];
+  const rest = posts.slice(1);
 
   // The "rest" grid is emitted ONLY when there are non-featured posts. With a
   // single post (the blog collapsed to one merged piece), rest is empty — and an
