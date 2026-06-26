@@ -16,11 +16,11 @@ import type { BlogPost } from "../../schema/post.ts";
 import { timeMeta } from "../../data/posts.ts";
 import { html, esc } from "../../templates/html.ts";
 
-/** Meta line: `<time>Date</time> · N min read · Category`. The shared
- *  date + read-time fragment is timeMeta (data/posts.ts); the category segment is
- *  this page's own addition. */
+/** Meta line: `<time>Date</time> · N min read`. The shared date + read-time
+ *  fragment is timeMeta (data/posts.ts). (Category was dropped from this line —
+ *  it's no longer surfaced on the post page now the eyebrow reads "Blog".) */
 const postMeta = (p: BlogPost): string =>
-  html`<p class="post__meta">${timeMeta(p.date, p.readMinutes)} &middot; ${esc(p.category)}</p>`;
+  html`<p class="post__meta">${timeMeta(p.date, p.readMinutes)}</p>`;
 
 /** The large lead card for the featured post. */
 const renderFeatured = (p: BlogPost): string => html`<article class="u-card u-card--text glass-card glass-card--v3 blog-featured">
