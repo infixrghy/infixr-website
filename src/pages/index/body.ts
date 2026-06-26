@@ -408,11 +408,15 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
         </div>
         <div class="field">
           <label for="cf-name">Name</label>
-          <input id="cf-name" name="name" type="text" required autocomplete="name" minlength="2" maxlength="80" placeholder="Ram Das">
+          <input id="cf-name" name="name" type="text" required autocomplete="name" minlength="2" maxlength="80" placeholder="Your Full Name">
         </div>
         <div class="field">
           <label for="cf-email">Email</label>
-          <input id="cf-email" name="email" type="email" required autocomplete="email" maxlength="120" placeholder="das@company.com">
+          <input id="cf-email" name="email" type="email" required autocomplete="email" maxlength="120" placeholder="you@company.com">
+        </div>
+        <div class="field">
+          <label for="cf-company">Company</label>
+          <input id="cf-company" name="company" type="text" autocomplete="organization" maxlength="120" placeholder="Company name">
         </div>
         <div class="field">
           <label for="cf-phone">Phone Number</label>

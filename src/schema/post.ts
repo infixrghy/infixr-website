@@ -23,7 +23,7 @@ export const BlogPostFrontMatter = Schema.Struct({
   date: IsoDate,
   /** Estimated read time in minutes, e.g. 4. */
   readMinutes: Schema.Number.pipe(Schema.check(Schema.isGreaterThan(0))),
-  /** Section label, e.g. "Engineering" / "Field notes". */
+  /** Section label, e.g. "Engineering" / "Perspective". */
   category: Schema.NonEmptyString,
   /** URL slug — the output filename stem (blog/<slug>.html). */
   slug: Schema.NonEmptyString.pipe(

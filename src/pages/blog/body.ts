@@ -114,7 +114,7 @@ export const renderBlogBody = (posts: ReadonlyArray<BlogPost>): string => {
   return html`<main>
 
   <section class="page-hero" aria-labelledby="page-title">
-    <p class="eyebrow">Field Notes</p>
+    <p class="eyebrow">Blog</p>
     <h1 id="page-title" class="page-title">Writing on shipping VR that actually gets used.</h1>
     <p class="page-lead">Notes from the build: what it takes to ship immersive training that teams actually use&mdash;comfort, performance, safe-to-fail design, and measuring what changes.</p>
   </section>
