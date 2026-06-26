@@ -53,7 +53,7 @@ export const renderPost = (p: BlogPost): string => html`<main class="post-page">
 
   <article>
     <header class="page-hero" aria-labelledby="post-title">
-      <p class="eyebrow">${esc(p.category)}</p>
+      <p class="eyebrow">Blog</p>
       <h1 id="post-title" class="page-title">${esc(p.title)}</h1>
       ${postMeta(p)}
     </header>
