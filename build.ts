@@ -152,22 +152,29 @@ const PAGES_CSS = "src/css/pages.css";
 const COPY_DIRS = ["assets", "js"];
 const COPY_FILES = ["manifest.webmanifest"];
 
-const FONT_FACE = `
+/**
+ * The @font-face block. `base` path-prefixes the woff2 src for nested
+ * (blog/<slug>) pages — exactly like preloadsFor. Without it the bare
+ * `assets/…` resolved against `/blog/` and 404'd, so EVERY post page silently
+ * fell back to system-ui (caught: the nav CTA rendered ~5px narrower there than
+ * on root pages because the fallback glyphs are narrower than Satoshi's).
+ */
+const fontFaceFor = (base: string): string => `
 @font-face {
   font-family: 'Satoshi';
   font-style: normal;
   font-weight: 300 900;
   font-display: swap;
-  src: url('assets/Satoshi-Variable.woff2') format('woff2-variations'),
-       url('assets/Satoshi-Variable.woff2') format('woff2');
+  src: url('${base}assets/Satoshi-Variable.woff2') format('woff2-variations'),
+       url('${base}assets/Satoshi-Variable.woff2') format('woff2');
 }
 @font-face {
   font-family: 'Satoshi';
   font-style: italic;
   font-weight: 300 900;
   font-display: swap;
-  src: url('assets/Satoshi-VariableItalic.woff2') format('woff2-variations'),
-       url('assets/Satoshi-VariableItalic.woff2') format('woff2');
+  src: url('${base}assets/Satoshi-VariableItalic.woff2') format('woff2-variations'),
+       url('${base}assets/Satoshi-VariableItalic.woff2') format('woff2');
 }
 `;
 
@@ -197,7 +204,7 @@ const preloadsFor = (base: string): string =>
  * trailing "\n" keeps `</style>` on its own line (byte-stable with the old
  * marker-spliced block, which closed `${css}\n</style>`).
  */
-const styleInner = (css: string): string => `${FONT_FACE}\n${css}\n`;
+const styleInner = (css: string, base: string): string => `${fontFaceFor(base)}\n${css}\n`;
 
 /**
  * Assemble a full HTML document from the shared templates + a body string.
@@ -218,7 +225,7 @@ function assembleShell(
   isHome: boolean,
   base = ""
 ): string {
-  const head = renderHead(meta, base, preloadsFor(base), styleInner(css));
+  const head = renderHead(meta, base, preloadsFor(base), styleInner(css, base));
   const nav = renderNav(meta.nav, isHome, base);
   const footer = renderFooter(isHome, base);
   return (
