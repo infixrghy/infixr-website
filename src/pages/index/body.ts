@@ -39,9 +39,10 @@ import type { BlogPost } from "../../schema/post.ts";
  * pictures" look is the weakness. The hybrid is honest — the one card that gets
  * a photo uses `sol-corporate` (a real render that's otherwise UNUSED on the
  * homepage, so no third repeat of the headset / who faces), and the text cards
- * own their type instead of hiding it under a gradient. Meta line: date +
- * read-time only (the homepage teaser never showed a category eyebrow on the
- * photo card — the text cards do, where it reads as editorial kicker).
+ * own their type instead of hiding it under a gradient. NO eyebrow kicker on any
+ * teaser card (photo OR text): the category label was dropped site-wide (post
+ * pages + blog index eyebrows already read "Blog", not the category), so the
+ * homepage cards match — meta line is date + read-time only. (Ari, 2026-07-01.)
  */
 const HOME_FEATURE_IMG = "sol-corporate";
 
@@ -82,7 +83,6 @@ const renderHomeFeature = (p: BlogPost): string =>
  */
 const renderHomeTextCard = (p: BlogPost): string =>
   glassCard({
-    eyebrow: p.category,
     title: p.title,
     href: `blog/${p.slug}`,
     body: p.excerpt,
