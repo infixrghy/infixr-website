@@ -33,10 +33,16 @@ const rel = raw_p.startsWith(root + "/") ? raw_p.slice(root.length + 1) : raw_p;
 // Build inputs: anything under src/ or content/posts/ (dir prefixes), plus the
 // build.ts pipeline file itself (exact), with a build extension. New dirs under
 // src/ need zero edits here.
+//
+// `.js` is IN the gate: build.ts copies src/js/ verbatim into public/js/, so an
+// edit to src/js/main.js (the shipped bundle) must rebuild to propagate — before,
+// .js was excluded and main.js edits silently skipped the build (a recurring
+// "stale main.js" footgun). src/js/hero-3d/** is vendored, but rebuilding on
+// those edits just re-copies js/ (harmless), so a blanket .js is fine.
 const INPUT_DIRS = ["src/", "content/posts/"];
 const isInput =
   (INPUT_DIRS.some((d) => rel.startsWith(d)) || rel === "build.ts") &&
-  /\.(css|ts|md)$/.test(rel);
+  /\.(css|ts|md|js)$/.test(rel);
 
 if (!isInput) process.exit(0);
 

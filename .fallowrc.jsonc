@@ -8,11 +8,17 @@
   // render fn — the whole src/**/*.ts graph hangs off it), the dev server, the
   // lint tool, and the ONE script actually shipped to the browser (src/js/main.js).
   // Without these, fallow finds 0 entry points and every export looks unused.
+  // test/**/*.test.ts are ALSO roots: `bun test` (bunfig.toml [test] root=test)
+  // discovers + runs them by glob, an edge invisible to the static module graph,
+  // so without listing them fallow flags each test file as unused. They import the
+  // src/ code under test but nothing imports them — declaring them entry points is
+  // the graph-honest statement of what they are to the runner.
   "entry": [
     "build.ts",
     "server.ts",
     "lint.ts",
-    "src/js/main.js"
+    "src/js/main.js",
+    "test/**/*.test.ts"
   ],
 
   // ── Ignore patterns ───────────────────────────────────────────────────────

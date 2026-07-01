@@ -79,7 +79,7 @@ export const timeMeta = (date: string, readMinutes: number): string =>
 // the gate in blog.ts. The scalar-coercion branch ladder is inherently branchy but
 // simple + covered by the build (a bad field fails the Schema decode downstream).
 // fallow-ignore-next-line complexity
-function parseFrontMatter(raw: string): { data: Record<string, unknown>; body: string } {
+export function parseFrontMatter(raw: string): { data: Record<string, unknown>; body: string } {
   const m = raw.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/);
   if (!m) return { data: {}, body: raw };
   const [, fm, body] = m;

@@ -119,10 +119,25 @@ const OUT = "public";
 // ARRAY IS THE CASCADE CONTRACT: it reproduces the top-to-bottom rule order the
 // old monolithic components.css had, which several rules depend on (equal
 // specificity → later-in-source wins; media queries add no specificity). Edit
-// with care — do NOT alphabetise or derive from a dir scan. Notably:
-//   • glass-card loads AFTER u-card (glass:hover overrides .u-card--text:hover);
-//   • u-card.overrides loads AFTER glass-card (the --neon-fill white-title
-//     override for photo cards must win over the glass + base-u-card neon rules).
+// with care — do NOT alphabetise or derive from a dir scan.
+//
+// The ONE cross-file ordering that is actually load-bearing (asserted below):
+//   • glass-card loads AFTER u-card — `.glass-card:hover { background: transparent }`
+//     (glass-card.css) and `.u-card--text:hover { background: var(--bg-card-hover) }`
+//     (u-card.css) both hit the same element (text cards carry BOTH classes) at
+//     equal specificity (0,2,0), so source order breaks the tie; glass-card must
+//     win or the card's own bg shows through the frost on hover.
+// NOTE: u-card.overrides.css is placed after glass-card.css by convention, but
+// that specific pairing is NOT load-bearing — the two files have disjoint
+// selectors/properties (glass-card sets background/border/shadow/pseudo-elements;
+// overrides declares --neon-fill on .u-card--overlay, which glass-card never
+// declares or consumes — verified: 0 occurrences in glass-card.css). The
+// --neon-fill override resolves by its DECLARING rule's specificity (0,1,0 beats
+// the :root default), independent of glass-card's position; its only real order
+// need is to sit after u-card.css (the base it overrides), which it does. So the
+// glass-card↔u-card pair is the only one guarded. (Corrected 2026-07-01: the old
+// comment here claimed the overrides↔glass-card pair was load-bearing; grepping
+// the CSS showed no shared selector/prop between them.)
 // (Was one src/css/components.css block — split for source co-location; output
 // is rule-order-identical, only extra @layer-component wrappers differ. Each
 // file self-wraps `@layer components {}`; same-named layers merge in order.)
@@ -139,6 +154,29 @@ const COMPONENT_CSS = [
   "src/components/contact/contact.css",
   "src/components/footer/footer.css",
 ];
+
+// Cascade guard: assert the one proven load-bearing pair holds. This array's
+// order is the ONLY thing enforcing it (no sort, no test elsewhere), so a careless
+// reorder would silently break `.glass-card:hover`'s background override. Fail the
+// build loudly instead. See the ORDER note above for why this is the only pair.
+{
+  const idx = (suffix: string) =>
+    COMPONENT_CSS.findIndex((p) => p.endsWith(suffix));
+  const uCard = idx("u-card/u-card.css");
+  const glass = idx("glass-card/glass-card.css");
+  if (uCard === -1 || glass === -1) {
+    throw new Error(
+      "COMPONENT_CSS cascade guard: expected both u-card.css and glass-card.css in the array"
+    );
+  }
+  if (glass < uCard) {
+    throw new Error(
+      "COMPONENT_CSS cascade violation: glass-card.css must load AFTER u-card.css " +
+        "(both style the same text-card :hover background at equal specificity; " +
+        "glass-card must win). Fix the array order in build.ts."
+    );
+  }
+}
 
 const CSS_ORDER = [
   "src/css/reset.css",
