@@ -4,10 +4,24 @@
   /* ============ HERO TITLE ============ */
   .hero__title {
     /* Scoped down from the shared --step-5 token (still used by .page-title on the
-       About/Blog heroes — don't shrink those). "A little bit" smaller per Ari:
-       ~12% off at every width (floor+mid+cap all cut, not just the cap), so the
-       headline reads big without dominating the fold. cqi keeps it container-fluid. */
-    font-size: clamp(4rem, 2.75rem + 5cqi, 5.25rem);
+       About/Blog heroes — don't shrink those). cqi keeps it container-fluid, keyed
+       to .hero__content's inline size (NOT the viewport — this content box shrinks
+       when the hero goes 2-col at ≥900px, so the scale tracks the column, not the
+       window).
+
+       Retuned 2026-07-01 (Ari, Galaxy M11): the OLD clamp(4rem, 2.75rem+5cqi,
+       5.25rem) hit its 4rem/64px FLOOR on a ~360px phone (content box ~297px →
+       5cqi≈15px → preferred≈59px < 64px floor). A 64px 3-line H1 made the hero
+       774px tall — 105% of the fold — pushing the CTAs off-screen. Just lowering
+       the floor wouldn't help: cqi is LIVE here, so the clamp would return the
+       ~59px preferred, a 5px nothing. The fix decouples the two ends by lowering
+       the BASE and steepening the SLOPE, solved from two real measurements:
+         • phone   content box ~297px → want ~48px  →  1.5rem + 8·2.97cqi ≈ 47.8 → floor 3rem=48px
+         • 1440px  content box ~639px → keep ~76px  →  1.5rem + 8·6.39cqi ≈ 75px  (was 76 — unchanged)
+       So the 3rem floor is now the intended MOBILE size (engages ≤~360px), and
+       desktop stays put (preferred-bound, well under the 5.25rem cap). Verified at
+       360/768/1024/1440 — mobile 64→48px, desktop unchanged. */
+    font-size: clamp(3rem, 1.5rem + 8cqi, 5.25rem);
     font-weight: 700;
     letter-spacing: -.03em;
     line-height: 1.05;
