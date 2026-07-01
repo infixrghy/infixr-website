@@ -81,5 +81,25 @@ export const renderHead = (
   <meta name="twitter:description" content="${m.twitterDescription}">
   <meta name="twitter:image" content="https://infixr.com/assets/og-image.png">
 
+  <!-- Speculation Rules: instant same-origin navigation (Chromium; ignored elsewhere).
+       NOT scripted JS — a declarative JSON payload the browser reads (like JSON-LD),
+       so it does NOT count against the src/js budget. The href_matches pattern runs on
+       the RESOLVED URL, so every base-relative link (../about) + extensionless GH Pages
+       URL (/about, /blog/<slug>) matches "/*" from one shared block. A path-only
+       pattern is same-origin by definition → external footer/social links + the
+       Web3Forms POST never match. eagerness:moderate = prerender on hover/pointerdown,
+       so bandwidth is spent only on likely clicks. The browser auto-skips the current
+       page + same-doc #anchors (#contact/#solutions). Prerender fully renders the
+       target offscreen (runs main.js early) — every behavior there is idempotent
+       (year stamp, form-listener attach, pointer-gated cursor trail); the who-carousel
+       autoplay timer is the one thing that starts pre-activation, verified harmless. -->
+  <script type="speculationrules">
+  {
+    "prerender": [
+      { "where": { "href_matches": "/*" }, "eagerness": "moderate" }
+    ]
+  }
+  </script>
+
 <style>${inlineCss}</style>
 </head>`;
