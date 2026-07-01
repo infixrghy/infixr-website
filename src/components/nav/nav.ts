@@ -79,6 +79,13 @@ export const renderNav = (active: NavId, isHome: boolean, base = ""): string => 
     <label for="nav-toggle" class="nav-burger" aria-label="Open menu">
       <span></span><span></span><span></span>
     </label>
+    <!-- Click-away backdrop (pure CSS, mobile only): a full-screen label bound to
+         #nav-toggle. When the menu is open it covers the page BEHIND the panel;
+         tapping it unchecks the toggle so the menu closes. Sibling of the checkbox
+         so the checked ~ nav-backdrop selector reaches it; placed before the ul in
+         source so the panel stacks above it. aria-hidden — it's a dismiss surface,
+         not nav; the burger label already toggles the same control for AT. -->
+    <label for="nav-toggle" class="nav-backdrop" aria-hidden="true" hidden></label>
     <ul>
       ${navItem("home", active, homeHref, "Home")}
       ${servicesNavItem(active, base)}

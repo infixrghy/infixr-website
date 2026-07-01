@@ -196,6 +196,8 @@
        in-flow indented sub-list inside the panel, not a second absolute box. */
     .primary-nav > ul {
       position: absolute;
+      /* above the click-away backdrop (z-index:1) so the panel stays tappable */
+      z-index: 2;
       top: calc(100% + var(--s-1));
       right: var(--space-4);
       flex-direction: column;
@@ -208,6 +210,12 @@
       border-radius: var(--radius);
       padding: var(--s-2);
       min-width: 224px;
+      /* never let the panel's own box exceed the viewport (defense-in-depth beside
+         the root overflow-x:clip): cap width to the space between its right anchor
+         (--space-4/16px) and the left edge, less a matching 16px gutter. On a normal
+         phone min-width:224px wins; this only bites on a pathologically narrow
+         screen (<256px), where it keeps the panel on-screen instead of overflowing. */
+      max-width: calc(100% - var(--space-4) - var(--space-4));
       overflow: clip;
       box-shadow:
         inset 0 1px 0 color-mix(in oklab, white 22%, transparent),
@@ -245,12 +253,32 @@
       padding-top: var(--s-2);
       border-top: 1px solid color-mix(in oklab, var(--accent) 22%, var(--border));
     }
+    /* Click-away backdrop: invisible full-screen dismiss surface behind the open
+       panel. width:100% + inset (NOT 100vw — 100vw includes the scrollbar gutter
+       and would re-introduce horizontal overflow, the very bug being fixed here).
+       Hidden until the toggle is checked. Sits above the page but BELOW the panel
+       (which gets z-index:2) so the panel stays interactive; tapping anywhere else
+       lands on this label and unchecks #nav-toggle → menu closes. */
+    .nav-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      z-index: 1;
+      /* fully transparent — this is a dismiss catcher, not a scrim (the panel's own
+         glow already separates it from the page). Bump to a faint wash later if a
+         visible dim is wanted. */
+      background: transparent;
+      cursor: default;
+    }
     .nav-toggle:checked {
       & ~ ul {
         transform: translateY(0) scale(1);
         opacity: 1;
         pointer-events: auto;
       }
+      /* reveal the click-away backdrop only while the menu is open */
+      & ~ .nav-backdrop { display: block; }
       & ~ .nav-burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
       & ~ .nav-burger span:nth-child(2) { opacity: 0; }
       & ~ .nav-burger span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
