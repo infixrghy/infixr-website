@@ -20,11 +20,21 @@
     pointer-events: none;
   }
   .page-title {
-    font-size: var(--step-5);
+    /* --step-4 (section-heading tier, 48→64px), NOT --step-5 (hero tier, min 72px).
+       --step-5's 72px floor holds at any width ≤400px (the clamp min wins once the
+       cqi-preferred value drops below it), so on a 360px phone a long post title
+       ("…Spatial Computing") rendered at 72px overran the viewport — looked broken
+       AND pushed a ghost horizontal scroll (the word was wider than 360px minus the
+       hero's side padding). --step-4 tops out at the same 64px the section headings
+       use and fits the longest current title at its 48px mobile floor. overflow-wrap
+       is the belt-and-suspenders: no future title (or the blog-index headline, which
+       shares this class) can ever overflow the line box regardless of length. */
+    font-size: var(--step-4);
     font-weight: 700;
     letter-spacing: -.03em;
     line-height: 1.05;
     max-width: 20ch;
+    overflow-wrap: break-word;
   }
   .page-lead {
     font-size: var(--step-1);
@@ -52,6 +62,12 @@
       font-size: var(--step-1);
       color: var(--fg-muted);
       line-height: 1.7;
+      /* Post bodies are user-authored markdown: a bare long URL or unbreakable
+         token would overflow the measure and push a horizontal scroll (current
+         posts have none, so this never triggers on today's copy — pure insurance
+         against a future post). reset.css sets text-wrap:pretty on p but that
+         governs balancing, not breaking an over-long word. */
+      overflow-wrap: break-word;
     }
     & ul, & ol {
       font-size: var(--step-1);
