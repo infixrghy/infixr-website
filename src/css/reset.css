@@ -2,19 +2,21 @@
   *, *::before, *::after { box-sizing: border-box; }
   * { margin: 0; }
   html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
-  /* Contain horizontal overflow site-wide. The mobile burger panel is
-     position:absolute (right-anchored, off to the side) and sits at opacity:0
-     while closed — on a real phone it stayed in the document's scrollable region,
-     so after opening + closing the menu the page could be panned sideways into
-     empty space (no scrollbar shown, but scrollLeft went > 0 and stuck). Clipping
-     the viewport's horizontal axis kills that pan. `clip` NOT `hidden`: `clip`
-     does not create a scroll container, so it can't break the sticky header
-     (`hidden` would). overflow-y stays visible (vertical scroll untouched). This
-     is the canonical containment for an intentionally-offscreen drawer — the
-     panel is SUPPOSED to be out of view, so clipping the axis it escapes on is
-     correct, not a mask over a layout bug. Desktop has no horizontal overflow
-     (verified), so this is inert there. (Ari, 2026-07-01 — mobile burger scroll.) */
-  html { overflow-x: clip; }
+  /* Kill sideways rubber-band on mobile. On the Galaxy M11, opening the burger
+     menu let the page be PANNED past its right edge into empty space — no
+     scrollbar, and (measured with the menu open at 752px) scrollWidth == clientWidth
+     with ZERO elements overflowing. So it was NEVER a layout overflow: it's touch
+     OVERSCROLL (rubber-band) letting the finger drag past the x-boundary. That's why
+     an earlier overflow-x:clip attempt did nothing — clip removes an overflow region,
+     it can't stop rubber-banding past a boundary that has no overflow. The correct
+     lever is overscroll-behavior-x:none (well-supported on Android/Samsung; the x
+     axis has no pull-to-refresh to break; inert on desktop, which doesn't rubber-band).
+     overflow-x:clip is KEPT alongside as a cheap belt against any FUTURE real
+     horizontal overflow (desktop has none today), on both html+body since root→
+     viewport propagation is unreliable on some mobile engines. overflow-Y untouched.
+     (Ari, 2026-07-01 — mobile burger sideways scroll; root cause = overscroll, proven
+     by measurement, not the panel/backdrop earlier theories.) */
+  html, body { overscroll-behavior-x: none; overflow-x: clip; }
   html:focus-within { scroll-behavior: smooth; }
   body { min-height: 100dvh; line-height: 1.5; -webkit-font-smoothing: antialiased; }
   img, picture, video, canvas, svg { display: block; max-width: 100%; }

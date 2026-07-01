@@ -262,8 +262,10 @@
     .nav-backdrop {
       display: none;
       position: fixed;
+      /* inset:0 sizes it viewport-edge-to-edge (fixed → containing block is the
+         viewport). Do NOT add width:100% — with a scrollbar present 100% can
+         resolve wider than the visual viewport; inset:0 sizes by edges and can't. */
       inset: 0;
-      width: 100%;
       z-index: 1;
       /* fully transparent — this is a dismiss catcher, not a scrim (the panel's own
          glow already separates it from the page). Bump to a faint wash later if a
