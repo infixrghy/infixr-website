@@ -122,15 +122,16 @@
          body       16-18      1em      - 1.125em
          subheading 24-32      1.5em    - 2em
          section    48-64      3em      - 4em
-         heading    72-96      4.5em    - 6em
-    */
+       (The old hero tier --step-5 (72-96px) was removed 2026-07-13: after the
+       Who-We-Are rebuild NOTHING consumed it — every page H1 now tops out at
+       --step-4 (section tier), the mobile-safe choice that avoids the 360px
+       long-word overflow --step-5's 72px floor caused. lint.ts flagged it dead.) */
     --step--1: clamp(.875rem, .82rem + .25cqi, 1rem);
     --step-0:  clamp(1rem, .94rem + .3cqi, 1.125rem);
     --step-1:  clamp(1.125rem, 1rem + .5cqi, 1.375rem);
     --step-2:  clamp(1.5rem, 1.2rem + 1.2cqi, 2rem);          /* subheading */
     --step-3:  clamp(2rem, 1.4rem + 2cqi, 2.75rem);
-    --step-4:  clamp(3rem, 2rem + 3cqi, 4rem);                /* section heading */
-    --step-5:  clamp(4.5rem, 3rem + 6cqi, 6rem);              /* hero heading */
+    --step-4:  clamp(3rem, 2rem + 3cqi, 4rem);                /* section heading (top tier) */
 
     --shadow: 0 10px 30px -8px rgba(0,0,0,.6);
     --shadow-glow: 0 0 60px -10px var(--accent-glow);

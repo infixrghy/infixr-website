@@ -6,16 +6,16 @@
  * lives beside it in pages/about/body.ts (renderAboutBody).
  */
 export const aboutMeta = {
-  title: "About Us | InfiXR",
+  title: "Who We Are | InfiXR",
   description:
-    "InfiXR designs and builds immersive VR experiences for real-world operational, training, and performance challenges.",
+    "InfiXR is a deep-tech innovation company and one of Northeast India's early immersive-technology pioneers, building AI-powered XR (VR/AR/MR) training, learning, and tourism experiences.",
   canonical: "https://infixr.com/about",
   ogUrl: "https://infixr.com/about",
-  ogTitle: "About InfiXR",
+  ogTitle: "Who We Are | InfiXR",
   ogDescription:
-    "We build immersive experiences that change how teams train and decide.",
-  twitterTitle: "About InfiXR",
+    "We help build immersive solutions across industries — deep-tech XR experiences that change how teams train, learn, and decide.",
+  twitterTitle: "Who We Are | InfiXR",
   twitterDescription:
-    "We build immersive experiences that change how teams train and decide.",
+    "We help build immersive solutions across industries — deep-tech XR experiences that change how teams train, learn, and decide.",
   nav: "about",
 } as const;

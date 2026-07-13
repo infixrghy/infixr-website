@@ -3,11 +3,12 @@
 @layer components {
   /* ============ HERO TITLE ============ */
   .hero__title {
-    /* Scoped down from the shared --step-5 token (still used by .page-title on the
-       About/Blog heroes — don't shrink those). cqi keeps it container-fluid, keyed
-       to .hero__content's inline size (NOT the viewport — this content box shrinks
-       when the hero goes 2-col at ≥900px, so the scale tracks the column, not the
-       window).
+    /* The homepage hero H1 carries its own bespoke clamp (below) — bigger than the
+       --step-4 section tier every other page H1 uses, but hand-tuned rather than a
+       shared token (the removed --step-5 was its old base; nothing else consumed it).
+       cqi keeps it container-fluid, keyed to .hero__content's inline size (NOT the
+       viewport — this content box shrinks when the hero goes 2-col at ≥900px, so the
+       scale tracks the column, not the window).
 
        Retuned 2026-07-01 (Ari, Galaxy M11): the OLD clamp(4rem, 2.75rem+5cqi,
        5.25rem) hit its 4rem/64px FLOOR on a ~360px phone (content box ~297px →

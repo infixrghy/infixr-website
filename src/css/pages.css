@@ -20,15 +20,15 @@
     pointer-events: none;
   }
   .page-title {
-    /* --step-4 (section-heading tier, 48→64px), NOT --step-5 (hero tier, min 72px).
-       --step-5's 72px floor holds at any width ≤400px (the clamp min wins once the
-       cqi-preferred value drops below it), so on a 360px phone a long post title
-       ("…Spatial Computing") rendered at 72px overran the viewport — looked broken
-       AND pushed a ghost horizontal scroll (the word was wider than 360px minus the
-       hero's side padding). --step-4 tops out at the same 64px the section headings
-       use and fits the longest current title at its 48px mobile floor. overflow-wrap
-       is the belt-and-suspenders: no future title (or the blog-index headline, which
-       shares this class) can ever overflow the line box regardless of length. */
+    /* --step-4 (section-heading tier, 48→64px) — deliberately NOT a bigger hero tier.
+       A 72px-floor tier (the old --step-5, since removed) held its floor at any width
+       ≤400px (the clamp min wins once the cqi-preferred value drops below it), so on a
+       360px phone a long post title ("…Spatial Computing") rendered at 72px overran the
+       viewport — looked broken AND pushed a ghost horizontal scroll (the word was wider
+       than 360px minus the hero's side padding). --step-4 tops out at 64px and fits the
+       longest current title at its 48px mobile floor. overflow-wrap is the belt-and-
+       suspenders: no future title (or the blog-index headline, which shares this class)
+       can ever overflow the line box regardless of length. */
     font-size: var(--step-4);
     font-weight: 700;
     letter-spacing: -.03em;
@@ -99,32 +99,284 @@
     margin-top: calc(-1 * var(--space-3));
   }
 
-  /* Value grid (About) — .value-grid is just the grid container now; each <li>
-     is a unified .u-card.u-card--text (surface/hover/padding come from there). */
-  .value-grid {
+  /* ============ WHO WE ARE PAGE (about.html) ============
+     Rebuilt 2026-07-13 from .tmp/who-we-are.pdf. Six sections: about-hero,
+     core-purpose, how-we-work, founder, team, cta-band (cta-band is shared, above).
+     Follows the house grammar: mobile-first single column, every multi-col layout
+     collapsing at ≤360px via container/media queries; frosted .glass-card cards
+     each need an accent bloom behind them to refract (same trick as .blog-list /
+     .service-suite / the old .value-grid). See pages/about/body.ts for the copy
+     and the four faithful-to-intent departures from the mock. */
+
+  /* Shared section header block (eyebrow + centred heading + optional lead) used by
+     core-purpose / founder / team. The homepage sections have bespoke *__head hooks;
+     this is the About page's local equivalent so its four headers stay identical. */
+  .section-head {
+    text-align: center;
+    display: grid;
+    gap: var(--space-3);
+    justify-items: center;
+    max-width: 1024px;
+    margin-inline: auto;
+    & h2 { font-size: var(--step-4); letter-spacing: -.02em; max-width: 20ch; }
+  }
+  .section-head__lead {
+    font-size: var(--step-1);
+    color: var(--fg-muted);
+    max-width: 64ch;
+    line-height: 1.6;
+  }
+
+  /* ---- Hero: headline + intro copy, paired with the team-in-VR photo ---- */
+  .about-hero {
+    padding: var(--space-9) max(var(--space-5), calc((100% - 1200px) / 2)) var(--space-7);
+    display: grid;
+    gap: var(--space-6) var(--head-gap);
+    align-items: start;
+    isolation: isolate;
+    position: relative;
+    /* Accent bloom top-left behind the headline (matches the mock's dark hero glow
+       and gives the page a warm anchor). */
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(ellipse 60% 50% at 20% 8%, var(--accent-glow), transparent 60%);
+      opacity: .7;
+      pointer-events: none;
+    }
+    /* Two-column headline|copy at wide widths; photo spans full width beneath. */
+    @media (min-width: 900px) {
+      grid-template-columns: 1fr 1fr;
+      & .about-hero__media { grid-column: 1 / -1; }
+    }
+  }
+  .about-hero__title {
+    font-size: var(--step-4);
+    font-weight: 700;
+    letter-spacing: -.03em;
+    line-height: 1.05;
+    text-transform: uppercase;
+    overflow-wrap: break-word;
+  }
+  .about-hero__accent { color: var(--accent); }
+  .about-hero__lead {
+    display: grid;
+    gap: var(--space-4);
+    & p {
+      font-size: var(--step-1);
+      color: var(--fg-muted);
+      line-height: 1.6;
+      max-width: 60ch;
+    }
+  }
+  .about-hero__media {
+    display: block;
+    margin-top: var(--space-2);
+    & img {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+      object-fit: cover;
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border);
+    }
+  }
+
+  /* ---- Core purpose: intro head + four value cards ---- */
+  .core-purpose {
+    padding: var(--pad-section) max(var(--space-5), calc((100% - 1200px) / 2));
+    display: grid;
+    gap: var(--head-gap);
+    position: relative;
+    isolation: isolate;
+  }
+  /* Light source for the frosted value cards (frost refracts nothing on flat dark). */
+  .core-purpose::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(55% 40% at 50% 62%, var(--accent-glow), transparent 72%);
+    opacity: .85;
+    pointer-events: none;
+  }
+  .value-cards {
+    list-style: none;
+    display: grid;
+    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  }
+  /* Value card interior. All four are FULLY LEGIBLE AT REST (the mock's three
+     washed-out cards were a hover snapshot, not a resting spec); the .u-card :hover
+     rim + title-neon is the "active" affordance. */
+  .value-card {
+    & h3 { font-size: var(--step-2); letter-spacing: -.01em; }
+    & p { font-size: var(--step-0); color: var(--fg-muted); line-height: 1.6; }
+  }
+
+  /* ---- How we work: sticky-left title + process step rail ---- */
+  .how-we-work {
+    padding: var(--pad-section) max(var(--space-5), calc((100% - 1200px) / 2));
+    display: grid;
+    gap: var(--head-gap);
+    position: relative;
+    isolation: isolate;
+    align-items: start;
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(50% 45% at 72% 40%, var(--accent-glow), transparent 74%);
+      opacity: .7;
+      pointer-events: none;
+    }
+    /* Two columns at wide widths; the intro sticks while the steps scroll past. */
+    @media (min-width: 900px) {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: var(--space-8);
+    }
+  }
+  .how-we-work__intro {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    & h2 {
+      font-size: var(--step-4);
+      letter-spacing: -.02em;
+      text-transform: uppercase;
+      line-height: 1.05;
+      max-width: 12ch;
+    }
+    @media (min-width: 900px) {
+      position: sticky;
+      top: clamp(96px, 12vw, 120px);
+    }
+  }
+  .how-we-work__steps {
+    list-style: none;
+    display: grid;
+    gap: var(--space-4);
+  }
+  .step-card__name {
+    font-size: var(--step-0);
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .step-card p {
+    font-size: var(--step-0);
+    color: var(--fg-muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* ---- Founder: bio card + long-form bio + pull-quote ---- */
+  .founder {
+    padding: var(--pad-section) max(var(--space-5), calc((100% - 1200px) / 2));
+    display: grid;
+    gap: var(--head-gap);
+    position: relative;
+    isolation: isolate;
+    &::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(50% 40% at 30% 55%, var(--accent-glow), transparent 74%);
+      opacity: .7;
+      pointer-events: none;
+    }
+  }
+  .founder__grid {
+    display: grid;
+    gap: var(--space-5);
+    align-items: start;
+    @media (min-width: 900px) {
+      grid-template-columns: minmax(260px, 340px) minmax(0, 1fr);
+      gap: var(--space-6);
+    }
+  }
+  /* The founder identity card — a frosted glass card, sticky beside the bio on wide
+     screens (mirrors the mock's left-rail portrait card, sans photo). */
+  .founder__card {
+    @media (min-width: 900px) {
+      position: sticky;
+      top: clamp(96px, 12vw, 120px);
+    }
+  }
+  .founder__name { font-size: var(--step-2); letter-spacing: -.01em; }
+  .founder__role { color: var(--accent); font-weight: 700; font-size: var(--step-0); }
+  .founder__exp { color: var(--fg-muted); font-size: var(--step--1); }
+  .founder__focus { color: var(--fg-muted); font-size: var(--step-0); line-height: 1.6; }
+  .founder__bio {
+    display: grid;
+    gap: var(--space-4);
+    & > p {
+      font-size: var(--step-0);
+      color: var(--fg-muted);
+      line-height: 1.7;
+      max-width: 74ch;
+    }
+  }
+  /* Pull-quote: accent quote-mark badge + the line, echoing the mock's teal circle. */
+  .founder__quote {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--space-4);
+    align-items: center;
+    margin: var(--space-3) 0 0;
+    & p {
+      font-size: var(--step-1);
+      color: var(--fg);
+      line-height: 1.4;
+      max-width: none;
+    }
+  }
+  .founder__quote-mark {
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--c-bg);
+    font-size: 2.4rem;
+    font-weight: 700;
+    line-height: 1;
+    /* the ldquo glyph sits high in its em-box; nudge it into the circle */
+    padding-top: .55rem;
+  }
+
+  /* ---- Team: intro head + six member cards ---- */
+  .team {
+    padding: var(--pad-section) max(var(--space-5), calc((100% - 1200px) / 2));
+    display: grid;
+    gap: var(--head-gap);
+    position: relative;
+    isolation: isolate;
+  }
+  .team::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: radial-gradient(55% 45% at 50% 40%, var(--accent-glow), transparent 74%);
+    opacity: .75;
+    pointer-events: none;
+  }
+  .team-grid {
+    list-style: none;
     display: grid;
     gap: var(--space-5);
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-    margin: var(--space-5) 0;
-    /* Cards are now frosted .glass-card (V36); frost needs light behind it to
-       refract (see .blog-list). This grid sits mid-.prose on a flat dark section,
-       so give it its own accent bloom behind the cards, masked to a soft centred
-       pool. isolation:isolate scopes the stacking context; ::before z-index:-1
-       sits behind the cards but inside the grid. */
-    position: relative;
-    isolation: isolate;
-    & h3 { font-size: var(--step-1); }
-    & p { font-size: var(--step-0); color: var(--fg-muted); margin: 0; }
   }
-  .value-grid::before {
-    content: "";
-    position: absolute;
-    inset: calc(-1 * var(--space-5));
-    z-index: -1;
-    background: radial-gradient(60% 55% at 50% 50%, var(--accent-glow), transparent 72%);
-    opacity: .8;
-    pointer-events: none;
-  }
+  .team-card__name { font-size: var(--step-1); letter-spacing: -.01em; }
+  .team-card__role { color: var(--accent); font-weight: 700; font-size: var(--step-0); }
+  .team-card__exp { color: var(--fg-muted); font-size: var(--step--1); }
+  .team-card__focus { color: var(--fg-muted); font-size: var(--step-0); line-height: 1.6; }
 
   /* ============ CTA BAND ============ */
   .cta-band {
