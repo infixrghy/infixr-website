@@ -3,6 +3,7 @@ title: "From Screens to Spatial Computing: Understanding AR, VR, MR, and XR"
 date: 2026-06-26
 readMinutes: 5
 category: Perspective
+author: "Prerana Baruah"
 slug: from-screens-to-spatial-computing
 excerpt: AR, VR, MR, XR — terms most of us have already used without realizing it. Here's what each one actually means, why they all sit under one umbrella, and why the future of computing is something we'll experience rather than something we look at.
 ---

@@ -56,6 +56,7 @@ export const renderPost = (p: BlogPost): string => html`<main class="post-page">
       <p class="eyebrow">Blog</p>
       <h1 id="post-title" class="page-title">${esc(p.title)}</h1>
       ${postMeta(p)}
+      <p class="post__byline">By ${esc(p.author)}</p>
     </header>
 
     <div class="prose">
