@@ -70,6 +70,6 @@ export const renderFooter = (isHome: boolean, base = ""): string => {
       <address>InfiXR<br>Guwahati, Assam<br>781028</address>
     </div>
   </div>
-  <p class="site-footer__copy">Copyright &copy; <span id="year">2026</span> &nbsp;|&nbsp; Powered by InfiXR</p>
+  <p class="site-footer__copy">Copyright &copy; <span id="year">2026</span> &nbsp;|&nbsp; Built with <span class="footer-heart" aria-label="love" role="img">&hearts;</span> by Arijit Gogoi</p>
 </footer>`;
 };
