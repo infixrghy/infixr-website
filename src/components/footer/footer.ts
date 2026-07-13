@@ -16,7 +16,8 @@ const instagramIcon = html`<svg width="20" height="20" viewBox="0 0 24 24" aria-
 
 /**
  * Render the shared <footer>.
- * @param isHome true on the home page → Quick Links use bare anchors (#top, #about…)
+ * @param isHome true on the home page → same-page Quick Links use bare anchors
+ *   (#top, #contact); About Us is exempt — it always targets the /about page.
  * @param base path prefix to site root for nested pages ("" at root, "../" for
  *   post pages) — same portability contract as renderNav.
  */
@@ -25,7 +26,10 @@ export const renderFooter = (isHome: boolean, base = ""): string => {
   // one level deep (NOT "/index"). See renderNav for the same contract.
   const root = `${base || "."}`;
   const home = isHome ? "#top" : root;
-  const about = isHome ? "#about" : `${base}about`;
+  // About Us ALWAYS points at the full /about page (the Who We Are page), on EVERY
+  // page including home — NOT the homepage's own #about teaser section. (Ari,
+  // 2026-07-13: "link all links to this page.") base="" at root → "about" → /about.
+  const about = `${base}about`;
   const sec = (anchor: string) => (isHome ? anchor : `${root}${anchor}`);
 
   return html`<footer class="site-footer">
