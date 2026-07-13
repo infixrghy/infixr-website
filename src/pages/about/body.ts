@@ -229,6 +229,15 @@ export const renderAboutBody = (): string =>
 
     <div class="founder__grid">
       <div class="u-card glass-card glass-card--v3 founder__card">
+        ${picture({
+    webp: "assets/founder-sarwar.webp",
+    png: "assets/founder-sarwar.jpg",
+    alt: "Sarwar Islam, founder of InfiXR.",
+    width: 680,
+    height: 1061,
+    loading: "lazy",
+    className: "founder__photo",
+  })}
         <div class="u-card__body">
           <h3 class="founder__name">Sarwar Islam</h3>
           <p class="founder__role">3D &amp; XR Specialist</p>
