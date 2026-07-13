@@ -318,8 +318,8 @@
   }
   /* Founder portrait — sits flush at the top of the identity card (the card has no
      padding; .u-card__body below does). .u-card's overflow:clip + border-radius clip
-     the top corners to the card radius. object-fit:cover crops the 680×1061 portrait
-     to a calm 4:5 window so it frames the face without dominating the card. z-index
+     the top corners to the card radius. The FULL image is shown at its natural
+     portrait ratio (no crop — width:100% + height:auto, no object-fit:cover). z-index
      lifts it above the glass ::before frost (which is z-index 0 on .glass-card). */
   .founder__photo {
     display: block;
@@ -328,9 +328,7 @@
     & img {
       display: block;
       width: 100%;
-      aspect-ratio: 4 / 5;
-      object-fit: cover;
-      object-position: 50% 20%;
+      height: auto;
     }
   }
   .founder__name { font-size: var(--step-2); letter-spacing: -.01em; margin-top: var(--space-2); }
