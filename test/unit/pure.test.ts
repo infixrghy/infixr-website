@@ -237,7 +237,7 @@ describe("glassCard", () => {
 describe("decodeFrontMatter (Effect channel)", () => {
   const valid = {
     title: "Post", date: "2026-07-01", readMinutes: 4,
-    category: "Engineering", slug: "a-valid-slug", excerpt: "An excerpt.",
+    category: "Engineering", author: "Jane Doe", slug: "a-valid-slug", excerpt: "An excerpt.",
   };
   test("valid front-matter decodes to a success Exit", async () => {
     const exit = await Effect.runPromiseExit(decodeFrontMatter(valid));
@@ -258,6 +258,11 @@ describe("decodeFrontMatter (Effect channel)", () => {
   test("a missing required field (excerpt) fails the decode", async () => {
     const { excerpt, ...noExcerpt } = valid;
     const exit = await Effect.runPromiseExit(decodeFrontMatter(noExcerpt));
+    expect(Exit.isFailure(exit)).toBe(true);
+  });
+  test("a missing required field (author) fails the decode", async () => {
+    const { author, ...noAuthor } = valid;
+    const exit = await Effect.runPromiseExit(decodeFrontMatter(noAuthor));
     expect(Exit.isFailure(exit)).toBe(true);
   });
 });
