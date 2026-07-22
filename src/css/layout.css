@@ -112,6 +112,13 @@
     color: var(--fg);
     & .brand__logo { height: 32px; width: auto; color: currentColor; }
   }
+  /* Nudge the logo + nav rail slightly inward from the header's outer padding —
+     logo a touch right, nav a touch left. Desktop only: on mobile the header is
+     logo + burger, which stay at their edges. (Ari, 2026-07-22.) */
+  @media (min-width: 801px) {
+    .brand { margin-left: var(--space-4); }
+    .primary-nav { margin-right: var(--space-4); }
+  }
   .site-footer__logo { height: 38px; width: auto; color: var(--fg); }
 
   /* Hero — flat --bg (no photo); text left, decorative headset+ring right.
