@@ -116,8 +116,8 @@
      logo a touch right, nav a touch left. Desktop only: on mobile the header is
      logo + burger, which stay at their edges. (Ari, 2026-07-22.) */
   @media (min-width: 801px) {
-    .brand { margin-left: var(--space-4); }
-    .primary-nav { margin-right: var(--space-4); }
+    .brand { margin-left: var(--space-5); }
+    .primary-nav { margin-right: var(--space-5); }
   }
   .site-footer__logo { height: 38px; width: auto; color: var(--fg); }
 
