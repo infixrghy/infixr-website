@@ -14,17 +14,17 @@
  *   2. core-purpose— "Creating meaningful experiences…" + 4 value cards
  *   3. how-we-work — sticky-left title + 4 process steps (Understand→Deliver)
  *   4. founder     — Sarwar Islam's bio + a pull-quote
- *   5. team        — the 6 people, as text cards
+ *   5. team        — the five people, as headshot cards
  *   6. cta-band    — "Need something custom?" deep-linking the one contact form
  *
  * FOUR faithful-to-INTENT (not to-pixels) departures from the mock, each a house
  * rule already established by the Services page:
- *   • NO team/founder headshots. The PDF's 7 face photos are stock comps, not repo
- *     assets (src/assets has none), and this codebase forbids faking imagery by
- *     reusing the few renders it owns (pages/index/body.ts:36, pages/services/
- *     body.ts). So team + founder are TEXT cards — name + accent role + years +
- *     one-line focus — the same shape the Services blocks use. (Drop real headshots
- *     into src/assets/team/ and they can be wired into .team-card / .founder later.)
+ *   • HEADSHOTS: real, client-supplied photos now ship. The founder portrait
+ *     (founder-sarwar, added 2026-07-13) and five team headshots (team-hemanth/
+ *     -prajwal/-rishab/-sujeet/-prerana — 640² square centre-crops in src/assets)
+ *     are wired via picture(); every member carries a real photo. The house rule
+ *     against FAKING imagery (reusing unrelated renders as stand-ins) still holds —
+ *     the PDF's stock face comps stay ignored.
  *   • The hero PHOTO uses who-1.webp — a genuine team-in-VR-headsets shot that
  *     already ships for THIS page (not a reused unrelated render), so it's honest.
  *   • The 4 core-purpose cards render FULLY LEGIBLE AT REST. In the mock three of
@@ -105,47 +105,48 @@ const STEPS: ReadonlyArray<Step> = [
 ];
 
 /** A team member. `role` is the accent line, `experience` the muted one below it,
- *  `focus` the one-line description. No `linkedin` field: the mock shows LinkedIn
- *  icons but no URLs, and inventing profile links would be authoring unverified
- *  data — so the icons are omitted rather than faked. */
-type Member = { name: string; role: string; experience: string; focus: string };
+ *  `focus` the one-line description. `photo` is a src/assets stem (a webp+jpg pair,
+ *  640² square) — every member carries a real client-supplied headshot. No
+ *  `linkedin` field: the mock shows LinkedIn icons but no URLs, and inventing
+ *  profile links would be authoring unverified data — so the icons are omitted
+ *  rather than faked. */
+type Member = { name: string; role: string; experience: string; focus: string; photo: string };
 
 const TEAM: ReadonlyArray<Member> = [
   {
     name: "Sai Hemanth",
     role: "Unity Developer",
     experience: "6+ Years Experience",
-    focus: "Developing immersive simulations and interactive learning experiences.",
+    focus: "Building immersive learning experiences and interactive simulations.",
+    photo: "team-hemanth",
   },
   {
     name: "Rishab Bhattacharjee",
     role: "3D Generalist",
     experience: "3+ Years Experience",
-    focus: "Crafting immersive 3D environments and interactive digital experiences.",
+    focus: "Creating immersive 3D environments and interactive digital experiences.",
+    photo: "team-rishab",
   },
   {
     name: "Sujeet Jha",
     role: "Unity Developer",
     experience: "3+ Years Experience",
-    focus: "Developing immersive VR applications and interactive simulation experiences.",
+    focus: "Developing immersive VR applications and interactive simulations.",
+    photo: "team-sujeet",
   },
   {
     name: "Prajwal K S",
     role: "Unity Developer",
     experience: "3+ Years Experience",
-    focus: "Creating engaging XR applications and next-generation simulation experiences.",
-  },
-  {
-    name: "Arijit",
-    role: "Full-stack Developer",
-    experience: "3+ Years Experience",
-    focus: "Developing scalable web applications and seamless digital experiences.",
+    focus: "Building engaging XR applications and real-world simulations.",
+    photo: "team-prajwal",
   },
   {
     name: "Prerana Baruah",
     role: "Product Designer",
     experience: "3+ Years Experience",
     focus: "Designing intuitive XR products and immersive digital experiences.",
+    photo: "team-prerana",
   },
 ];
 
@@ -159,10 +160,20 @@ const renderStep = (s: Step): string =>
           </div>
         </li>`;
 
-/** One team member, as a frosted text card. Bespoke markup: three stacked lines
- *  (accent role, muted years, focus) — richer than glassCard()'s title+body. */
+/** One team member, as a frosted text card. A square client-supplied headshot
+ *  (via picture()) sits flush at the card top — mirroring the founder card — above
+ *  three stacked lines (accent role, muted years, focus). */
 const renderMember = (m: Member): string =>
   html`<li class="u-card u-card--text glass-card glass-card--v3 team-card">
+          ${picture({
+    webp: `assets/${m.photo}.webp`,
+    png: `assets/${m.photo}.jpg`,
+    alt: `${m.name}, ${m.role} at InfiXR.`,
+    width: 640,
+    height: 640,
+    loading: "lazy",
+    className: "team-card__photo",
+  })}
           <div class="u-card__body">
             <h3 class="team-card__name">${esc(m.name)}</h3>
             <p class="team-card__role">${esc(m.role)}</p>
@@ -240,19 +251,16 @@ export const renderAboutBody = (): string =>
   })}
         <div class="u-card__body">
           <h3 class="founder__name">Sarwar Islam</h3>
-          <p class="founder__role">3D &amp; XR Specialist</p>
+          <p class="founder__role">Founder &amp; CEO | InfiXR (OPC) Private Limited</p>
           <p class="founder__exp">16+ Years Experience</p>
-          <p class="founder__focus">Developing immersive simulations and interactive learning experiences.</p>
         </div>
       </div>
 
       <div class="founder__bio">
-        <p>I founded InfiXR with a simple belief: learning should be experienced, not just consumed. Throughout my journey, I've been fascinated by the potential of technology to transform the way people understand, practice, and apply knowledge. While access to information has never been easier, meaningful learning often remains a challenge because traditional methods struggle to bridge the gap between theory and real-world application.</p>
-        <p>This realization inspired me to create InfiXR&mdash;a company dedicated to making learning more immersive, engaging, and impactful through Extended Reality (XR), simulations, and interactive technologies. I believe the most effective learning happens when people can actively participate, explore, make mistakes, and gain confidence through experience. XR has the unique ability to make this possible by placing learners inside realistic environments where knowledge becomes something they can interact with rather than simply observe.</p>
-        <p>I say this without boasting&mdash;few people in this country, perhaps on this continent, understand immersive technology the way I do. Over two decades I've architected systems others called impossible, mentored the engineers now leading this field, and built InfiXR into the first deep-tech company in Northeast India through sheer conviction and vision. Where others saw risk, I saw the future&mdash;and I was right, every single time. My intuition has become the company's compass, and that is no accident. And I say this humbly&mdash;the future was always going to be built by someone; it simply had the good fortune of being me.</p>
-        <p>At InfiXR, we are building solutions that combine innovation, creativity, and human-centered design to create transformative learning experiences. Whether for education, workforce training, professional development, or industry-specific applications, our goal is to help individuals and organizations unlock the power of experiential learning. Every experience we create is designed not only to engage users but also to improve understanding, retention, and practical skill development.</p>
-        <p>And the clock is running. Artificial intelligence is already automating entire categories of work&mdash;roles that felt secure a few years ago are vanishing, and the pace is only accelerating. In a region where lakhs of educated young people are already unemployed, that shift isn't abstract&mdash;it's the difference between opportunity and a generation left behind. The people who thrive won't be the ones who resist it, but the ones who reskill fast enough to stay ahead of it. That's the urgency driving InfiXR: pairing AI with immersive, hands-on learning so workers can adapt at the speed the market now demands&mdash;before the gap between what they know and what the world needs becomes impossible to close.</p>
-        <p>My vision is to help shape a future where learning is no longer limited by classrooms, manuals, or passive content. I envision a world where people can step inside knowledge, practice complex skills in safe environments, and prepare for real-world challenges through immersive experiences. As technology continues to evolve, InfiXR will remain committed to pushing the boundaries of what learning can be&mdash;making it more accessible, memorable, and effective for people everywhere.</p>
+        <p>Sarwar Islam is the Founder and CEO of InfiXR, where he combines his background in Visual Effects, 3D design, and immersive technologies to build practical XR solutions for industry, education, government, and tourism.</p>
+        <p>A graduate of Vancouver Film School, Canada, Sarwar began his career in the Visual Effects industry in 2010, working with production studios in Canada and India on internationally recognized film and television projects. These experiences helped him develop a deep understanding of 3D environments, spatial design, real-time visualization, and interactive digital experiences.</p>
+        <p>Over the years, he realized that the same technologies used to create cinematic worlds could also solve real-world challenges in training, education, and communication. This inspired him to establish InfiXR, with a focus on creating customized Virtual Reality (VR), Augmented Reality (AR), Mixed Reality (MR), WebXR, and AI-powered immersive solutions tailored to each client's unique needs.</p>
+        <p>A significant turning point in his professional journey came while working on an immersive technology initiative with IIT Guwahati. The experience highlighted the transformative potential of XR for skill development and workforce training, reinforcing his vision to create immersive learning solutions that are practical, scalable, and capable of addressing real-world challenges across multiple industries.</p>
         <blockquote class="founder__quote">
           <span class="founder__quote-mark" aria-hidden="true">&ldquo;</span>
           <p>If we can make learning feel real, we can make it truly meaningful.</p>

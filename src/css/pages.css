@@ -334,7 +334,6 @@
   .founder__name { font-size: var(--step-2); letter-spacing: -.01em; margin-top: var(--space-2); }
   .founder__role { color: var(--accent); font-weight: 700; font-size: var(--step-0); }
   .founder__exp { color: var(--fg-muted); font-size: var(--step--1); }
-  .founder__focus { color: var(--fg-muted); font-size: var(--step-0); line-height: 1.6; }
   .founder__bio {
     display: grid;
     /* Roomier than the old --space-4 (16px): the founder portrait makes the identity
@@ -380,7 +379,7 @@
     padding-top: .55rem;
   }
 
-  /* ---- Team: intro head + six member cards ---- */
+  /* ---- Team: intro head + five headshot cards ---- */
   .team {
     padding: var(--pad-section) max(var(--space-5), calc((100% - 1200px) / 2));
     display: grid;
@@ -403,6 +402,21 @@
     gap: var(--space-5);
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   }
+  /* Member headshot — a square, flush at the card top (mirrors .founder__photo: the
+     .u-card overflow:clip + radius round the top corners; z-index:1 lifts it above
+     the glass ::before frost). object-fit:cover crops the 640² source to the box. */
+  .team-card__photo {
+    display: block;
+    position: relative;
+    z-index: 1;
+    aspect-ratio: 1;
+    & img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  }
+  /* With a photo flush on top, stack the text from the top: the base
+     .u-card--text centres its body, which would float the name mid-card here.
+     (pages.css loads after u-card.css in @layer components → this wins at equal
+     specificity.) */
+  .team-card .u-card__body { align-content: start; }
   .team-card__name { font-size: var(--step-1); letter-spacing: -.01em; }
   .team-card__role { color: var(--accent); font-weight: 700; font-size: var(--step-0); }
   .team-card__exp { color: var(--fg-muted); font-size: var(--step--1); }
