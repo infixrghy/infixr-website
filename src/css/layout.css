@@ -649,11 +649,4 @@
     color: var(--fg);
     font-size: var(--step--1);
   }
-  /* The ♥ in the "Built with ♥ by Arijit Gogoi" build credit — accent teal,
-     nudged up a hair so the glyph reads as intentional against the copy line. */
-  .footer-heart {
-    color: var(--accent);
-    font-size: 1.05em;
-    vertical-align: -.05em;
-  }
 }

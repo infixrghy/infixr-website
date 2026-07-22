@@ -3,7 +3,6 @@ title: Spatial Computing as a Training Platform
 date: 2026-06-13
 readMinutes: 6
 category: Engineering
-author: "Prerana Baruah"
 slug: spatial-computing-as-a-training-platform
 excerpt: A complete field guide to building immersive training that actually ships — from why spatial computing changes how people learn, through comfort, rendering budgets, and safe-to-fail design, to measuring transfer and scaling from pilot to rollout.
 ---

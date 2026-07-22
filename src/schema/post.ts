@@ -25,8 +25,6 @@ export const BlogPostFrontMatter = Schema.Struct({
   readMinutes: Schema.Number.pipe(Schema.check(Schema.isGreaterThan(0))),
   /** Section label, e.g. "Engineering" / "Perspective". */
   category: Schema.NonEmptyString,
-  /** Post author's name — rendered as the byline on the post page. */
-  author: Schema.NonEmptyString,
   /** URL slug — the output filename stem (blog/<slug>.html). */
   slug: Schema.NonEmptyString.pipe(
     Schema.check(

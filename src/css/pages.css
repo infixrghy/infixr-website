@@ -42,15 +42,6 @@
     max-width: 60ch;
   }
 
-  /* Post byline ("By <author>") — sits under the date/read-time meta in the post
-     page header (.page-hero, centred). Quiet like the meta line but the name reads
-     accent so authorship is legible at a glance. */
-  .post__byline {
-    font-size: var(--step--1);
-    color: var(--fg-dim);
-    margin-top: calc(-1 * var(--space-2));
-  }
-
   /* ============ PROSE ============
      Long-form body for a single post (blog/<slug>). marked emits
      h2 / p / ul / ol / li / strong / a from the markdown — every one of those

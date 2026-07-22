@@ -3,7 +3,6 @@ title: "Why Northeast India's XR Moment is Now"
 date: 2026-06-13
 readMinutes: 5
 category: Perspective
-author: "Prerana Baruah"
 slug: why-northeast-india-xr-moment-is-now
 excerpt: 28.83 lakh educated young people in Assam alone are registered as unemployed—while refineries expand and Japan recruits 50,000 skilled workers from the state. This isn't a talent problem. It's a training infrastructure problem, and the window to build it is open now.
 ---
