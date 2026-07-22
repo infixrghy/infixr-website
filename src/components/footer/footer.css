@@ -52,6 +52,14 @@
       max-width: 34ch;
     }
   }
+  /* Company descriptor between the logo and the tagline: the factual one-liner.
+     One step down from body copy so it reads as supporting text under the logo,
+     not a second headline. Inherits footer white via `& p`; text-wrap:pretty
+     comes from the reset. */
+  .site-footer__blurb {
+    font-size: var(--step--1);
+    line-height: 1.5;
+  }
   .site-footer__tagline {
     font-size: var(--step--1);
     line-height: 1.5;
