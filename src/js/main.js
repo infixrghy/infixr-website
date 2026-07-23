@@ -65,8 +65,11 @@
   // reduced-motion, where transitions are off so no transitionend fires.
   const position = (animate) => {
     if (!animate) {
-      if (i === 0) i = real;            // [3'] clone → real 3
-      else if (i === real + 1) i = 1;   // [1'] clone → real 1
+      // Any clone/out-of-range index → its real twin, modulo the loop ([3']=0 → 3,
+      // [1']=real+1 → 1). Modulo (not two equality cases) so an i that drifted PAST
+      // the clones — e.g. background-tab advances whose transitionend never fired —
+      // still snaps back instead of leaving the track translated out of view.
+      if (i < 1 || i > real) i = (((i - 1) % real) + real) % real + 1;
     }
     const center = (track.parentElement.clientWidth - slides[1].offsetWidth) / 2;
     if (!animate) track.style.transition = "none";
@@ -94,7 +97,14 @@
   ["pointerdown", "wheel", "touchstart", "keydown"].forEach((e) => carousel.addEventListener(e, hold, { passive: true }));
   addEventListener("resize", () => position(false));
 
-  setInterval(() => { if (!reduce.matches && Date.now() >= pauseUntil) advance(1); }, 5000); // autoplay: advance, never hold
+  // Autoplay never steps while the tab is hidden: throttled background intervals
+  // still fire, but hidden tabs don't run CSS transitions, so the transitionend
+  // that does the clone→real teleport never comes — i walks off the clone range
+  // and the track translates out of view (the "carousel gone after tab-switch" bug).
+  setInterval(() => { if (!document.hidden && !reduce.matches && Date.now() >= pauseUntil) advance(1); }, 5000); // autoplay: advance, never hold
+  // On return, re-place instantly: a hide mid-animation can still swallow one
+  // transitionend and leave i resting on a clone.
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) position(false); });
 })();
 
 // Cursor trail: one accent ring (.cursor-tail) that lerp-chases the native CSS
