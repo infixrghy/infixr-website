@@ -1,0 +1,28 @@
+---
+/**
+ * Picture.astro — the responsive <picture> idiom: one webp <source> over a
+ * png/jpg <img> fallback with explicit width/height (reserves the layout box —
+ * CLS guard) and decoding="async". Paths point at public/assets (root-absolute).
+ */
+interface Props {
+  /** webp source path (the preferred format). */
+  webp: string;
+  /** png/jpg fallback path → the <img> src. */
+  png: string;
+  /** alt text. "" for decorative images. */
+  alt: string;
+  /** Intrinsic size in px — reserves the layout box (CLS guard). */
+  width: number;
+  height: number;
+  /** "eager" for above-the-fold (hero), "lazy" below it. */
+  loading: "eager" | "lazy";
+  /** "high" for the LCP hero image; omit otherwise. */
+  fetchpriority?: "high" | "low" | "auto";
+  class?: string;
+}
+const { webp, png, alt, width, height, loading, fetchpriority, class: cls } = Astro.props;
+---
+<picture class={cls}>
+  <source type="image/webp" srcset={webp}>
+  <img src={png} alt={alt} width={width} height={height} fetchpriority={fetchpriority} loading={loading} decoding="async">
+</picture>

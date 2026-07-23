@@ -1,0 +1,53 @@
+---
+/**
+ * blog/[slug].astro — one page per post at /blog/<slug> (emitted as
+ * blog/<slug>.html by build.format:"file"). The page header (category eyebrow
+ * reads "Blog", title, meta line) is synthesised from front-matter — the
+ * markdown body has no title of its own. The body renders inside `.prose`
+ * (the long-form rules in pages.css).
+ */
+import { getCollection, render } from "astro:content";
+import Base from "../../layouts/Base.astro";
+import "../../css/pages.css";
+import TimeMeta from "../../components/time-meta/TimeMeta.astro";
+
+export async function getStaticPaths() {
+  const posts = await getCollection("posts");
+  // URL comes from the front-matter `slug` field (README: filename should
+  // match it; the field is the source of truth for the address).
+  return posts.map((post) => ({ params: { slug: post.data.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const url = `https://infixr.com/blog/${post.data.slug}`;
+---
+<Base
+  title={`${post.data.title} | InfiXR`}
+  description={post.data.excerpt}
+  canonical={url}
+  ogUrl={url}
+  ogTitle={post.data.title}
+  ogDescription={post.data.excerpt}
+  twitterTitle={post.data.title}
+  twitterDescription={post.data.excerpt}
+  nav="blog"
+>
+<main class="post-page">
+
+  <article>
+    <header class="page-hero" aria-labelledby="post-title">
+      <p class="eyebrow">Blog</p>
+      <h1 id="post-title" class="page-title">{post.data.title}</h1>
+      <p class="post__meta"><TimeMeta date={post.data.date} readMinutes={post.data.readMinutes} /></p>
+    </header>
+
+    <div class="prose">
+      <Content />
+    </div>
+
+    <p class="post-page__back"><a class="link-arrow" href="/blog">&larr; All posts</a></p>
+  </article>
+
+</main>
+</Base>

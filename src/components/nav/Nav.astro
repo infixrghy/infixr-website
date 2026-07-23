@@ -1,0 +1,59 @@
+---
+/**
+ * Nav.astro — the shared site header + primary nav.
+ *
+ * ONE template sets is-active / aria-current from `active`, so the current
+ * page is always marked and Home always exists. `isHome` switches section
+ * links between bare "#contact" (same-page anchor on the home page — no
+ * reload) and "/#contact" (cross-page) elsewhere. All cross-page links are
+ * root-absolute — the site serves from the infixr.com root on every page.
+ *
+ * The burger + click-away backdrop are pure CSS (checkbox hack); the Services
+ * dropdown is :hover/:focus-within on desktop, an always-open indented
+ * sub-list in the mobile panel — no JS anywhere in the header.
+ */
+import Brand from "../brand/Brand.astro";
+import Button from "../button/Button.astro";
+import { SERVICES } from "../../data/services.ts";
+import type { NavId } from "../../utils/nav.ts";
+
+interface Props {
+  active: NavId;
+  isHome?: boolean;
+}
+const { active, isHome = false } = Astro.props;
+
+const sec = (anchor: string) => (isHome ? anchor : `/${anchor}`);
+const homeHref = isHome ? "#top" : "/";
+const current = (id: NavId) => (active === id ? "page" : undefined);
+---
+<header class="site-header">
+  <a class="brand" href={homeHref} aria-label="InfiXR home">
+    <Brand />
+  </a>
+  <nav class="primary-nav" aria-label="Primary">
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" hidden>
+    <label for="nav-toggle" class="nav-burger" aria-label="Open menu">
+      <span></span><span></span><span></span>
+    </label>
+    <!-- Click-away backdrop (pure CSS, mobile only): a full-screen label bound to
+         #nav-toggle. When the menu is open it covers the page BEHIND the panel;
+         tapping it unchecks the toggle so the menu closes. aria-hidden — it's a
+         dismiss surface, not nav; the burger label toggles the same control for AT. -->
+    <label for="nav-toggle" class="nav-backdrop" aria-hidden="true" hidden></label>
+    <ul>
+      <li><a class:list={[active === "home" && "is-active"]} href={homeHref} aria-current={current("home")}>Home</a></li>
+      <li class="has-dropdown">
+        <a class:list={["nav-parent", active === "services" && "is-active"]} href="/services" aria-current={current("services")}>Our Services<svg class="nav-chevron" viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg></a>
+        <ul class="nav-dropdown" aria-label="Our Services">
+          {SERVICES.map(([slug, label]) => (
+            <li><a href={`/services#${slug}`}>{label}</a></li>
+          ))}
+        </ul>
+      </li>
+      <li><a class:list={[active === "about" && "is-active"]} href="/about" aria-current={current("about")}>Who We Are</a></li>
+      <li><a class:list={[active === "blog" && "is-active"]} href="/blog" aria-current={current("blog")}>Blog</a></li>
+      <li><Button label="Contact Us" variant="glass" href={sec("#contact")} /></li>
+    </ul>
+  </nav>
+</header>

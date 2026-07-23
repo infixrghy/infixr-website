@@ -1,0 +1,17 @@
+---
+/**
+ * TimeMeta.astro — the post meta-line fragment: `<time datetime=…>Mon D,
+ * YYYY</time> · N min read`. The ONE source for it (blog cards, homepage
+ * feature card, glass-card meta footers, post pages). Callers own their
+ * wrapper (`<p class="post__meta">` etc.).
+ */
+import { displayDate } from "../../utils/posts.ts";
+
+interface Props {
+  /** ISO date YYYY-MM-DD (schema-validated upstream). */
+  date: string;
+  readMinutes: number;
+}
+const { date, readMinutes } = Astro.props;
+---
+<time datetime={date}>{displayDate(date)}</time> &middot; {readMinutes} min read

@@ -1,23 +1,22 @@
 /**
  * PostToolUse hook: when an Edit/Write/MultiEdit touches any build input, run
- * `node build.ts` to regenerate public/. Skips otherwise.
+ * `astro build` to regenerate dist/. Skips otherwise.
  *
  * Build inputs = anything under these dirs/files with a build extension:
- *   - src/**            — CSS + every TS render fn / schema / page-meta, now
- *                         INCLUDING co-located components under src/components/
+ *   - src/**            — .astro pages/layouts/components, CSS, TS config/utils
  *   - content/posts/**  — blog post sources (data-driven)
- *   - build.ts          — the pipeline itself
+ *   - public/**         — static passthrough (main.js, hero-3d, assets)
+ *   - astro.config.mjs  — the pipeline config itself
  *
- * Gate is a declarative prefix-set + extension check (was a brittle hand-listed
- * regex that had to be patched every time a dir was added — and would have
- * missed src/components/ entirely after the CSS co-location reshape). New dirs
- * under src/ now need ZERO hook edits. Non-inputs (README, .baseline/ scratch,
- * .handoff/ notes, this hook) are still skipped by the extension/prefix filter.
+ * Gate is a declarative prefix-set + extension check. New dirs under src/
+ * need ZERO hook edits. Non-inputs (README, .handoff/ notes, this hook) are
+ * skipped by the extension/prefix filter.
  *
  * Wired in .claude/settings.json. Reads tool input JSON on stdin.
  */
 import { text } from "node:stream/consumers";
 import { spawnSync } from "node:child_process";
+import { join } from "node:path";
 
 const raw = await text(process.stdin);
 let input: { tool_input?: { file_path?: string; path?: string } } = {};
@@ -27,29 +26,25 @@ const cwd = process.env.CLAUDE_PROJECT_DIR ?? process.cwd();
 // Normalise the edited path to a project-RELATIVE forward-slash path, then anchor
 // the match. Tool paths arrive absolute (e.g. C:\…\src\foo.css on Windows), so
 // strip the project root first — anchoring beats substring matching: an unanchored
-// `includes("/src/")` would also fire on vendored trees (vendor/…/src/…), and
-// treating the "build.ts" FILE like a dir prefix would match a build.ts/ segment.
+// `includes("/src/")` would also fire on vendored trees (vendor/…/src/…).
 const root = cwd.replace(/\\/g, "/").replace(/\/$/, "");
 const raw_p = (input.tool_input?.file_path ?? input.tool_input?.path ?? "").replace(/\\/g, "/");
 const rel = raw_p.startsWith(root + "/") ? raw_p.slice(root.length + 1) : raw_p;
 
-// Build inputs: anything under src/ or content/posts/ (dir prefixes), plus the
-// build.ts pipeline file itself (exact), with a build extension. New dirs under
-// src/ need zero edits here.
-//
-// `.js` is IN the gate: build.ts copies src/js/ verbatim into public/js/, so an
-// edit to src/js/main.js (the shipped bundle) must rebuild to propagate — before,
-// .js was excluded and main.js edits silently skipped the build (a recurring
-// "stale main.js" footgun). src/js/hero-3d/** is vendored, but rebuilding on
-// those edits just re-copies js/ (harmless), so a blanket .js is fine.
-const INPUT_DIRS = ["src/", "content/posts/"];
+const INPUT_DIRS = ["src/", "content/posts/", "public/"];
 const isInput =
-  (INPUT_DIRS.some((d) => rel.startsWith(d)) || rel === "build.ts") &&
-  /\.(css|ts|md|js)$/.test(rel);
+  (INPUT_DIRS.some((d) => rel.startsWith(d)) || rel === "astro.config.mjs") &&
+  /\.(css|ts|md|js|mjs|astro)$/.test(rel);
 
 if (!isInput) process.exit(0);
 
-const r = spawnSync("node", ["build.ts"], { cwd });
+// astro is a JS CLI — spawn it via the current node binary (cross-platform;
+// npx.cmd indirection on Windows is flaky under spawnSync).
+const r = spawnSync(
+  process.execPath,
+  [join(cwd, "node_modules", "astro", "bin", "astro.mjs"), "build"],
+  { cwd }
+);
 if (r.stderr) process.stderr.write(r.stderr);
 if (r.stdout) process.stdout.write(r.stdout);
 // status is null when the spawn itself failed (e.g. node not on PATH) — surface

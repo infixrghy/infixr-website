@@ -1,0 +1,26 @@
+---
+/**
+ * Brand.astro — the InfiXR wordmark SVG, shared by Nav and Footer.
+ *
+ * `class` doubles as the a11y switch: the bare header logo sits inside an
+ * <a aria-label="InfiXR home"> so the svg is decorative (aria-hidden); the
+ * footer's standalone instance (site-footer__logo) carries its own aria-label.
+ * Styled by its consumers' CSS (.brand__logo in nav.css, .site-footer__logo in
+ * footer.css) — no CSS of its own.
+ */
+interface Props {
+  class?: string;
+}
+const { class: extraClass } = Astro.props;
+---
+<svg
+  class:list={["brand__logo", extraClass]}
+  viewBox="0 0 120 36"
+  role="img"
+  aria-label={extraClass ? "InfiXR" : undefined}
+  aria-hidden={extraClass ? undefined : "true"}
+>
+  <text x="0" y="28" font-family="Satoshi, system-ui, sans-serif" font-weight="800" letter-spacing="-0.04em">
+    <tspan font-size="24" fill="currentColor">infi</tspan><tspan font-size="32" fill="currentColor" dy="2">XR</tspan>
+  </text>
+</svg>

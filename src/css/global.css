@@ -1,0 +1,34 @@
+/* global.css — THE CASCADE CONTRACT (imported once, by src/layouts/Base.astro).
+ *
+ * The @import order below IS the rule order in the bundled output, and several
+ * rules depend on it (equal specificity → later-in-source wins; all files
+ * self-wrap in named @layers, and first-declaration order defines layer order:
+ * reset → tokens → layout → components). Do NOT alphabetise or reorder.
+ *
+ * The ONE cross-file ordering that is load-bearing (guarded by a test in
+ * test/output/build.test.ts):
+ *   • glass-card.css loads AFTER u-card.css — `.glass-card:hover
+ *     { background: transparent }` and `.u-card--text:hover { background:
+ *     var(--bg-card-hover) }` hit the same element at equal specificity
+ *     (0,2,0); source order breaks the tie, and glass-card must win or the
+ *     card's own bg shows through the frost on hover.
+ *
+ * pages.css is NOT here: the homepage ships core CSS only; about/services/
+ * blog/post pages import ../css/pages.css themselves (after their Base import,
+ * so it lands after everything below — same position the old concat gave it).
+ */
+@import './fonts.css';
+@import './reset.css';
+@import './tokens.css';
+@import './layout.css';
+@import '../components/typography/typography.css';
+@import '../components/cursor/cursor.css';
+@import '../components/nav/nav.css';
+@import '../components/button/button.css';
+@import '../components/hero/hero.css';
+@import '../components/carousel/carousel.css';
+@import '../components/u-card/u-card.css';
+@import '../components/glass-card/glass-card.css';
+@import '../components/u-card/u-card.overrides.css';
+@import '../components/contact/contact.css';
+@import '../components/footer/footer.css';

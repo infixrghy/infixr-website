@@ -1,0 +1,210 @@
+---
+/**
+ * about.astro — the "Who We Are" page. Six sections (hero → core purpose →
+ * how-we-work → founder → team → cta-band), rebuilt 2026-07-13 from the
+ * design PDF; copy transcribed + proofread from the rendered mock. All
+ * headshots are real client-supplied photos (the house rule against faking
+ * imagery holds — no stock stand-ins).
+ */
+import Base from "../layouts/Base.astro";
+import "../css/pages.css";
+import Button from "../components/button/Button.astro";
+import Picture from "../components/picture/Picture.astro";
+import GlassCard from "../components/glass-card/GlassCard.astro";
+
+/** Core-purpose value cards (plain title + body glass cards). */
+const VALUES = [
+  {
+    title: "Innovate Faster",
+    body: "Prototype, visualize, and test ideas rapidly using immersive technologies that accelerate decision-making and development.",
+  },
+  {
+    title: "Train Safer",
+    body: "Enable hands-on practice in risk-free virtual environments, reducing costs while improving confidence and preparedness.",
+  },
+  {
+    title: "Educate Better",
+    body: "Transform passive learning into immersive experiences that improve engagement, retention, and real-world understanding.",
+  },
+  {
+    title: "Engage Deeper",
+    body: "Create meaningful interactions that help users explore, understand, and connect with information in entirely new ways.",
+  },
+];
+
+/** The "How We Work" process rail. */
+const STEPS = [
+  {
+    name: "Understand",
+    body: "We begin by understanding your goals, challenges, and audience to identify where immersive technology can create the greatest value.",
+  },
+  {
+    name: "Design",
+    body: "Our team transforms ideas into engaging concepts, experiences, and interactions tailored to your specific requirements.",
+  },
+  {
+    name: "Develop",
+    body: "Using VR, AR, AI, and interactive technologies, we build custom solutions designed for performance, usability, and scalability.",
+  },
+  {
+    name: "Deliver & Support",
+    body: "We deploy, refine, and continuously support our solutions to ensure they achieve meaningful real-world outcomes.",
+  },
+];
+
+/** Team members. `photo` is a public/assets stem (webp+jpg pair, 640² square). */
+const TEAM = [
+  {
+    name: "Sai Hemanth",
+    role: "Unity Developer",
+    experience: "6+ Years Experience",
+    focus: "Building immersive learning experiences and interactive simulations.",
+    photo: "team-hemanth",
+  },
+  {
+    name: "Rishab Bhattacharjee",
+    role: "3D Generalist",
+    experience: "3+ Years Experience",
+    focus: "Creating immersive 3D environments and interactive digital experiences.",
+    photo: "team-rishab",
+  },
+  {
+    name: "Sujeet Jha",
+    role: "Unity Developer",
+    experience: "3+ Years Experience",
+    focus: "Developing immersive VR applications and interactive simulations.",
+    photo: "team-sujeet",
+  },
+  {
+    name: "Prajwal K S",
+    role: "Unity Developer",
+    experience: "3+ Years Experience",
+    focus: "Building engaging XR applications and real-world simulations.",
+    photo: "team-prajwal",
+  },
+  {
+    name: "Prerana Baruah",
+    role: "Product Designer",
+    experience: "3+ Years Experience",
+    focus: "Designing intuitive XR products and immersive digital experiences.",
+    photo: "team-prerana",
+  },
+];
+---
+<Base
+  title="Who We Are | InfiXR"
+  description="InfiXR is a deep-tech innovation company and one of Northeast India's early immersive-technology pioneers, building AI-powered XR (VR/AR/MR) training, learning, and tourism experiences."
+  canonical="https://infixr.com/about"
+  ogUrl="https://infixr.com/about"
+  ogTitle="Who We Are | InfiXR"
+  ogDescription="We help build immersive solutions across industries — deep-tech XR experiences that change how teams train, learn, and decide."
+  twitterTitle="Who We Are | InfiXR"
+  twitterDescription="We help build immersive solutions across industries — deep-tech XR experiences that change how teams train, learn, and decide."
+  nav="about"
+>
+<main>
+
+  <section class="about-hero" aria-labelledby="page-title">
+    <div class="about-hero__copy">
+      <p class="eyebrow">Who We Are</p>
+      <h1 id="page-title" class="about-hero__title">We Help Build <span class="about-hero__accent">Immersive Solutions</span> Across Industries</h1>
+    </div>
+    <div class="about-hero__lead">
+      <p>At InfiXR, we are a deep-tech innovation company helping organizations transform ideas into impactful digital solutions. From concept development and product design to deployment and scale, we partner with businesses, institutions, startups, and government organizations to build technology products tailored to their unique needs.</p>
+      <p>Whether you're validating a new idea, modernizing operations, building custom software, or creating immersive experiences, we combine deep-tech expertise, strategy, and innovation to turn ideas into scalable solutions that drive measurable results.</p>
+      <p>As one of Northeast India's early immersive technology pioneers, we are building scalable solutions for clients across the country.</p>
+    </div>
+    <Picture webp="/assets/who-1.webp" png="/assets/who-1.jpg" alt="A diverse team wearing VR headsets collaborating around a meeting table." width={800} height={450} loading="eager" fetchpriority="high" class="about-hero__media" />
+  </section>
+
+  <section class="core-purpose" aria-labelledby="purpose-title">
+    <header class="section-head">
+      <p class="eyebrow">Core Purpose</p>
+      <h2 id="purpose-title">Creating Meaningful Experiences Through Immersive Technology.</h2>
+      <p class="section-head__lead">InfiXR is Northeast India's first AI-powered XR (VR/AR/MR) platform, delivering customized immersive training, learning, and tourism experiences &mdash; combining 3D/XR environments with AI-driven adaptive content, simulation intelligence, and personalized learning paths.</p>
+    </header>
+
+    <ul class="value-cards" role="list">
+      {VALUES.map((v) => (
+        <GlassCard title={v.title} body={v.body} class="value-card" />
+      ))}
+    </ul>
+  </section>
+
+  <section class="how-we-work" aria-labelledby="how-title">
+    <div class="how-we-work__intro">
+      <p class="eyebrow">How We Work</p>
+      <h2 id="how-title">Turning Vision Into Reality Through Technology</h2>
+    </div>
+    <ol class="how-we-work__steps" role="list">
+      {STEPS.map((s) => (
+        <li class="u-card glass-card glass-card--v3 step-card">
+          <div class="u-card__body">
+            <h3 class="step-card__name">{s.name}</h3>
+            <p>{s.body}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </section>
+
+  <section class="founder" aria-labelledby="founder-title">
+    <header class="section-head">
+      <p class="eyebrow">Meet the Founder</p>
+      <h2 id="founder-title">Leading the Future of Immersive Learning</h2>
+      <p class="section-head__lead">Combining technology, creativity, and education to redefine how people learn, train, and grow.</p>
+    </header>
+
+    <div class="founder__grid">
+      <div class="u-card glass-card glass-card--v3 founder__card">
+        <Picture webp="/assets/founder-sarwar.webp" png="/assets/founder-sarwar.jpg" alt="Sarwar Islam, founder of InfiXR." width={680} height={1061} loading="lazy" class="founder__photo" />
+        <div class="u-card__body">
+          <h3 class="founder__name">Sarwar Islam</h3>
+          <p class="founder__role">Founder &amp; CEO | InfiXR (OPC) Private Limited</p>
+          <p class="founder__exp">16+ Years Experience</p>
+        </div>
+      </div>
+
+      <div class="founder__bio">
+        <p>Sarwar Islam is the Founder and CEO of InfiXR, where he combines his background in Visual Effects, 3D design, and immersive technologies to build practical XR solutions for industry, education, government, and tourism.</p>
+        <p>A graduate of Vancouver Film School, Canada, Sarwar began his career in the Visual Effects industry in 2010, working with production studios in Canada and India on internationally recognized film and television projects. These experiences helped him develop a deep understanding of 3D environments, spatial design, real-time visualization, and interactive digital experiences.</p>
+        <p>Over the years, he realized that the same technologies used to create cinematic worlds could also solve real-world challenges in training, education, and communication. This inspired him to establish InfiXR, with a focus on creating customized Virtual Reality (VR), Augmented Reality (AR), Mixed Reality (MR), WebXR, and AI-powered immersive solutions tailored to each client's unique needs.</p>
+        <p>A significant turning point in his professional journey came while working on an immersive technology initiative with IIT Guwahati. The experience highlighted the transformative potential of XR for skill development and workforce training, reinforcing his vision to create immersive learning solutions that are practical, scalable, and capable of addressing real-world challenges across multiple industries.</p>
+        <blockquote class="founder__quote">
+          <span class="founder__quote-mark" aria-hidden="true">&ldquo;</span>
+          <p>If we can make learning feel real, we can make it truly meaningful.</p>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <section class="team" aria-labelledby="team-title">
+    <header class="section-head">
+      <p class="eyebrow">Our Team</p>
+      <h2 id="team-title">The People Turning Ideas Into Immersive Experiences.</h2>
+      <p class="section-head__lead">We're a team of creators, developers, and innovators committed to making VR, AR, and AI technologies more accessible, practical, and impactful for organizations across industries.</p>
+    </header>
+
+    <ul class="team-grid" role="list">
+      {TEAM.map((m) => (
+        <li class="u-card u-card--text glass-card glass-card--v3 team-card">
+          <Picture webp={`/assets/${m.photo}.webp`} png={`/assets/${m.photo}.jpg`} alt={`${m.name}, ${m.role} at InfiXR.`} width={640} height={640} loading="lazy" class="team-card__photo" />
+          <div class="u-card__body">
+            <h3 class="team-card__name">{m.name}</h3>
+            <p class="team-card__role">{m.role}</p>
+            <p class="team-card__exp">{m.experience}</p>
+            <p class="team-card__focus">{m.focus}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="cta-band" aria-labelledby="cta-title">
+    <h2 id="cta-title">Need something custom?</h2>
+    <p>Tell us the problem worth solving in XR. We'll send back a short read on whether it's the right fit and what shipping it would look like.</p>
+    <Button label="Contact Us" variant="glass" href="/#contact" />
+  </section>
+
+</main>
+</Base>

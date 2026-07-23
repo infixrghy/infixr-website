@@ -1,0 +1,57 @@
+---
+/**
+ * GlassCard.astro — the frosted glass text card (V3 sheen + lit teal rim +
+ * tinted surface, .glass-card in glass-card.css). Serves both card shapes:
+ *   • blog/article — linked title + time-meta footer (href + footer.date)
+ *   • Solutions    — plain title + CTA footer (footer.label/href)
+ * The three teal dials (tint/alpha/rim) map 1:1 to the --gc-* custom props
+ * documented in design/GLASS-CARD.md; omit them and the variant preset drives
+ * the look. Renders an <li> — parents are always card grids (<ul>/<ol>).
+ */
+import TimeMeta from "../time-meta/TimeMeta.astro";
+
+type Footer =
+  | { date: string; readMinutes: number }   // time-meta line
+  | { label: string; href: string };        // CTA link-arrow
+
+interface Props {
+  title: string;
+  body: string;
+  /** Set → title becomes a link (<h3><a href>). */
+  href?: string;
+  /** Eyebrow kicker above the title (blog cards); omit for none. */
+  eyebrow?: string;
+  footer?: Footer;
+  variant?: "v1" | "v2" | "v3";
+  class?: string;
+  /** Per-instance overrides of the teal dials (CSS custom props). */
+  tint?: string;
+  alpha?: string;
+  rim?: string;
+}
+const {
+  title, body, href, eyebrow, footer,
+  variant = "v3", class: extraClass, tint, alpha, rim,
+} = Astro.props;
+
+const style =
+  [tint && `--gc-tint:${tint}`, alpha && `--gc-alpha:${alpha}`, rim && `--gc-rim:${rim}`]
+    .filter(Boolean)
+    .join(";") || undefined;
+
+const metaFooter = footer && "date" in footer ? footer : undefined;
+const ctaFooter = footer && "label" in footer ? footer : undefined;
+---
+<li class:list={["u-card", "u-card--text", "glass-card", `glass-card--${variant}`, extraClass]} style={style}>
+  <div class="u-card__body">
+    {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+    {href ? <h3><a href={href}>{title}</a></h3> : <h3>{title}</h3>}
+    <p>{body}</p>
+    {metaFooter && (
+      <p class="post__meta"><TimeMeta date={metaFooter.date} readMinutes={metaFooter.readMinutes} /></p>
+    )}
+    {ctaFooter && (
+      <a class="link-arrow" href={ctaFooter.href}>{ctaFooter.label} &rarr;</a>
+    )}
+  </div>
+</li>

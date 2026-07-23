@@ -18,6 +18,8 @@ const TOKENS_FILE = "src/css/tokens.css";
 // Two globs, NOT one nested-brace pattern: kept split from the Bun days (Bun's
 // Glob silently matched nothing on nested `{…{…}…}` braces). node:fs glob
 // handles the single-level braces used here; the split costs nothing.
+// (global.css and fonts.css hold only @imports / @font-face — no var() refs —
+// so they aren't consumers.)
 const CONSUMER_GLOBS = [
   "src/css/{pages,layout,reset}.css",
   "src/components/**/*.css",
@@ -76,15 +78,16 @@ if (dead.length === 0 && orphanRefs.length === 0) {
   console.log("✓ no dead tokens, no orphan refs");
 }
 
-// ── V46 dead-asset pass: assets/ is copied WHOLESALE into public/ (V31), so an
-//    unreferenced file ships forever. This pass runs over BUILT output, NOT src/:
-//    who-/sol- image paths are template-constructed (`assets/${s.img}.webp`) so the
-//    literal filename never appears in src; og-image is referenced by ABSOLUTE URL
-//    (filename-match, not path-match) — only the emitted public/*.html carries the
-//    real literals. A preload is a HINT not a USE (B8: a ghost preload would self-
-//    justify its own dead asset), so preload <link> hrefs are stripped before the
-//    reference scan — an asset must have a NON-preload consumer to survive. ──
-const OUT = "public";
+// ── Dead-asset pass: public/assets/ is copied WHOLESALE into dist/ by Astro's
+//    static passthrough, so an unreferenced file ships forever. This pass runs
+//    over BUILT output, NOT src/: who-/sol- image paths are template-constructed
+//    (`/assets/${s.img}.webp`) so the literal filename never appears in src;
+//    og-image is referenced by ABSOLUTE URL (filename-match, not path-match) —
+//    only the emitted dist/*.html carries the real literals. A preload is a HINT
+//    not a USE (a ghost preload would self-justify its own dead asset), so
+//    preload <link> hrefs are stripped before the reference scan — an asset must
+//    have a NON-preload consumer to survive. ──
+const OUT = "dist";
 const ASSETS_DIR = `${OUT}/assets`;
 
 let assetFails = 0;

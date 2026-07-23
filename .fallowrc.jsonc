@@ -2,74 +2,40 @@
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
 
   // ── Entry points ──────────────────────────────────────────────────────────
-  // This is a Bun static-site generator, NOT a browser bundle, so the default
-  // src/index.* / src/main.* roots don't exist here. The real reachability roots
-  // are the build orchestrator (build.ts imports every template / schema / page
-  // render fn — the whole src/**/*.ts graph hangs off it), the dev server, the
-  // lint tool, and the ONE script actually shipped to the browser (src/js/main.js).
-  // Without these, fallow finds 0 entry points and every export looks unused.
-  // test/**/*.test.ts are ALSO roots: `bun test` (bunfig.toml [test] root=test)
-  // discovers + runs them by glob, an edge invisible to the static module graph,
-  // so without listing them fallow flags each test file as unused. They import the
-  // src/ code under test but nothing imports them — declaring them entry points is
-  // the graph-honest statement of what they are to the runner.
+  // This is an Astro static site. fallow's static module graph can't parse
+  // .astro files, so the .ts modules they consume (content.config.ts →
+  // post-schema.ts, data/services.ts, utils/*) would all look unused without
+  // roots declared here. lint.ts is a standalone tool; test/**/*.test.ts are
+  // discovered by vitest's glob (an edge invisible to the module graph);
+  // public/js/main.js ships to the browser via a <script> tag.
   "entry": [
-    "build.ts",
-    "server.ts",
     "lint.ts",
-    "src/js/main.js",
+    "src/content.config.ts",
+    "src/data/services.ts",
+    "src/utils/posts.ts",
+    "src/utils/nav.ts",
+    "public/js/main.js",
     "test/**/*.test.ts"
   ],
 
   // ── Ignore patterns ───────────────────────────────────────────────────────
-  // The CSS files are NOT imported by any JS module — build.ts reads them at
-  // build time via Bun.file()/readFile (the CSS_ORDER + COMPONENT_CSS path
-  // lists) and inlines them into each page. That runtime file-read is invisible
-  // to fallow's static module graph, so it reports them as "unused files". They
-  // are not dead; exclude them from analysis. This covers BOTH the shared CSS in
-  // src/css/ AND the co-located component CSS under src/components/<name>/*.css
-  // (the reshape that split components.css into component folders) — but ONLY the
-  // .css there; the component .ts render fns ARE real modules reachable from
-  // build.ts, so they stay in the graph. (src/js/hero-3d/ DOES ship — T27 hero 3D
-  // is live — but via the build's verbatim js/ copy + a runtime <script> tag that
-  // injects model-viewer.min.js, never via JS imports. Invisible to the static
-  // module graph for the same reason as the CSS, so it's excluded the same way.)
+  // .astro templates + CSS are consumed by Astro/Vite, not the JS module graph
+  // fallow sees: CSS via the global.css @import chain (inlined at build), the
+  // hero-3d runtime via a runtime <script> injection (never a JS import).
   "ignorePatterns": [
+    "src/**/*.astro",
     "src/css/**",
     "src/components/**/*.css",
-    "src/js/hero-3d/**"
+    "public/js/hero-3d/**",
+    ".claude/hooks/**"
   ],
 
-  // ── Exports used only within their own file ───────────────────────────────
-  // The Effect-Schema idiom exports a `Schema.Struct` value AND its derived type
-  // from the same module (e.g. PageMeta, BlogPostFrontMatter, GlassCardParams):
-  // the Struct value is consumed internally by that file's own decode* call, the
-  // type is imported elsewhere. fallow correctly sees the type's consumers but
-  // flags the Struct *value* export as unused — likewise renderGlassCard, called
-  // only by glassCard() in its own file. These are intentional API surface, kept
-  // exported on purpose. This switch accepts "exported but used only in-file" as
-  // legitimate, so the pattern doesn't trip the gate as new schemas are added.
+  // Exports consumed only in-file stay legitimate API surface (e.g. a schema
+  // value + its derived type exported from one module).
   "ignoreExportsUsedInFile": true,
-
-  // ── Unresolved imports ────────────────────────────────────────────────────
-  // pages/index/body.ts emits `<script src="js/hero-3d/loader.js">` as HTML TEXT
-  // inside its `html` tagged-template (the page's <main> string) — it is NOT a JS
-  // import, just markup the build inlines. fallow's static resolver scans the .ts
-  // source and mistakes that string literal for a relative module specifier, then
-  // can't resolve it (the loader lives under src/js/hero-3d/, already excluded from
-  // the graph by ignorePatterns above — hero 3D ships via the js/ copy + that
-  // <script> tag, never via the module graph). The mis-read only surfaced after the per-page-folder move put
-  // body.ts one dir deeper. A line-suppression can't sit inside the template string
-  // (it'd render into the HTML output), so the specifier is whitelisted here — the
-  // narrow, honest fix fallow's own report recommends for a known non-import.
-  "ignoreUnresolvedImports": [
-    "./js/hero-3d/loader.js"
-  ],
 
   // ── Duplication ───────────────────────────────────────────────────────────
   "duplicates": {
-    // Hide pair-only clones; focus on widespread copy-paste worth refactoring.
-    // Lower to 2 to report every duplicate pair.
     "minOccurrences": 3
   },
 

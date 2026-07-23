@@ -1,0 +1,111 @@
+---
+/**
+ * Base.astro — the shared page shell: full <head>, cursor-trail mount, Nav,
+ * page content (slot), Footer, and the one sanctioned client script (main.js).
+ *
+ * Head metadata arrives as typed props (was the Effect-Schema PageMeta);
+ * ogImageAlt/ogLocale are optional — present only on the homepage today, and
+ * nothing is emitted when absent. canonical/ogUrl are full absolute URLs.
+ *
+ * ALL site CSS is imported here (global.css — the cascade contract) and inlined
+ * into a <style> by `build.inlineStylesheets: "always"` — no render-blocking
+ * external stylesheet. Non-home pages additionally import ../css/pages.css
+ * themselves.
+ */
+import "../css/global.css";
+import Nav from "../components/nav/Nav.astro";
+import Footer from "../components/footer/Footer.astro";
+import type { NavId } from "../utils/nav.ts";
+
+interface Props {
+  title: string;
+  description: string;
+  /** Absolute canonical URL, e.g. https://infixr.com/about */
+  canonical: string;
+  ogUrl: string;
+  ogTitle: string;
+  ogDescription: string;
+  twitterTitle: string;
+  twitterDescription: string;
+  /** Which nav item is active on this page. */
+  nav: NavId;
+  /** true on the homepage: section links become same-page anchors. */
+  isHome?: boolean;
+  /** og:image:alt — homepage only today. */
+  ogImageAlt?: string;
+  /** og:locale — homepage only today. */
+  ogLocale?: string;
+}
+const {
+  title, description, canonical, ogUrl, ogTitle, ogDescription,
+  twitterTitle, twitterDescription, nav, isHome = false, ogImageAlt, ogLocale,
+} = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+<head>
+  <link rel="preload" as="font" type="font/woff2" href="/assets/Satoshi-Variable.woff2" crossorigin>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0d1311">
+  <title>{title}</title>
+  <meta name="description" content={description}>
+  <link rel="canonical" href={canonical}>
+
+  <!-- Favicons -->
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml">
+  <link rel="alternate icon" href="/assets/favicon-32.png" type="image/png" sizes="32x32">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png" sizes="180x180">
+  <link rel="manifest" href="/manifest.webmanifest">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content={ogUrl}>
+  <meta property="og:site_name" content="InfiXR">
+  <meta property="og:title" content={ogTitle}>
+  <meta property="og:description" content={ogDescription}>
+  <meta property="og:image" content="https://infixr.com/assets/og-image.png">
+  {ogImageAlt && <meta property="og:image:alt" content={ogImageAlt}>}
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  {ogLocale && <meta property="og:locale" content={ogLocale}>}
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content={twitterTitle}>
+  <meta name="twitter:description" content={twitterDescription}>
+  <meta name="twitter:image" content="https://infixr.com/assets/og-image.png">
+
+  <!-- Speculation Rules: instant same-origin navigation (Chromium; ignored elsewhere).
+       NOT scripted JS — a declarative JSON payload the browser reads (like JSON-LD).
+       The href_matches pattern runs on the RESOLVED URL, so every root-absolute link
+       + extensionless GH Pages URL (/about, /blog/<slug>) matches "/*" from one shared
+       block. A path-only pattern is same-origin by definition → external footer/social
+       links + the Web3Forms POST never match. eagerness:moderate = prerender on
+       hover/pointerdown, so bandwidth is spent only on likely clicks. The browser
+       auto-skips the current page + same-doc #anchors. Prerender fully renders the
+       target offscreen (runs main.js early) — every behavior there is idempotent. -->
+  <script type="speculationrules" is:inline>
+  {
+    "prerender": [
+      { "where": { "href_matches": "/*" }, "eagerness": "moderate" }
+    ]
+  }
+  </script>
+</head>
+<body>
+
+<!-- Cursor trail: a lerp-following ring that lags behind the native CSS cursor.
+     pointer-events:none + aria-hidden so it never intercepts clicks or hits a11y.
+     Gated to pointer:fine in CSS; main.js no-ops where this element is absent. -->
+<div class="cursor-tail" aria-hidden="true"></div>
+
+<Nav active={nav} isHome={isHome} />
+
+<slot />
+
+<Footer isHome={isHome} />
+
+<script is:inline src="/js/main.js" defer></script>
+</body>
+</html>

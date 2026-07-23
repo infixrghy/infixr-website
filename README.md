@@ -70,9 +70,9 @@ Then, whenever you want to preview:
 npm run dev
 ```
 
-Open <http://127.0.0.1:8765/blog> in your browser and check your post. Press `Ctrl+C` in the terminal to stop the preview.
+Open <http://127.0.0.1:8765/blog> in your browser and check your post. The preview updates live as you edit and save the file. Press `Ctrl+C` in the terminal to stop it.
 
-If the build prints an error instead — read it; it names the file and field that's wrong (usually a typo in the front-matter). Fix and run again.
+If the page shows an error instead — read it; it names the file and field that's wrong (usually a typo in the front-matter). Fix the file and the page reloads by itself.
 
 ## Publishing
 
@@ -96,5 +96,6 @@ After `git push`, GitHub Actions builds and deploys automatically — the post i
 
 ## Rules
 
-- Only touch `content/posts/` for blog work. The `public/` folder is generated output — never edit it (it's rebuilt from scratch on every push, and any hand edit is silently lost).
+- Only touch `content/posts/` for blog work. The `dist/` folder is generated output — never edit it (it's rebuilt from scratch on every push, and any hand edit is silently lost). The `public/` folder holds the site's images, fonts, and scripts — leave it alone for blog work.
 - One file per post; the site handles everything else (index cards, homepage teaser, per-post page, ordering) from the front-matter.
+- The site is built with [Astro](https://astro.build) — pages live in `src/pages/`, components in `src/components/`. Blog work never needs to touch them.

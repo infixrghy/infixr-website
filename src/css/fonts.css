@@ -1,0 +1,21 @@
+/* Satoshi (self-hosted, fontshare woff2). Root-absolute URLs — the site is
+   served from the infixr.com root, so /assets/… resolves identically from
+   every page depth (this replaced the old build's `${base}` prefix threading;
+   a relative path here silently 404'd on /blog/<slug> pages and fell back to
+   system-ui — the caught ~5px-narrower nav CTA). */
+@font-face {
+  font-family: 'Satoshi';
+  font-style: normal;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('/assets/Satoshi-Variable.woff2') format('woff2-variations'),
+       url('/assets/Satoshi-Variable.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Satoshi';
+  font-style: italic;
+  font-weight: 300 900;
+  font-display: swap;
+  src: url('/assets/Satoshi-VariableItalic.woff2') format('woff2-variations'),
+       url('/assets/Satoshi-VariableItalic.woff2') format('woff2');
+}

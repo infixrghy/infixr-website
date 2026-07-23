@@ -1,0 +1,67 @@
+---
+/**
+ * blog.astro — the blog index. The NEWEST post leads as the large featured
+ * card (purely date-driven — publishing a newer post automatically promotes
+ * it, no flag); the rest fill the grid. The grid is emitted ONLY when there
+ * are non-featured posts: with a single post an empty .blog__grid still costs
+ * a row in the .blog-list parent grid (gap: --space-7), stranding ~48px of
+ * dead space under the featured card (owner, 2026-06-13).
+ */
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import "../css/pages.css";
+import TimeMeta from "../components/time-meta/TimeMeta.astro";
+import { newestFirst } from "../utils/posts.ts";
+
+const posts = newestFirst(await getCollection("posts"));
+const featured = posts[0];
+const rest = posts.slice(1);
+---
+<Base
+  title="Blog | InfiXR"
+  description="Writing on building, shipping, and measuring industrial VR experiences."
+  canonical="https://infixr.com/blog"
+  ogUrl="https://infixr.com/blog"
+  ogTitle="Blog | InfiXR"
+  ogDescription="Writing on building, shipping, and measuring industrial VR experiences."
+  twitterTitle="InfiXR Blog"
+  twitterDescription="Writing on building, shipping, and measuring industrial VR experiences."
+  nav="blog"
+>
+<main>
+
+  <section class="page-hero" aria-labelledby="page-title">
+    <p class="eyebrow">Blog</p>
+    <h1 id="page-title" class="page-title">Writing on shipping VR that actually gets used.</h1>
+  </section>
+
+  <section class="blog-list" aria-label="All blog posts">
+
+    <article class="u-card u-card--text glass-card glass-card--v3 blog-featured">
+      <div class="u-card__body">
+        <p class="post__meta"><TimeMeta date={featured.data.date} readMinutes={featured.data.readMinutes} /></p>
+        <h2><a href={`/blog/${featured.data.slug}`}>{featured.data.title}</a></h2>
+        <p>{featured.data.excerpt}</p>
+        <a class="link-arrow" href={`/blog/${featured.data.slug}`}>Read post &rarr;</a>
+      </div>
+    </article>
+
+    {rest.length > 0 && (
+      <div class="blog__grid">
+        {rest.map((p) => (
+          <article class="u-card u-card--text glass-card glass-card--v3">
+            <div class="u-card__body">
+              <p class="post__meta"><TimeMeta date={p.data.date} readMinutes={p.data.readMinutes} /></p>
+              <h3><a href={`/blog/${p.data.slug}`}>{p.data.title}</a></h3>
+              <p>{p.data.excerpt}</p>
+              <a class="link-arrow" href={`/blog/${p.data.slug}`}>Read &rarr;</a>
+            </div>
+          </article>
+        ))}
+      </div>
+    )}
+
+  </section>
+
+</main>
+</Base>

@@ -1,0 +1,337 @@
+---
+/**
+ * index.astro — the homepage.
+ *
+ * The blog teaser is data-driven from the `posts` content collection (same
+ * validated data the blog index uses): the NEWEST post is the photo lead on
+ * the left, the next two are frosted text cards. Purely date-driven — a newer
+ * post automatically takes the photo lead, no flag to set. Fewer than 3 posts
+ * simply renders fewer cards.
+ *
+ * The lead card's photo is `sol-corporate` (posts carry no image field; this
+ * render is otherwise unused on the homepage, so nothing repeats). It's
+ * decorative (alt="") — it sets the workspace tone, the heading/meta carry
+ * the meaning.
+ */
+import { getCollection } from "astro:content";
+import Base from "../layouts/Base.astro";
+import Button from "../components/button/Button.astro";
+import Picture from "../components/picture/Picture.astro";
+import GlassCard from "../components/glass-card/GlassCard.astro";
+import TimeMeta from "../components/time-meta/TimeMeta.astro";
+import { newestFirst } from "../utils/posts.ts";
+
+const posts = newestFirst(await getCollection("posts"));
+const feature = posts[0];
+const textPosts = posts.slice(1, 3);
+
+/**
+ * "Who We Are" carousel slides — the 3 real cards, as data. The track is
+ * clone-padded [3'][1][2][3][1'] so the transform-track loop in main.js can
+ * instant-teleport from an edge clone to its pixel-identical real twin =
+ * seamless infinite loop. Clones are aria-hidden and carry no data-name.
+ */
+const WHO_SLIDES = [
+  {
+    img: "who-1",
+    alt: "A diverse team wearing VR headsets collaborating around a meeting table",
+    index: "01",
+    title: "VR Apps for Real-World Challenges",
+    body: "Immersive experiences engineered to solve real operational, training, and performance problems.",
+    name: "VR Apps for Real-World Challenges",
+  },
+  {
+    img: "who-2",
+    alt: "An engineer in VR manipulating a 3D model on a factory floor",
+    index: "02",
+    title: "Scalable & Accessible",
+    body: "One XR platform across VR, web, and mobile — easy to deploy, scale, and reach anywhere.",
+    name: "Scalable and Accessible",
+  },
+  {
+    img: "who-3",
+    alt: "A researcher in a lab gesturing while wearing a VR headset",
+    index: "03",
+    title: "Practical, Not Experimental",
+    body: "Built for usability, efficiency, and measurable outcomes — real results, not novelty.",
+    name: "Practical, Not Experimental",
+  },
+] as const;
+
+/** Track order [3'][1][2][3][1'] — see the carousel comment in the markup. */
+const TRACK = [
+  { ...WHO_SLIDES[2], clone: true },
+  { ...WHO_SLIDES[0], clone: false },
+  { ...WHO_SLIDES[1], clone: false },
+  { ...WHO_SLIDES[2], clone: false },
+  { ...WHO_SLIDES[0], clone: true },
+];
+---
+<Base
+  title="Industrial VR Development & Corporate Solutions | InfiXR"
+  description="End-to-end VR training solutions for safer & faster learning. We design and develop VR solutions that go beyond visuals."
+  canonical="https://infixr.com/"
+  ogUrl="https://infixr.com/"
+  ogTitle="Industrial VR Development & Corporate Solutions | InfiXR"
+  ogDescription="End-to-end VR training solutions for safer & faster learning. Built around your needs."
+  twitterTitle="InfiXR — VR Solutions, Built Around Your Needs."
+  twitterDescription="End-to-end VR training solutions for safer & faster learning."
+  nav="home"
+  isHome
+  ogImageAlt="InfiXR — VR Solutions, Built Around Your Needs."
+  ogLocale="en_US"
+>
+<main id="top">
+
+  <!-- HERO -->
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero__content">
+      <h1 id="hero-title" class="hero__title">
+        <span class="hero__line">
+          <span class="xr-slot" aria-label="XR">
+            <span class="word-slot__sr">XR</span>
+            <ul class="xr-slot__list" aria-hidden="true">
+              <li>XR</li>
+              <li>VR</li>
+              <li>AR</li>
+              <li>MR</li>
+            </ul></span> Solutions,</span>
+        <span class="hero__line">Built Around Your</span>
+        <span class="word-slot" aria-label="needs, training, experiences, simulations, walkthroughs">
+          <span class="word-slot__sr">Needs</span>
+          <ul class="word-slot__list" aria-hidden="true">
+            <li>Needs</li>
+            <li>Training</li>
+            <li>Experiences</li>
+            <li>Simulations</li>
+            <li>Walkthroughs</li>
+          </ul>
+        </span>
+      </h1>
+      <p class="hero__sub">End-to-end VR training solutions for safer &amp; faster learning.</p>
+      <div class="hero__cta">
+        <Button label="Request a Demo" variant="glass" minWidth="cta" href="#contact" />
+        <Button label="Explore Our Work" variant="ghost" minWidth="cta" href="#solutions" />
+      </div>
+    </div>
+
+    <!-- Decorative headset (3D on desktop/motion via js/hero-3d, else static webp)
+         orbiting a single static SVG ellipse. Purely ornamental → aria-hidden.
+         Hidden ≤900px. -->
+    <div class="hero__visual" aria-hidden="true">
+      <svg class="hero__ring" viewBox="0 0 600 600" fill="none" preserveAspectRatio="xMidYMid meet">
+        <ellipse class="hero__ring-arc" cx="300" cy="300" rx="250" ry="120" transform="rotate(-18 300 300)"/>
+        <circle class="hero__node" cx="535" cy="262" r="4"/>
+        <circle class="hero__node hero__node--accent" cx="92" cy="356" r="7"/>
+        <circle class="hero__node" cx="360" cy="178" r="3.5"/>
+      </svg>
+      <!-- Static fallback = the model-viewer's exact frame-0 render. Square 1500²
+           so it occupies the SAME box as .hero__model — when the 3D reveals at
+           frame 0 the pixels match and rotation begins from here (seamless handoff). -->
+      <Picture webp="/assets/hero-headset-1200.webp" png="/assets/hero-headset-1200.png" alt="" width={1500} height={1500} loading="eager" fetchpriority="high" class="hero__headset" />
+    </div>
+  </section>
+
+  <!-- OUR SOLUTIONS -->
+  <section class="solutions" id="solutions" aria-labelledby="solutions-title">
+    <header class="solutions__head">
+      <div class="solutions__headline">
+        <p class="eyebrow">What We Build</p>
+        <h2 id="solutions-title">From Idea to Immersive Reality</h2>
+      </div>
+      <p class="solutions__lead">A streamlined process that turns operational challenges into immersive, measurable training.</p>
+    </header>
+    <ul class="solutions__grid">
+      <!-- 2 small frosted glass-card text cards (V3). The Solutions shape = plain
+           title (no href) + a CTA footer (no eyebrow). The .solutions::before glow
+           is what the frost refracts. -->
+      <GlassCard
+        title="Corporate Training"
+        body="Immersive scenarios that sharpen communication, decision-making, and leadership—so teams practice high-stakes moments before they happen for real."
+        footer={{ label: "Learn More", href: "/services#infisoft" }}
+      />
+      <GlassCard
+        title="Workforce Training"
+        body="Hands-on skill-building at scale. Repeatable, measurable VR modules onboard and upskill your workforce faster than classroom or video ever could."
+        footer={{ label: "Learn More", href: "/services#infitrain" }}
+      />
+      <!-- 1 large photo feature card (overlay, spans both rows) -->
+      <li class="u-card u-card--overlay u-card--feature solution-feature">
+        <div class="u-card__media">
+          <Picture webp="/assets/sol-industrial-feature.webp" png="/assets/sol-industrial-feature.png" alt="Industrial and safety training simulation in a warehouse" width={512} height={230} loading="lazy" />
+        </div>
+        <div class="u-card__body">
+          <h3>Industrial &amp; Safety Training</h3>
+          <p>Train for high-risk environments without the risk. From equipment handling to emergency response, we make dangerous work safe to rehearse&mdash;and scalable.</p>
+          <a class="link-arrow" href="/services#infitrain">Learn More &rarr;</a>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <!-- OUR SERVICES — the InfiXR product family. Sits between Solutions and
+       Who-We-Are so DOM scroll order matches the nav order. Four branded products
+       as a symmetric frosted glass-card grid (2×2 desktop, 1-col mobile). -->
+  <section class="services" id="services" aria-labelledby="services-title">
+    <header class="services__head">
+      <div class="services__headline">
+        <p class="eyebrow">Our Services</p>
+        <h2 id="services-title">One Platform, Four Realities</h2>
+      </div>
+      <p class="services__lead">A family of XR offerings—each tuned to a different world, from high-risk industry floors to museum halls and classrooms.</p>
+    </header>
+    <ul class="services__grid">
+      <GlassCard
+        title="InfiTrain"
+        body="VR-based simulation solutions for hands-on skill training in high-risk, equipment-intensive industries."
+        footer={{ label: "Learn More", href: "/services#infitrain" }}
+      />
+      <GlassCard
+        title="InfiSoft"
+        body="AI-powered XR solutions for developing interpersonal, leadership, and communication skills through immersive roleplay simulations."
+        footer={{ label: "Learn More", href: "/services#infisoft" }}
+      />
+      <GlassCard
+        title="InfiExplore"
+        body="AR & MR powered experiential solutions for museums, heritage sites, and tourism destinations."
+        footer={{ label: "Learn More", href: "/services#infiexplore" }}
+      />
+      <GlassCard
+        title="InfiLearn"
+        body="Browser-accessible XR learning solutions for vocational institutes, polytechnics, and schools."
+        footer={{ label: "Learn More", href: "/services#infilearn" }}
+      />
+    </ul>
+  </section>
+
+  <!-- WHO WE ARE -->
+  <section class="who" id="about" aria-labelledby="who-title">
+    <div class="who__intro">
+      <p class="eyebrow">Who We Are</p>
+      <h2 id="who-title" class="who__title">VR for Real-World Challenges</h2>
+      <a class="who__link link-arrow" href="/about">Learn More &rarr;</a>
+    </div>
+
+    <div class="carousel" role="region" aria-label="Who we are highlights" aria-roledescription="carousel">
+      <!-- Transform-track carousel: the track translateX-shifts inside a clip
+           viewport. Clone-padded [3'][1][2][3][1']; the carousel code in main.js
+           shifts one card per step and, on transitionend at an edge clone,
+           instant-jumps to its real twin → seamless infinite loop. Own dots + 5s
+           autoplay drive it. data-carousel="3" = real count. -->
+      <div class="carousel__viewport">
+        <ol class="carousel__track" data-carousel="3">
+          {TRACK.map((s) => (
+            <li class="card" aria-hidden={s.clone ? "true" : undefined} data-name={s.clone ? undefined : s.name}>
+              <figure class="card__media">
+                <Picture webp={`/assets/${s.img}.webp`} png={`/assets/${s.img}.jpg`} alt={s.clone ? "" : s.alt} width={800} height={450} loading="lazy" />
+              </figure>
+              <div class="card__body">
+                <span class="card__index" aria-hidden="true">{s.index}</span>
+                <h3>{s.title}</h3>
+                <p>{s.body}</p>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <!-- Control band: own dots, centered. -->
+      <div class="carousel__dots" role="tablist" aria-label="Choose slide" data-carousel-dots>
+        <button type="button" class="carousel__dot" role="tab" aria-label="Slide 1: VR Apps for Real-World Challenges"></button>
+        <button type="button" class="carousel__dot" role="tab" aria-label="Slide 2: Scalable and Accessible"></button>
+        <button type="button" class="carousel__dot" role="tab" aria-label="Slide 3: Practical, Not Experimental"></button>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOG -->
+  <section class="blog" id="blog" aria-labelledby="blog-title">
+    <header class="blog__head">
+      <p class="eyebrow">Blog</p>
+      <h2 id="blog-title">The Future of Spatial Experiences</h2>
+      <p class="blog__lead">Exploring immersive experiences, spatial storytelling, and where VR training goes next.</p>
+      <a class="link-arrow link-arrow--bold blog__more" href="/blog">View More &rarr;</a>
+    </header>
+    <ul class="blog__grid">
+      {feature && (
+        <li class="u-card u-card--overlay u-card--feature blog-feature">
+          <div class="u-card__media">
+            <Picture webp="/assets/sol-corporate.webp" png="/assets/sol-corporate.png" alt="" width={800} height={450} loading="lazy" />
+          </div>
+          <a class="u-card__link" href={`/blog/${feature.data.slug}`}>
+            <div class="u-card__overlay">
+              <p class="u-card__meta"><TimeMeta date={feature.data.date} readMinutes={feature.data.readMinutes} /></p>
+              <h3>{feature.data.title}</h3>
+            </div>
+            <span class="u-card__badge" aria-hidden="true">&rarr;</span>
+          </a>
+        </li>
+      )}
+      {textPosts.map((p) => (
+        <GlassCard
+          title={p.data.title}
+          href={`/blog/${p.data.slug}`}
+          body={p.data.excerpt}
+          footer={{ date: p.data.date, readMinutes: p.data.readMinutes }}
+          class="blog-text"
+        />
+      ))}
+    </ul>
+  </section>
+
+  <!-- CONTACT -->
+  <section class="contact" id="contact" aria-labelledby="contact-title">
+    <div class="u-card contact__card">
+      <p class="eyebrow">Get In Touch</p>
+      <h2 id="contact-title">Let's build something together.</h2>
+      <p class="contact__lead">At InfiXR, we design and develop VR solutions that go beyond visuals&mdash;helping teams train better, reduce risks, and perform with confidence in high-stakes environments. Tell us what you're building&mdash;we'd love to be a part of it.</p>
+
+      <form class="contact-form" id="contact-form" novalidate>
+        <!-- Web3Forms wiring. access_key is PUBLIC by design (it only authorizes
+             "deliver to the bound inbox", not read/send-as) — safe in committed
+             HTML. subject + from_name shape the inbox email. The form POSTs JSON
+             via /js/main.js. -->
+        <input type="hidden" name="access_key" value="7c892888-b3cd-4066-8c20-99577004b7f4">
+        <input type="hidden" name="subject" value="New contact — infixr.com">
+        <input type="hidden" name="from_name" value="InfiXR Website">
+        <!-- Web3Forms native honeypot: hidden checkbox bots auto-tick → they drop
+             the submission server-side. Hidden from humans (off-layout + off-tab +
+             a11y-hidden). Pure markup, no JS. -->
+        <div class="cf-hp" aria-hidden="true">
+          <label for="cf-botcheck">Don't fill this out if you're human</label>
+          <input id="cf-botcheck" name="botcheck" type="checkbox" tabindex="-1" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="cf-name">Name</label>
+          <input id="cf-name" name="name" type="text" required autocomplete="name" minlength="2" maxlength="80" placeholder="Your Full Name">
+        </div>
+        <div class="field">
+          <label for="cf-email">Email</label>
+          <input id="cf-email" name="email" type="email" required autocomplete="email" maxlength="120" placeholder="you@company.com">
+        </div>
+        <div class="field">
+          <label for="cf-company">Company</label>
+          <input id="cf-company" name="company" type="text" autocomplete="organization" maxlength="120" placeholder="Company name">
+        </div>
+        <div class="field">
+          <label for="cf-phone">Phone Number</label>
+          <input id="cf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\-]{6,20}" maxlength="20" placeholder="+91 99999 99999">
+        </div>
+        <div class="field field--full">
+          <label for="cf-message">Message</label>
+          <textarea id="cf-message" name="message" required minlength="10" maxlength="2000" rows="5" placeholder="The skill to train, the risk to cut, the moment to nail."></textarea>
+        </div>
+        <div class="field field--full contact-form__actions">
+          <Button label="Send Message" variant="glass" />
+          <p class="contact-form__status" role="status" aria-live="polite"></p>
+        </div>
+      </form>
+    </div>
+  </section>
+
+</main>
+
+<!-- Hero 3D: lazy-loads the rotating Meta Quest 3 (model-viewer) over the static
+     webp on desktop, motion allowed. Index-only; the model-viewer runtime lives
+     under /js/hero-3d/ and loads itself relative to this root page. -->
+<script is:inline src="js/hero-3d/loader.js" defer></script>
+</Base>

@@ -1,0 +1,29 @@
+---
+/**
+ * Button.astro — every button on the site (hero CTAs, nav Contact, form send,
+ * about/services CTAs). The surfaces live as context-free .btn--* classes in
+ * button.css; this component assembles them.
+ *
+ * `href` set → renders an <a> (navigation). No `href` → a <button type=submit>
+ * (`submit` defaults true — the only non-link button on the site is the
+ * contact form's send). The Props type makes a typo'd variant a typecheck
+ * error (`npm run typecheck`).
+ */
+interface Props {
+  label: string;
+  /** Surface variant → .btn--primary | .btn--ghost | .btn--glass. */
+  variant?: "primary" | "ghost" | "glass";
+  /** Shared width-floor token → .btn--w-<token> (hero CTA pair). */
+  minWidth?: "cta";
+  class?: string;
+  /** Destination — presence switches the element to <a href>. */
+  href?: string;
+}
+const { label, variant = "primary", minWidth, class: extraClass, href } = Astro.props;
+const cls = ["btn", `btn--${variant}`, minWidth && `btn--w-${minWidth}`, extraClass];
+---
+{href ? (
+  <a class:list={cls} href={href}>{label}</a>
+) : (
+  <button type="submit" class:list={cls}>{label}</button>
+)}
