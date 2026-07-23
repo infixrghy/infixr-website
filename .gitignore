@@ -14,7 +14,7 @@ dist/
 Thumbs.db
 .idea/
 .vscode/
-.claude/settings.local.json
+.claude/
 
 # scratch (local only)
 .satoshi-fontshare.css
@@ -26,10 +26,6 @@ design/*
 # …except committed design DOCS (e.g. the glass-card component spec, which
 # SPEC.md V36 + code comments reference — must ship so those refs resolve).
 !design/GLASS-CARD.md
-
-# fallow's local cache (incremental analysis). The config (.fallowrc.jsonc) and
-# the agent gate (.claude/) ARE committed; only this cache dir is local.
-.fallow/
 
 # session handoff notes (local only — scratch for cross-session continuity)
 .handoff/
