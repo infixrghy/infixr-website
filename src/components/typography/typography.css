@@ -13,7 +13,7 @@
        Are / Blog / Get In Touch) carry the brand undertone. Stays distinct from
        body via the uppercase + .18em tracking + smaller size, not via colour.
        --fg-dim is left alone — its other consumers (form ::placeholder, card
-       meta) legitimately want a quiet neutral. 2026-06-13, Ari. */
+       meta) legitimately want a quiet neutral. 2026-06-13, owner. */
     color: var(--fg-muted);
     font-weight: 600;
   }

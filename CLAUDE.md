@@ -7,9 +7,9 @@
 - GH Pages serves `public/` via GitHub Actions (`.github/workflows/deploy.yml`). Pages source = "GitHub Actions". Custom domain **infixr.com** (apex), TLS + Enforce-HTTPS on; `build.ts` emits `public/CNAME` (= `infixr.com`) so the domain survives every rebuild. NOT on Cloudflare — GH Pages hosts the whole thing (Web3Forms decoupled the form from the host).
 
 ## JS Rules
-- budget: ≤10 KB total across all `src/js/*.js` files. (Raised from 5 KB on 2026-06-11 — Ari, for the cursor glow-trail.)
-- only allowed: form handler, year stamp, who-carousel (transform-track loop + autoplay + nav), cursor glow-trail (lerp-following accent glow behind the native CSS dot cursor; Ari-approved). All four live in one bundle: `src/js/main.js`, each no-ops where its target is absent.
-- ANY new JS needs Ari approval first. ask, do not assume.
+- budget: ≤10 KB total across all `src/js/*.js` files. (Raised from 5 KB on 2026-06-11 — owner, for the cursor glow-trail.)
+- only allowed: form handler, year stamp, who-carousel (transform-track loop + autoplay + nav), cursor glow-trail (lerp-following accent glow behind the native CSS dot cursor; owner-approved). All four live in one bundle: `src/js/main.js`, each no-ops where its target is absent.
+- ANY new JS needs owner approval first. ask, do not assume.
 - prefer CSS / HTML / browser-native every time.
 
 ## CSS Rules

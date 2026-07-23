@@ -11,7 +11,7 @@
        accent) so the whole site sits on a near-black with a faint teal undertone;
        every surface derivative then lifts toward the ACCENT (not white), so "elevated"
        reads as warmer teal, never grey. One palette edit, every consumer healed.
-       (Was #1f2725; deepened to near-black 2026-06-11 — Ari, for max glass/glow pop.
+       (Was #1f2725; deepened to near-black 2026-06-11 — owner, for max glass/glow pop.
        The static chrome hexes in head.ts <meta theme-color> + manifest.webmanifest
        cannot read this var — they're hand-synced to match.) */
     --c-bg: #0d1311;
@@ -38,7 +38,7 @@
        Solutions/Services/Blog/Contact sections (each section's ::after, masked to a
        soft radial pool). Was hardcoded color-mix(--c-fg 4%, transparent) in 8 gradient
        declarations across 4 sections; hoisted to one dial so the grid can't drift
-       per-section. 4%→6%: slightly more visible (Ari). NOTE the new near-black --c-bg
+       per-section. 4%→6%: slightly more visible (owner). NOTE the new near-black --c-bg
        already lifts this contrast vs the old base, so 6% is a small nudge, not a big
        one. The per-section MASK radials stay inline — their weighting (solutions=left,
        services=center, blog=right, contact=center) is an intentional composition
@@ -53,7 +53,7 @@
        composite time, not in the value), which read as flat/dead against the
        warm-dark page. Mixing toward --accent bakes a faint teal undertone into
        the token so secondary text harmonises with the bg instead of fighting it.
-       (Was `--c-fg 78% → transparent`; retuned to teal-tinted 2026-06-13 — Ari,
+       (Was `--c-fg 78% → transparent`; retuned to teal-tinted 2026-06-13 — owner,
        killed the grey-ish body text. Picked "Option C" from a C-vs-D side-by-side.) */
     --fg-muted: color-mix(in oklab, var(--c-fg) 82%, var(--accent));
     --fg-dim: color-mix(in oklab, var(--c-fg) 60%, transparent);

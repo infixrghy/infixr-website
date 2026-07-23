@@ -10,7 +10,7 @@
        viewport — this content box shrinks when the hero goes 2-col at ≥900px, so the
        scale tracks the column, not the window).
 
-       Retuned 2026-07-01 (Ari, Galaxy M11): the OLD clamp(4rem, 2.75rem+5cqi,
+       Retuned 2026-07-01 (owner, Galaxy M11): the OLD clamp(4rem, 2.75rem+5cqi,
        5.25rem) hit its 4rem/64px FLOOR on a ~360px phone (content box ~297px →
        5cqi≈15px → preferred≈59px < 64px floor). A 64px 3-line H1 made the hero
        774px tall — 105% of the fold — pushing the CTAs off-screen. Just lowering

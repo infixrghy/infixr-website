@@ -102,7 +102,7 @@ export const renderBlogBody = (posts: ReadonlyArray<BlogPost>): string => {
   // (gap: --space-7), stranding ~48px of dead space under the featured card. A
   // :empty CSS guard can't catch it (the template's newline indentation makes the
   // div a whitespace node, not truly :empty), so gate the markup itself. Returns
-  // when rest grows back. (Ari, 2026-06-13.)
+  // when rest grows back. (owner, 2026-06-13.)
   const restGrid =
     rest.length > 0
       ? html`

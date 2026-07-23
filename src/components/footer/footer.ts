@@ -27,7 +27,7 @@ export const renderFooter = (isHome: boolean, base = ""): string => {
   const root = `${base || "."}`;
   const home = isHome ? "#top" : root;
   // About Us ALWAYS points at the full /about page (the Who We Are page), on EVERY
-  // page including home — NOT the homepage's own #about teaser section. (Ari,
+  // page including home — NOT the homepage's own #about teaser section. (owner,
   // 2026-07-13: "link all links to this page.") base="" at root → "about" → /about.
   const about = `${base}about`;
   const sec = (anchor: string) => (isHome ? anchor : `${root}${anchor}`);

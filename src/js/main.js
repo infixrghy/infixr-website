@@ -47,7 +47,7 @@
 // is clone-padded [3'][1][2][3][1']; `i` indexes those 5. Stepping onto an edge
 // clone then instant-teleporting to its pixel-identical real twin = seamless loop.
 // Autoplay = one interval gated on `pauseUntil`; any user intent (dot click, swipe,
-// wheel, key) pauses it 15s. No-ops where the carousel is absent. (Ari-approved JS.)
+// wheel, key) pauses it 15s. No-ops where the carousel is absent. (owner-approved JS.)
 (() => {
   const track = document.querySelector("[data-carousel]");
   if (!track) return;
@@ -103,7 +103,7 @@
 // smoothing the old infixr.com used — but written as transform: translate3d (one
 // compositor layer, no per-frame layout) instead of left/top. No-ops when the
 // element is absent (CSS gates it to pointer:fine) or reduced-motion is set.
-// (Ari-approved JS; 10 KB budget.)
+// (owner-approved JS; 10 KB budget.)
 (() => {
   const tail = document.querySelector(".cursor-tail");
   if (!tail) return;

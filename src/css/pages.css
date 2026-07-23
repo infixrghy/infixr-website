@@ -566,7 +566,7 @@
      padding-inline grows the pill AROUND the centred label, content-relative and
      safe across the --step--1 font clamp — unlike a fixed width). Vertical padding
      left at the base .8rem (wider, not taller). Scoped to .service-block so the
-     hero / contact / about CTAs keep the site-default weight + size. (Ari, 2026-06-13.) */
+     hero / contact / about CTAs keep the site-default weight + size. (owner, 2026-06-13.) */
   .service-block .btn {
     justify-self: start;
     margin-top: var(--space-2);

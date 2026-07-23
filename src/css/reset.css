@@ -14,7 +14,7 @@
      overflow-x:clip is KEPT alongside as a cheap belt against any FUTURE real
      horizontal overflow (desktop has none today), on both html+body since root→
      viewport propagation is unreliable on some mobile engines. overflow-Y untouched.
-     (Ari, 2026-07-01 — mobile burger sideways scroll; root cause = overscroll, proven
+     (owner, 2026-07-01 — mobile burger sideways scroll; root cause = overscroll, proven
      by measurement, not the panel/backdrop earlier theories.) */
   html, body { overscroll-behavior-x: none; overflow-x: clip; }
   html:focus-within { scroll-behavior: smooth; }

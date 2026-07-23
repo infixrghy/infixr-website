@@ -78,7 +78,7 @@
            shows this inter-frame transient — desktop DPR 1.25 cannot): 22px → ghost+jank,
            12px → still ghost+jank, none → clean + smoother. No threshold above zero is
            clean on real hardware, and the "frost" wasn't carrying its visual weight anyway
-           (Ari), so the blur is gone. The teal-tinted translucent surface + lit rim + accent
+           (owner), so the blur is gone. The teal-tinted translucent surface + lit rim + accent
            rings (on the parent) + sheen sweep (::after) ARE the glass look; they stay.
            NOTE saturate() is dropped with the blur — a bare backdrop saturate with no blur
            is its own cheap-but-pointless filter layer; the tint already carries the colour. */
@@ -107,7 +107,7 @@
       }
 
       /* Hover: brighter rim + sheen sweep + title neon. NO lift and NO fill change —
-         the surface colour must STAY PUT (Ari's pick). Two reasons there's no movement
+         the surface colour must STAY PUT (owner's pick). Two reasons there's no movement
          and no &:hover::before:
            1. The frost is translucent, so its colour = its tint + whatever section
               glow shows THROUGH it. A `translateY` lift moved the card over a

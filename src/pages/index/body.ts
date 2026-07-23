@@ -42,7 +42,7 @@ import type { BlogPost } from "../../schema/post.ts";
  * own their type instead of hiding it under a gradient. NO eyebrow kicker on any
  * teaser card (photo OR text): the category label was dropped site-wide (post
  * pages + blog index eyebrows already read "Blog", not the category), so the
- * homepage cards match — meta line is date + read-time only. (Ari, 2026-07-01.)
+ * homepage cards match — meta line is date + read-time only. (owner, 2026-07-01.)
  */
 const HOME_FEATURE_IMG = "sol-corporate";
 
@@ -443,7 +443,7 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
 
 <!-- Hero 3D (T27): lazy-loads the rotating Meta Quest 3 (model-viewer) over the
      static webp on desktop, motion allowed. Index-only. The model-viewer runtime
-     lives under js/hero-3d/ — outside the V1 5 KB budget per Ari-approved
+     lives under js/hero-3d/ — outside the V1 5 KB budget per owner-approved
      exception; this loader stays tiny. defer = off the critical path. -->
 <script src="js/hero-3d/loader.js" defer></script>`
   );

@@ -114,7 +114,7 @@
   }
   /* Nudge the logo + nav rail slightly inward from the header's outer padding —
      logo a touch right, nav a touch left. Desktop only: on mobile the header is
-     logo + burger, which stay at their edges. (Ari, 2026-07-22.) */
+     logo + burger, which stay at their edges. (owner, 2026-07-22.) */
   @media (min-width: 801px) {
     .brand { margin-left: var(--space-5); }
     .primary-nav { margin-right: var(--space-5); }
@@ -130,7 +130,7 @@
        Avoids hero resizing when mobile URL bar toggles during scroll (V14).
        Trimmed again 82→72svh (floor 540→480, cap 820→720): with align-items:start
        the row stretched to the floor and dumped a tall dead band BELOW the CTAs —
-       that void is what read as "CTAs stranded near the bottom" (Ari). Lower hero =
+       that void is what read as "CTAs stranded near the bottom" (owner). Lower hero =
        no void, content sits balanced. */
     min-height: clamp(480px, 72svh, 720px);
     display: grid;
@@ -139,11 +139,11 @@
        headline shrinks and the CTAs clear the bottom edge (B4). */
     align-items: start;
     /* top padding: DESKTOP is 64px — trimmed 64→32 once, then walked back in two
-       "just a little lower" nudges (Ari) — 32→48→64. That 64 is Ari's tuned
+       "just a little lower" nudges (owner) — 32→48→64. That 64 is owner's tuned
        desktop value; keep it. But on a small phone (Galaxy M11) a fixed 64px top
        pad stacked under the ~90px sticky header ate the fold and helped push the
        CTAs off-screen. So the top pad is now RESPONSIVE: clamp floors it at 32px on
-       mobile and reaches Ari's 64px by the ~900px 2-col breakpoint (vw-keyed — the
+       mobile and reaches owner's 64px by the ~900px 2-col breakpoint (vw-keyed — the
        hero section has no container-type, so cqi would be wrong here). Mobile
        reclaims ~32px of fold; desktop is byte-for-byte unchanged (64px). Horizontal
        + bottom padding untouched. */
@@ -512,7 +512,7 @@
      guard lets the grid fall back to the base single-column 1fr and the lone
      feature card goes full-width instead of stranding an empty right column.
      Self-healing: add posts -> text cards return -> :has() flips -> hybrid is
-     back. Pure CSS, no JS, no body.ts branch. (Ari, 2026-06-13 — blog collapsed
+     back. Pure CSS, no JS, no body.ts branch. (owner, 2026-06-13 — blog collapsed
      to one merged post.) */
   @media (min-width: 760px) {
     .blog .blog__grid:has(.blog-text) {
@@ -644,7 +644,7 @@
        copyright bar joins the accent vocabulary instead of reading as a grey line. */
     border-top: 1px solid var(--divider);
     text-align: center;
-    /* Full --fg like the rest of the footer copy (Ari: whole footer reads white);
+    /* Full --fg like the rest of the footer copy (owner: whole footer reads white);
        set explicitly so it doesn't depend on the `& p` cascade. */
     color: var(--fg);
     font-size: var(--step--1);

@@ -64,7 +64,7 @@
     font-size: var(--step--1);
     line-height: 1.5;
     /* Colour inherits the footer's full --fg via the `& p` rule above (the whole
-       footer reads white per Ari) — no override here. */
+       footer reads white per owner) — no override here. */
     text-wrap: balance;
   }
   /* Links at full --fg (was --fg-muted): they're the primary actionable copy in the
@@ -79,7 +79,7 @@
       width: 40px; height: 40px;
       border-radius: 50%;
       /* Resting disc = faint teal tint + accent hairline (was the flat grey
-         --bg-card, the same dead grey Ari flagged). The icon itself picks up a
+         --bg-card, the same dead grey owner flagged). The icon itself picks up a
          little accent so the link reads as part of the teal vocabulary at rest;
          hover fills solid teal. */
       background: color-mix(in oklab, var(--accent) 12%, transparent);

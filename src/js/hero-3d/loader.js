@@ -1,12 +1,12 @@
 /**
  * hero-3d/loader.js — lazy loader for the rotating Meta Quest 3 hero model.
  *
- * This is the T27 JS-budget exception (approved by Ari): model-viewer is a large
+ * This is the T27 JS-budget exception (approved by owner): model-viewer is a large
  * runtime (~1 MB raw / ~250 KB gzipped). It lives under src/js/hero-3d/ which is
  * OUTSIDE V1's `src/js/*.js` 5 KB budget by design — see SPEC §V1. This loader
  * file itself is the only counted byte cost on the page, and it stays tiny.
  *
- * Strategy (decided with Ari):
+ * Strategy (decided with owner):
  *   - The static <picture class="hero__headset"> webp is the LCP element and is
  *     ALWAYS painted first. The 3D is a progressive upgrade layered over it.
  *   - Reduced-motion → DON'T load at all. The whole point of the 3D is rotation;
