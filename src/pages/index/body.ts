@@ -421,7 +421,7 @@ export const renderHomeBody = (posts: ReadonlyArray<BlogPost>): string => {
         </div>
         <div class="field">
           <label for="cf-phone">Phone Number</label>
-          <input id="cf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\\-]{6,20}" maxlength="20" placeholder="+91 98765 43210">
+          <input id="cf-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" pattern="[0-9 +()\\-]{6,20}" maxlength="20" placeholder="+91 99999 99999">
         </div>
         <div class="field field--full">
           <label for="cf-message">Message</label>
