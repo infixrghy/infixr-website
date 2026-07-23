@@ -3,8 +3,8 @@
  * `astro build` to regenerate dist/. Skips otherwise.
  *
  * Build inputs = anything under these dirs/files with a build extension:
- *   - src/**            — .astro pages/layouts/components, CSS, TS config/utils
- *   - content/posts/**  — blog post sources (data-driven)
+ *   - src/**            — .astro pages/layouts/components, CSS, TS config/utils,
+ *                         blog posts (src/content/posts/**)
  *   - public/**         — static passthrough (main.js, hero-3d, assets)
  *   - astro.config.mjs  — the pipeline config itself
  *
@@ -31,7 +31,7 @@ const root = cwd.replace(/\\/g, "/").replace(/\/$/, "");
 const raw_p = (input.tool_input?.file_path ?? input.tool_input?.path ?? "").replace(/\\/g, "/");
 const rel = raw_p.startsWith(root + "/") ? raw_p.slice(root.length + 1) : raw_p;
 
-const INPUT_DIRS = ["src/", "content/posts/", "public/"];
+const INPUT_DIRS = ["src/", "public/"];
 const isInput =
   (INPUT_DIRS.some((d) => rel.startsWith(d)) || rel === "astro.config.mjs") &&
   /\.(css|ts|md|js|mjs|astro)$/.test(rel);

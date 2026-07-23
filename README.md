@@ -8,10 +8,10 @@ Blog posts live as plain-text Markdown files. Adding one file and pushing it pub
 
 ### 1. Create the file
 
-Add one file in the `content/posts/` folder, named after the post's URL slug:
+Add one file in the `src/content/posts/` folder, named after the post's URL slug:
 
 ```
-content/posts/my-new-post.md
+src/content/posts/my-new-post.md
 ```
 
 The filename (minus `.md`) should match the `slug` field below. The post's address becomes `infixr.com/blog/my-new-post`.
@@ -54,7 +54,7 @@ Regular paragraphs are just text with a blank line between them.
 - Bullet lists too
 ```
 
-Look at the existing files in `content/posts/` for real examples — copying one and rewriting it is the easiest way to start.
+Look at the existing files in `src/content/posts/` for real examples — copying one and rewriting it is the easiest way to start.
 
 ## Previewing on your computer (optional but recommended)
 
@@ -79,7 +79,7 @@ If the page shows an error instead — read it; it names the file and field that
 Commit the new file and push. That's the whole deployment:
 
 ```
-git add content/posts/my-new-post.md
+git add src/content/posts/my-new-post.md
 git commit -m 'feat(blog): add "My New Post" post'
 git push
 ```
@@ -96,6 +96,6 @@ After `git push`, GitHub Actions builds and deploys automatically — the post i
 
 ## Rules
 
-- Only touch `content/posts/` for blog work. The `dist/` folder is generated output — never edit it (it's rebuilt from scratch on every push, and any hand edit is silently lost). The `public/` folder holds the site's images, fonts, and scripts — leave it alone for blog work.
+- Only touch `src/content/posts/` for blog work. The `dist/` folder is generated output — never edit it (it's rebuilt from scratch on every push, and any hand edit is silently lost). The `public/` folder holds the site's images, fonts, and scripts — leave it alone for blog work.
 - One file per post; the site handles everything else (index cards, homepage teaser, per-post page, ordering) from the front-matter.
 - The site is built with [Astro](https://astro.build) — pages live in `src/pages/`, components in `src/components/`. Blog work never needs to touch them.
