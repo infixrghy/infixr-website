@@ -59,6 +59,5 @@
 - commit style: Conventional Commits (`feat:`, `fix:`, `perf:`, `chore:`)
 
 ## Repo
-- remote: github.com/infixrghy/infixr-website (org repo; transferred from arijit-gogoi)
+- remote: github.com/infixrghy/infixr-website (org repo)
 - live: **https://infixr.com/** (custom domain; `infixrghy.github.io/infixr-website/` still serves + the github.io URL redirects to the apex). Pages source = GitHub Actions. DNS at **Hostinger**: 4×A `@`→GitHub (`185.199.108–111.153`) + 4×AAAA `@`→GitHub (`2606:50c0:8000–8003::153`) + `www` CNAME→`infixrghy.github.io`; mail records (SPF/DKIM/DMARC/MX for `@infixr.com`) left untouched.
-- auth: gh CLI as `arijit-gogoi` (personal account, member of infixrghy org)
