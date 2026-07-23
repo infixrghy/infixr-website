@@ -21,8 +21,8 @@
     // Astro's client/env types.
     "types": ["node", "astro/client"]
   },
-  // Generated dist/ and the vendored subtrees (vendor/ 3D viewer, repos/
-  // Effect source-for-agents) are excluded — not ours / not type-relevant.
+  // Generated dist/ and the vendored vendor/ 3D-viewer tree are excluded —
+  // not ours / not type-relevant.
   "include": [".astro/types.d.ts", "src/**/*", "lint.ts", "vitest.config.ts", "test/**/*.ts"],
-  "exclude": ["node_modules", "dist", "vendor", "repos", "public"]
+  "exclude": ["node_modules", "dist", "vendor", "public"]
 }

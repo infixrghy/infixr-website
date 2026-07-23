@@ -1,8 +1,7 @@
 import { defineConfig } from "vitest/config";
 
 // Fence test discovery to our test/ dir: without this include, vitest's
-// default glob would crawl the vendored Effect monorepo under repos/ (800+
-// suites, many failing — not ours) and vendor/. Mirrors tsconfig's exclude.
+// default glob would also crawl vendor/. Mirrors tsconfig's exclude.
 export default defineConfig({
   test: {
     include: ["test/**/*.test.ts"],
