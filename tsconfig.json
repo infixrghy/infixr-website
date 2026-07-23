@@ -1,16 +1,19 @@
 {
-  // Bun-native project: tsc is used ONLY as a type checker (`tsc --noEmit`) —
-  // Bun runs/transpiles the .ts directly (build.ts, server.ts, lint.ts, and the
-  // src/ render fns). So this config is tuned for checking, not emitting.
+  // Node-native project: tsc is used ONLY as a type checker (`tsc --noEmit`) —
+  // Node (≥24) runs the .ts directly via type stripping (build.ts, server.ts,
+  // lint.ts, and the src/ render fns). So this config is tuned for checking,
+  // not emitting. Type stripping = erasable syntax only: no enums, namespaces,
+  // or constructor parameter properties (none exist in this codebase).
   "compilerOptions": {
-    // Bun supports modern syntax + ESM natively.
+    // Node type-stripping supports modern syntax + ESM natively.
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
 
-    // The codebase imports siblings WITH the .ts extension (Bun style, e.g.
-    // `import { html } from "./templates/html.ts"`). Allowed only with noEmit.
+    // The codebase imports siblings WITH the .ts extension (e.g.
+    // `import { html } from "./templates/html.ts"`) — REQUIRED at runtime by
+    // Node's type stripping (it never rewrites specifiers). Allowed only with noEmit.
     "allowImportingTsExtensions": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
@@ -24,8 +27,8 @@
     "strict": true,
     "noFallthroughCasesInSwitch": true,
 
-    // Runtime types: Bun globals + node: specifiers used by build.ts / data/posts.ts.
-    "types": ["bun", "node"],
+    // Runtime types: node: specifiers used by build.ts / server.ts / data/posts.ts.
+    "types": ["node"],
 
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -38,6 +41,6 @@
   // vendored subtrees (vendor/ 3D viewer, repos/ Effect source-for-agents) are
   // excluded — not ours / not type-relevant. repos/ is read-only reference the
   // agent reads; it never enters the build or the type-check surface.
-  "include": ["src/**/*.ts", "build.ts", "server.ts", "lint.ts", "test/**/*.ts"],
+  "include": ["src/**/*.ts", "build.ts", "server.ts", "lint.ts", "vitest.config.ts", "test/**/*.ts"],
   "exclude": ["node_modules", "public", "vendor", "repos", "src/js/hero-3d"]
 }

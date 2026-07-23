@@ -27,7 +27,7 @@
  * (no null — Option for absent fields) and gives typed errors for missing files /
  * bad front-matter, so a malformed page fails the build, not the browser.
  *
- * Usage: `bun run build.ts`  (no args — the .claude auto-build hook depends on this)
+ * Usage: `node build.ts`  (no args — the .claude auto-build hook depends on this)
  */
 import { Effect, Schema } from "effect";
 import { readFile, writeFile, mkdir, rm, cp, readdir } from "node:fs/promises";

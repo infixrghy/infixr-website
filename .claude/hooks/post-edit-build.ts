@@ -1,6 +1,6 @@
 /**
  * PostToolUse hook: when an Edit/Write/MultiEdit touches any build input, run
- * `bun run build.ts` to regenerate public/. Skips otherwise.
+ * `node build.ts` to regenerate public/. Skips otherwise.
  *
  * Build inputs = anything under these dirs/files with a build extension:
  *   - src/**            — CSS + every TS render fn / schema / page-meta, now
@@ -16,7 +16,10 @@
  *
  * Wired in .claude/settings.json. Reads tool input JSON on stdin.
  */
-const raw = await Bun.stdin.text();
+import { text } from "node:stream/consumers";
+import { spawnSync } from "node:child_process";
+
+const raw = await text(process.stdin);
 let input: { tool_input?: { file_path?: string; path?: string } } = {};
 try { input = JSON.parse(raw); } catch { /* nothing on stdin */ }
 
@@ -46,7 +49,9 @@ const isInput =
 
 if (!isInput) process.exit(0);
 
-const r = Bun.spawnSync(["bun", "run", "build.ts"], { cwd });
-process.stderr.write(r.stderr);
-process.stdout.write(r.stdout);
-process.exit(r.exitCode ?? 0);
+const r = spawnSync("node", ["build.ts"], { cwd });
+if (r.stderr) process.stderr.write(r.stderr);
+if (r.stdout) process.stdout.write(r.stdout);
+// status is null when the spawn itself failed (e.g. node not on PATH) — surface
+// that as a failure, not a silent green.
+process.exit(r.status ?? (r.error ? 1 : 0));

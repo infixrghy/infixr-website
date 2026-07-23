@@ -4,11 +4,11 @@
  * These are the byte-producing functions the build composes: escaping, the
  * front-matter parser, date/meta formatting, and the two typed components. They
  * take data and return a string with no IO/DOM, so they test in isolation with
- * zero setup. Run with `bun test` (built-in; no runner dep — the project is
- * effect@4-beta, and @effect/vitest is still an effect-v3 package, so Effect
+ * zero setup. Run with `npm test` (vitest — plain, NOT @effect/vitest: that is
+ * still an effect-v3 package and the project is effect@4-beta, so Effect
  * values are exercised via Effect.runPromiseExit rather than it.effect()).
  */
-import { test, expect, describe } from "bun:test";
+import { test, expect, describe } from "vitest";
 import { Effect, Exit } from "effect";
 
 import { esc, html } from "../../src/templates/html.ts";

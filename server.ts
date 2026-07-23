@@ -1,12 +1,13 @@
-import { serve } from "bun";
+import { createServer } from "node:http";
+import { createReadStream } from "node:fs";
 import { join, extname } from "node:path";
 import { stat } from "node:fs/promises";
 
-// Serve the built site. Run `bun run build.ts` first (or `bun run dev` which chains both).
-const ROOT = join(import.meta.dir, "public");
+// Serve the built site. Run `npm run build` first (or `npm run dev` which chains both).
+const ROOT = join(import.meta.dirname, "public");
 const PORT = Number(process.env.PORT ?? 8765);
 // Loopback by default (not LAN-exposed). For on-device testing from a phone on the same
-// Wi-Fi, opt in with `HOST=0.0.0.0 bun run server.ts` to bind all interfaces.
+// Wi-Fi, opt in with `HOST=0.0.0.0 node server.ts` to bind all interfaces.
 const HOST = process.env.HOST ?? "127.0.0.1";
 
 const TYPES: Record<string, string> = {
@@ -24,45 +25,60 @@ const TYPES: Record<string, string> = {
   ".txt": "text/plain; charset=utf-8",
 };
 
-const server = serve({
-  port: PORT,
-  hostname: HOST,
-  async fetch(req) {
-    const url = new URL(req.url);
+// Mirror GitHub Pages' extensionless resolution so the local mirror can't lie
+// about which links work. For a clean URL `/about`, GH serves `about.html`; for
+// `/blog` it serves `blog.html` EVEN THOUGH `blog/` is also a directory (the
+// .html sibling wins). Resolve in GH's exact priority, serving the first hit at
+// 200 with NO redirect (a trailing slash would shift the relative-link base and
+// break resolution differently than production, making local tests lie):
+//   1. public/about           literal file (assets, real .html)
+//   2. public/about.html       the clean-URL page
+//   3. public/blog/index.html  real dir-index, if one exists
+const resolveFile = async (p: string): Promise<string | null> => {
+  try {
+    const s = await stat(p);
+    return s.isDirectory() ? null : p;
+  } catch {
+    return null;
+  }
+};
+
+const server = createServer(async (req, res) => {
+  try {
+    const url = new URL(req.url ?? "/", `http://${req.headers.host ?? "localhost"}`);
     let pathname = decodeURIComponent(url.pathname);
     if (pathname.endsWith("/")) pathname += "index.html";
 
     const base = join(ROOT, pathname);
-    if (!base.startsWith(ROOT)) return new Response("forbidden", { status: 403 });
+    if (!base.startsWith(ROOT)) {
+      res.writeHead(403, { "content-type": "text/plain; charset=utf-8" });
+      res.end("forbidden");
+      return;
+    }
 
-    // Mirror GitHub Pages' extensionless resolution so the local mirror can't lie
-    // about which links work. For a clean URL `/about`, GH serves `about.html`; for
-    // `/blog` it serves `blog.html` EVEN THOUGH `blog/` is also a directory (the
-    // .html sibling wins). Resolve in GH's exact priority, serving the first hit at
-    // 200 with NO redirect (a trailing slash would shift the relative-link base and
-    // break resolution differently than production, making local tests lie):
-    //   1. public/about           literal file (assets, real .html)
-    //   2. public/about.html       the clean-URL page
-    //   3. public/blog/index.html  real dir-index, if one exists
-    const serveFile = async (p: string): Promise<Response | null> => {
-      try {
-        const s = await stat(p);
-        if (s.isDirectory()) return null;
-        const type = TYPES[extname(p).toLowerCase()] ?? "application/octet-stream";
-        return new Response(Bun.file(p), {
-          headers: { "content-type": type, "cache-control": "no-cache" },
-        });
-      } catch {
-        return null;
-      }
-    };
+    const hit =
+      (await resolveFile(base)) ??
+      (await resolveFile(base + ".html")) ??
+      (await resolveFile(join(base, "index.html")));
+    if (!hit) {
+      res.writeHead(404, { "content-type": "text/plain; charset=utf-8" });
+      res.end("not found");
+      return;
+    }
 
-    const res =
-      (await serveFile(base)) ??
-      (await serveFile(base + ".html")) ??
-      (await serveFile(join(base, "index.html")));
-    return res ?? new Response("not found", { status: 404 });
-  },
+    const type = TYPES[extname(hit).toLowerCase()] ?? "application/octet-stream";
+    res.writeHead(200, { "content-type": type, "cache-control": "no-cache" });
+    createReadStream(hit).pipe(res);
+  } catch {
+    // Bad URL escape / unexpected IO error — never let an async throw escape the
+    // handler (an unhandled rejection would crash the whole dev server).
+    if (!res.headersSent) {
+      res.writeHead(500, { "content-type": "text/plain; charset=utf-8" });
+    }
+    res.end("internal error");
+  }
 });
 
-console.log(`infiXR dev server: http://${server.hostname}:${server.port}`);
+server.listen(PORT, HOST, () => {
+  console.log(`infiXR dev server: http://${HOST}:${PORT}`);
+});

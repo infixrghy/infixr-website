@@ -2,7 +2,7 @@
 
 ## Stack
 - static HTML + CSS. no framework, ever.
-- Bun for tooling (build, server, asset gen). no npm.
+- Node (≥24) + npm for tooling (build, server, asset gen). Node runs the `.ts` entry points directly via native type stripping — no transpile step, erasable TS syntax only (no enums/namespaces). no Bun (migrated off 2026-07-23; `bun.lock`/`bunfig.toml` deleted, lockfile = `package-lock.json`).
 - `src/` = source of truth; `build.ts` emits `public/` (generated, gitignored).
 - GH Pages serves `public/` via GitHub Actions (`.github/workflows/deploy.yml`). Pages source = "GitHub Actions". Custom domain **infixr.com** (apex), TLS + Enforce-HTTPS on; `build.ts` emits `public/CNAME` (= `infixr.com`) so the domain survives every rebuild. NOT on Cloudflare — GH Pages hosts the whole thing (Web3Forms decoupled the form from the host).
 
@@ -31,19 +31,19 @@
 - `src/schema/*.ts` (`page.ts`, `post.ts`, `glass-card.ts`, `button.ts`, `common.ts`) — Effect Schema for page meta, blog front-matter, and the component param APIs (glass card + button); malformed data/params fail the build, not the browser. `common.ts` = shared atoms used by >1 schema module (`IsoDate` — extract on the SECOND consumer, not speculatively).
 - `content/posts/*.md` — blog post sources (front-matter + markdown). `src/data/posts.ts` (`loadPosts`) validates + `marked`-renders them (build-time only, 0 client bytes); `pages/blog/body.ts` renders them into the blog index AND one page each at `public/blog/<slug>.html`. Latest few also surface in the homepage blog teaser (`pages/index/body.ts`).
 - `src/css/reset.css`, `tokens.css`, `layout.css`, `pages.css` — source of truth for the SHARED (non-component) styles. Component-scoped CSS lives co-located under `src/components/<name>/` (see above). (`components.css` was split into those folders; it no longer exists.)
-- `src/js/main.js` — ~7.6 KB, the only shipped JS file (year stamp + contact form + who-carousel + cursor glow-trail; each no-ops where its target is absent). Ships on every page via `build.ts`. NOTE: `.js` is OUTSIDE the post-edit build-hook gate (it watches `.css`/`.ts`/`.md`), so editing this file does NOT auto-rebuild — run `bun run build.ts` by hand after. CONTACT FORM: POSTs JSON to **Web3Forms** (`https://api.web3forms.com/submit`) → delivers to `contact@infixr.com`. `access_key` is a PUBLIC hidden field in the form markup (`src/pages/index/body.ts`) — it only authorizes delivery to the bound inbox, so it's safe in committed HTML (NOT a secret). Spam = Web3Forms' native `botcheck` honeypot (hidden checkbox; unchecked → omitted from FormData → absent → read as human; bot ticks → present → dropped). No backend of ours, no Resend, no DNS — host-independent.
+- `src/js/main.js` — ~7.6 KB, the only shipped JS file (year stamp + contact form + who-carousel + cursor glow-trail; each no-ops where its target is absent). Ships on every page via `build.ts`. NOTE: `.js` is IN the post-edit build-hook gate (it watches `.css`/`.ts`/`.md`/`.js`), so editing this file auto-rebuilds like any other build input. CONTACT FORM: POSTs JSON to **Web3Forms** (`https://api.web3forms.com/submit`) → delivers to `contact@infixr.com`. `access_key` is a PUBLIC hidden field in the form markup (`src/pages/index/body.ts`) — it only authorizes delivery to the bound inbox, so it's safe in committed HTML (NOT a secret). Spam = Web3Forms' native `botcheck` honeypot (hidden checkbox; unchecked → omitted from FormData → absent → read as human; bot ticks → present → dropped). No backend of ours, no Resend, no DNS — host-independent.
 - `src/assets/` — images, favicon, og-image, `Satoshi-Variable.woff2` + `Satoshi-VariableItalic.woff2` (self-hosted, fontshare; no rsms.me/Google Fonts)
 - `src/manifest.webmanifest` — PWA manifest
 - `public/` — GENERATED build output. gitignored. NEVER hand-edit. CI deploys this.
-- `build.ts` — Bun + Effect build: `src/` + `content/` → `public/`. Per page: decode `PageMeta` (Schema) → assemble shell (head from `src/templates/*`, nav/footer from `src/components/*`, body) → inline `src/css/*` + the ordered `COMPONENT_CSS` list + `@font-face` → inject preloads → write. Index body = `renderHomeBody(posts)` (`pages/index/body.ts`); about body = `renderAboutBody()` (`pages/about/body.ts`); blog body + per-post pages from `pages/blog/body.ts`; post data from `loadPosts` (`src/data/posts.ts`). Meta from each `pages/<page>/meta.ts`. Also emits `public/blog/<slug>.html` per post. copies assets/js/manifest, emits `.nojekyll` + `CNAME` (= `infixr.com`, the custom-domain binding — emitted here, NOT hand-dropped, since `public/` is regenerated). NEVER writes `src/`. Auto-fires via `.claude/settings.json` → `.claude/hooks/post-edit-build.ts` on Edit/Write to any build input — gate is a declarative prefix-set (anything under `src/` or `content/posts/`, or `build.ts`, with a `.css`/`.ts`/`.md` extension), so new dirs/files under `src/` need zero hook edits.
-- `lint.ts` — dead-token check (`bun run lint`): every `src/css/tokens.css` var must be used in a consumer.
+- `build.ts` — Node + Effect build: `src/` + `content/` → `public/`. Per page: decode `PageMeta` (Schema) → assemble shell (head from `src/templates/*`, nav/footer from `src/components/*`, body) → inline `src/css/*` + the ordered `COMPONENT_CSS` list + `@font-face` → inject preloads → write. Index body = `renderHomeBody(posts)` (`pages/index/body.ts`); about body = `renderAboutBody()` (`pages/about/body.ts`); blog body + per-post pages from `pages/blog/body.ts`; post data from `loadPosts` (`src/data/posts.ts`). Meta from each `pages/<page>/meta.ts`. Also emits `public/blog/<slug>.html` per post. copies assets/js/manifest, emits `.nojekyll` + `CNAME` (= `infixr.com`, the custom-domain binding — emitted here, NOT hand-dropped, since `public/` is regenerated). NEVER writes `src/`. Auto-fires via `.claude/settings.json` → `.claude/hooks/post-edit-build.ts` on Edit/Write to any build input — gate is a declarative prefix-set (anything under `src/` or `content/posts/`, or `build.ts`, with a `.css`/`.ts`/`.md` extension), so new dirs/files under `src/` need zero hook edits.
+- `lint.ts` — dead-token check (`npm run lint`): every `src/css/tokens.css` var must be used in a consumer.
 - `.github/workflows/deploy.yml` — CI: push to main → build → deploy `public/` to Pages.
 - `vendor/rotating-metaquest3/` — 3D viewer subtree. NOT shipped (hero 3D deferred, needs JS-budget exception).
 - `SPEC.md` — cavekit spec (source of truth for invariants)
 
 ## Build flow
-- Edit any build input (anything under `src/` — CSS, component/template/schema/page/body TS — or `content/posts/*.md`, or `build.ts`) → hook auto-runs `bun run build.ts` → `public/` regenerated.
-- Manual: `bun run build.ts` (cheap). Dev: `bun run dev` (build + serve). Lint: `bun run lint`.
+- Edit any build input (anything under `src/` — CSS, component/template/schema/page/body TS — or `content/posts/*.md`, or `build.ts`) → hook auto-runs `node build.ts` → `public/` regenerated.
+- Manual: `node build.ts` (cheap). Dev: `npm run dev` (build + serve). Lint: `npm run lint`. Tests: `npm test` (vitest, 47 tests; discovery fenced to `test/` by `vitest.config.ts` — do NOT widen its `include`, repos/ holds the vendored Effect monorepo's 800+ suites).
 - `src/` is the only thing committed. `public/` is gitignored — no stale-inline-CSS problem anymore; CI rebuilds from `src/` on every push.
 
 ## Editing
@@ -53,7 +53,7 @@
 - never hardcode breakpoints in pixels when `clamp()` / container query works
 
 ## Dev loop
-- start server: `bun run server.ts`
+- start server: `node server.ts`
 - chrome-devtools-mcp for perf, lighthouse, mobile emulation
 - claude-in-chrome for screenshots, manual checks
 - commit style: Conventional Commits (`feat:`, `fix:`, `perf:`, `chore:`)

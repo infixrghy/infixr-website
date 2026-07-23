@@ -10,14 +10,14 @@
  * + moved there). Component-local custom props (e.g. .glass-card --gc-*) are
  * exempted from orphan-ref checks below — V26 only governs tokens.css tokens.
  *
- * Usage: `bun run lint.ts`
+ * Usage: `node lint.ts`
  */
-import { readFile } from "node:fs/promises";
-import { Glob } from "bun";
+import { readFile, glob } from "node:fs/promises";
 
 const TOKENS_FILE = "src/css/tokens.css";
-// Two globs, NOT one nested-brace pattern: Bun's Glob does not expand nested
-// `{…{…}…}` braces (it silently matches nothing). Scanned in turn below.
+// Two globs, NOT one nested-brace pattern: kept split from the Bun days (Bun's
+// Glob silently matched nothing on nested `{…{…}…}` braces). node:fs glob
+// handles the single-level braces used here; the split costs nothing.
 const CONSUMER_GLOBS = [
   "src/css/{pages,layout,reset}.css",
   "src/components/**/*.css",
@@ -33,7 +33,7 @@ for (const m of tokensSrc.matchAll(/--([a-z][a-z0-9-]*)\s*:/gi)) {
 
 let consumerSrc = "";
 for (const pattern of CONSUMER_GLOBS) {
-  for await (const file of new Glob(pattern).scan(".")) {
+  for await (const file of glob(pattern)) {
     consumerSrc += await readFile(file, "utf8");
   }
 }
@@ -92,17 +92,19 @@ try {
   // Built files that may reference an asset: HTML (img/src/srcset/inline-CSS url()),
   // js (none today, but a future sprite/lazy-loader could), manifest (icon paths).
   let builtSrc = "";
-  for await (const file of new Glob(`${OUT}/**/*.{html,js,webmanifest}`).scan(".")) {
+  for await (const file of glob(`${OUT}/**/*.{html,js,webmanifest}`)) {
     builtSrc += await readFile(file, "utf8");
   }
   // Strip preload <link> tags so their hrefs don't count as a "use" (V46/B8).
   const builtNoPreload = builtSrc.replace(/<link\b[^>]*\brel="preload"[^>]*>/gi, "");
 
   const assetFiles: string[] = [];
-  // Recursive (`**/*`) so a future assets/<subdir>/ can't smuggle files past the check.
-  for await (const f of new Glob(`${ASSETS_DIR}/**/*`).scan(".")) {
+  // Recursive (`**/*`) so a future assets/<subdir>/ can't smuggle files past the
+  // check. withFileTypes + isFile: node's glob (unlike Bun's files-only scan)
+  // also yields matched DIRECTORIES, which must not enter the name list.
+  for await (const d of glob(`${ASSETS_DIR}/**/*`, { withFileTypes: true })) {
     // basename: the literal that template-constructed refs + absolute URLs both carry.
-    assetFiles.push(f.split(/[\\/]/).pop()!);
+    if (d.isFile()) assetFiles.push(d.name);
   }
 
   const deadAssets = assetFiles

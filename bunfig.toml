@@ -1,7 +1,0 @@
-# Bun config. The ONLY reason this file exists: confine `bun test` discovery to
-# our test/ dir. Without a root, `bun test` crawls the whole tree and runs the
-# vendored Effect monorepo's own suites under repos/effect/**/test/** (800+ tests,
-# many failing — they're not ours). Setting the root fences discovery to test/,
-# so `bun test` (no args) runs exactly our 47. Mirrors tsconfig's `exclude: repos`.
-[test]
-root = "test"

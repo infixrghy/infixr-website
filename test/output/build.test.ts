@@ -8,7 +8,7 @@
  * asset the markup references but that doesn't exist; the ~5px nav-CTA drift
  * from a missing base prefix on post pages).
  *
- * It runs the REAL entry point (`bun run build.ts`) once in beforeAll — build.ts
+ * It runs the REAL entry point (`node build.ts`) once in beforeAll — build.ts
  * exports nothing and runs its Effect at import time (with process.exit(1) on
  * failure), so it must be shelled out, not imported. Then it reads public/ and
  * asserts. public/ is gitignored + regenerated, so writing it here is fine.
@@ -16,11 +16,15 @@
  * Invariants are tagged with their SPEC.md §V number where one exists, so a
  * failing test points straight at the spec clause it defends.
  */
-import { test, expect, describe, beforeAll } from "bun:test";
+import { test, expect, describe, beforeAll } from "vitest";
 import { readFileSync, existsSync, readdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { join } from "node:path";
+import { fileURLToPath } from "node:url";
 
-const ROOT = join(import.meta.dir, "..", "..");
+// import.meta.url, not import.meta.dirname: vitest's SSR transform is only
+// guaranteed to provide the url form.
+const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const OUT = join(ROOT, "public");
 const ASSETS_SRC = join(ROOT, "src", "assets");
 
@@ -38,10 +42,11 @@ const read = (p: string): string => readFileSync(p, "utf8");
 beforeAll(async () => {
   // Run the real build in its own process (build.ts self-executes on import +
   // may process.exit — shelling out isolates that from the test runner).
-  const proc = Bun.spawnSync(["bun", "run", "build.ts"], { cwd: ROOT });
-  if (proc.exitCode !== 0) {
+  const proc = spawnSync("node", ["build.ts"], { cwd: ROOT });
+  if (proc.error) throw proc.error;
+  if (proc.status !== 0) {
     throw new Error(
-      `build.ts failed (exit ${proc.exitCode}):\n${proc.stderr.toString()}`
+      `build.ts failed (exit ${proc.status}):\n${proc.stderr.toString()}`
     );
   }
 });
