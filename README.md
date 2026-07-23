@@ -70,7 +70,7 @@ Then, whenever you want to preview:
 npm run dev
 ```
 
-Open <http://127.0.0.1:8765/blog> in your browser and check your post. The preview updates live as you edit and save the file. Press `Ctrl+C` in the terminal to stop it.
+Open <http://localhost:8765/blog> in your browser and check your post. The preview updates live as you edit and save the file. Press `Ctrl+C` in the terminal to stop it.
 
 If the page shows an error instead — read it; it names the file and field that's wrong (usually a typo in the front-matter). Fix the file and the page reloads by itself.
 
